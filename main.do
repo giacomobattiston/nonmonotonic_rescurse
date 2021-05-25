@@ -274,8 +274,6 @@ drop if ccode == 710
 qui sum armstrade, detail
 gen armstrade90 = armstrade >  `r(p90)' if !missing(armstrade)
 
-stop
-
 *label controls used in 
 la var lnarea "Area, log Km\(^2\)"
 la var abslat "Absolute latitude"
@@ -714,5 +712,10 @@ duplicates drop ISO_A3, force
 spmap contig_bases1000 using ${main}1_data/maps_utilities/worldcoor.dta, id(id) fcolor(Blues2)
 *graph save "Graph" "C:\Users\Franceschin\Dropbox\paperi network & job market\technology_conflict\output\map_natcap.pdf",replace
 
-	
+use ${main}2_processed/data_regressions.dta, clear
+kountry ccode, from(cown) to(iso3c)
+rename _ISO3C_ ISO_A3
+merge m:m ISO_A3 using  ${main}1_data/maps_utilities/worlddata_cleaned.dta
+duplicates drop ISO_A3, force
+spmap oil using ${main}1_data/maps_utilities/worldcoor.dta, id(id) fcolor(Greens2)
 	
