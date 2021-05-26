@@ -10,6 +10,7 @@ Replication files for the paper "Third-Party Interest, Resource Value, and the L
 
 ## Folder structure
 
+```stata
 git/LEAPproject
 ├────README.md
 │    
@@ -35,6 +36,7 @@ Overleaf/LEAPproject
 │    │  └──figures
 │    │  └──statistics
 └──config
+````
 
 Raw data lives in the data/ folder _(read-only)_ <br>
 We do not version control data <br>
