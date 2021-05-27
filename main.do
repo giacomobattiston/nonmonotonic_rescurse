@@ -232,7 +232,7 @@ _pctile coal,  p(`perc')
 * Perform winsorization
 replace coal = `r(r1)' if coal > `r(r1)' & !missing(coal)
 * Rescale
-replace coal=coal/(10^9)
+replace coal=coal/(10^3)
 * Generate the squared term
 gen coal2=coal^2
 
