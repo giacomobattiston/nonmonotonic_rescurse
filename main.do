@@ -232,7 +232,7 @@ _pctile coal,  p(`perc')
 * Perform winsorization
 replace coal = `r(r1)' if coal > `r(r1)' & !missing(coal)
 * Rescale
-replace coal=coal/(10^6)
+replace coal=coal/(10^9)
 * Generate the squared term
 gen coal2=coal^2
 
@@ -242,6 +242,8 @@ gen sedvol=exp(lnsedvol)
 _pctile sedvol,  p(`perc')
 * Perform winsorization
 replace sedvol = `r(r1)' if sedvol > `r(r1)' & !missing(sedvol)
+* Rescale 
+replace sedvol = sedvol/(10^3)
 * Generate the squared term
 gen sedvol2=(sedvol^2)
 
