@@ -385,7 +385,7 @@ starlevels(\sym{*} 0.1 \sym{**} 0.05 \sym{***} 0.01) ///
  drop(`controls') ///
  	stats(yearfe continentfe geocontrols  peak N, fmt(s s s a2 a2) ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" )  ///
-	labels(`"Year FEs"' `"Continent FEs"' `"Geo Controls"' `"\(N\)"')) ///
+	labels(`"Year FEs"' `"Continent FEs"' `"Geo Controls"' `"Peak"' `"\(N\)"')) ///
 		mtitles("Conf." "Conf." "H. Conf." "H. Conf." "Conf." "Conf." "H. Conf." "H. Conf.") ///
 			postfoot("\hline\hline \end{tabular}}")	
 
@@ -786,7 +786,7 @@ starlevels(\sym{*} 0.1 \sym{**} 0.05 \sym{***} 0.01) ///
 	mgroups("Third Party: US Bases" "Third Party: US Arms' Trade" , pattern(1 0 0 0 1 0 0 0) prefix(\multicolumn{@span}{c}{) suffix(}) span) ///
  	stats(yearfe continentfe geocontrols b1s p1 b2s p2 N, fmt(s s s s a2 s a2  a2)  ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" )  ///
-	labels(`"Year FEs"' `"Continent FEs"' `"Geo Controls"' `"Lin. Com. Oil"' `"p-value Lin. Com. Oil"' `"Lin. Com. Oil\(^2\)"'`"p-value Lin. Com. Oil\(^2\)"' `"Peak"' `"\(N\)"')) ///
+	labels(`"Year FEs"' `"Continent FEs"' `"Geo Controls"' `"Lin. Com. Oil"' `"p-value Lin. Com. Oil"' `"Lin. Com. Oil\(^2\)"'`"p-value Lin. Com. Oil\(^2\)"' `"\(N\)"')) ///
 		mtitles("Conf." "Conf." "H. Conf." "H. Conf." "Conf." "Conf." "H. Conf." "H. Conf.") ///
 	postfoot("\hline\hline \end{tabular}}")
 
@@ -796,14 +796,8 @@ starlevels(\sym{*} 0.1 \sym{**} 0.05 \sym{***} 0.01) ///
 replace thirdparty = contig_bases1000
 
 ivreg2 conflict  c.oil##i.thirdparty   c.oil2##i.thirdparty c.gas##i.thirdparty   c.gas2##i.thirdparty   c.coal##i.thirdparty   c.coal2##i.thirdparty  i.year i.region, cluster(ccode) partial(i.year i.region)
-estadd local gascon = "Yes"
-estadd local gasintcon = "Yes"
-estadd local gas2con = "Yes"
-estadd local gas2intcon = "Yes"
-estadd local coalcon = "Yes"
-estadd local caolintcon = "Yes"
-estadd local coal2con = "Yes"
-estadd local caol2intcon = "Yes"
+estadd local gascoal = "Yes"
+estadd local gascoalsq = "Yes"
 estadd local yearfe = "Yes"
 estadd local continentfe = "Yes"
 estadd local geocontrols = "No"
@@ -852,14 +846,8 @@ estadd scalar peak = -_b[c.oil]/(2*_b[c.oil2])
 est sto reg1
 
 ivreg2 conflict c.oil##i.thirdparty   c.oil2##i.thirdparty c.gas##i.thirdparty   c.gas2##i.thirdparty   c.coal##i.thirdparty   c.coal2##i.thirdparty i.year i.region `controls', cluster(ccode) partial(i.year i.region)
-estadd local gascon = "Yes"
-estadd local gasintcon = "Yes"
-estadd local gas2con = "Yes"
-estadd local gas2intcon = "Yes"
-estadd local coalcon = "Yes"
-estadd local caolintcon = "Yes"
-estadd local coal2con = "Yes"
-estadd local caol2intcon = "Yes"
+estadd local gascoal = "Yes"
+estadd local gascoalsq = "Yes"
 estadd local yearfe = "Yes"
 estadd local continentfe = "Yes"
 estadd local geocontrols = "Yes"
@@ -908,14 +896,8 @@ estadd scalar peak = -_b[c.oil]/(2*_b[c.oil2])
 est sto reg2
 
 ivreg2 conflict2   c.oil##i.thirdparty   c.oil2##i.thirdparty c.gas##i.thirdparty   c.gas2##i.thirdparty   c.coal##i.thirdparty   c.coal2##i.thirdparty i.year i.region , cluster(ccode) partial(i.year i.region)
-estadd local gascon = "Yes"
-estadd local gasintcon = "Yes"
-estadd local gas2con = "Yes"
-estadd local gas2intcon = "Yes"
-estadd local coalcon = "Yes"
-estadd local caolintcon = "Yes"
-estadd local coal2con = "Yes"
-estadd local caol2intcon = "Yes"
+estadd local gascoal = "Yes"
+estadd local gascoalsq = "Yes"
 estadd local yearfe = "Yes"
 estadd local continentfe = "Yes"
 estadd local geocontrols = "No"
@@ -963,14 +945,8 @@ estadd scalar peak = -_b[c.oil]/(2*_b[c.oil2])
 est sto reg3
 
 ivreg2 conflict2 c.oil##i.thirdparty   c.oil2##i.thirdparty c.gas##i.thirdparty   c.gas2##i.thirdparty   c.coal##i.thirdparty   c.coal2##i.thirdparty i.year i.region `controls', cluster(ccode) partial(i.year i.region)
-estadd local gascon = "Yes"
-estadd local gasintcon = "Yes"
-estadd local gas2con = "Yes"
-estadd local gas2intcon = "Yes"
-estadd local coalcon = "Yes"
-estadd local caolintcon = "Yes"
-estadd local coal2con = "Yes"
-estadd local caol2intcon = "Yes"
+estadd local gascoal = "Yes"
+estadd local gascoalsq = "Yes"
 estadd local yearfe = "Yes"
 estadd local continentfe = "Yes"
 estadd local geocontrols = "Yes"
@@ -1021,14 +997,8 @@ est sto reg4
 replace thirdparty = armstrade90
 
 ivreg2 conflict  c.oil##i.thirdparty   c.oil2##i.thirdparty c.gas##i.thirdparty   c.gas2##i.thirdparty   c.coal##i.thirdparty   c.coal2##i.thirdparty  i.year i.region, cluster(ccode) partial(i.year i.region)
-estadd local gascon = "Yes"
-estadd local gasintcon = "Yes"
-estadd local gas2con = "Yes"
-estadd local gas2intcon = "Yes"
-estadd local coalcon = "Yes"
-estadd local caolintcon = "Yes"
-estadd local coal2con = "Yes"
-estadd local caol2intcon = "Yes"
+estadd local gascoal = "Yes"
+estadd local gascoalsq = "Yes"
 estadd local yearfe = "Yes"
 estadd local continentfe = "Yes"
 estadd local geocontrols = "No"
@@ -1077,14 +1047,8 @@ estadd scalar peak = -_b[c.oil]/(2*_b[c.oil2])
 est sto reg5
 
 ivreg2 conflict c.oil##i.thirdparty   c.oil2##i.thirdparty c.gas##i.thirdparty   c.gas2##i.thirdparty   c.coal##i.thirdparty   c.coal2##i.thirdparty i.year i.region `controls', cluster(ccode) partial(i.year i.region)
-estadd local gascon = "Yes"
-estadd local gasintcon = "Yes"
-estadd local gas2con = "Yes"
-estadd local gas2intcon = "Yes"
-estadd local coalcon = "Yes"
-estadd local caolintcon = "Yes"
-estadd local coal2con = "Yes"
-estadd local caol2intcon = "Yes"
+estadd local gascoal = "Yes"
+estadd local gascoalsq = "Yes"
 estadd local yearfe = "Yes"
 estadd local continentfe = "Yes"
 estadd local geocontrols = "Yes"
@@ -1135,14 +1099,8 @@ estadd scalar peak = -_b[c.oil]/(2*_b[c.oil2])
 est sto reg6
 
 ivreg2 conflict2   c.oil##i.thirdparty   c.oil2##i.thirdparty c.gas##i.thirdparty   c.gas2##i.thirdparty   c.coal##i.thirdparty   c.coal2##i.thirdparty i.year i.region , cluster(ccode) partial(i.year i.region)
-estadd local gascon = "Yes"
-estadd local gasintcon = "Yes"
-estadd local gas2con = "Yes"
-estadd local gas2intcon = "Yes"
-estadd local coalcon = "Yes"
-estadd local caolintcon = "Yes"
-estadd local coal2con = "Yes"
-estadd local caol2intcon = "Yes"
+estadd local gascoal = "Yes"
+estadd local gascoalsq = "Yes"
 estadd local yearfe = "Yes"
 estadd local continentfe = "Yes"
 estadd local geocontrols = "No"
@@ -1193,14 +1151,8 @@ estadd scalar peak = -_b[c.oil]/(2*_b[c.oil2])
 est sto reg7
 
 ivreg2 conflict2 c.oil##i.thirdparty   c.oil2##i.thirdparty c.gas##i.thirdparty   c.gas2##i.thirdparty   c.coal##i.thirdparty   c.coal2##i.thirdparty i.year i.region `controls', cluster(ccode) partial(i.year i.region)
-estadd local gascon = "Yes"
-estadd local gasintcon = "Yes"
-estadd local gas2con = "Yes"
-estadd local gas2intcon = "Yes"
-estadd local coalcon = "Yes"
-estadd local caolintcon = "Yes"
-estadd local coal2con = "Yes"
-estadd local caol2intcon = "Yes"
+estadd local gascoal = "Yes"
+estadd local gascoalsq = "Yes"
 estadd local yearfe = "Yes"
 estadd local continentfe = "Yes"
 estadd local geocontrols = "Yes"
@@ -1262,22 +1214,18 @@ ${main}5_output/tables/prio_oilint.tex, replace ///
 starlevels(\sym{*} 0.1 \sym{**} 0.05 \sym{***} 0.01) ///
  nobaselevels nonumbers ///
 	mgroups("Third Party: US Bases" "Third Party: US Arms' Trade" , pattern(1 0 0 0 1 0 0 0) prefix(\multicolumn{@span}{c}{) suffix(}) span) ///
- 	stats(gascon gasintcon gas2con gas2intcon coalcon coalintcon coal2con ///
-	coal2intcon yearfe continentfe geocontrols b1s p1 b2s p2 N, ///
-	fmt(s s s s s s s s s s s s a2 s a2  a2)  ///
+ 	stats(gascoal gascoalsq yearfe continentfe geocontrols b1s p1 b2s p2 N, ///
+	fmt(s s s s s s a2 s a2  a2)  ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" /// 
-	"\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" ///
-	"\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" ///
-	"\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" )  ///
-	labels(`"Gas"' `"Gas\(^2\)"' `"Gas X Third Party"' `"Gas\(^2\) X Third Party"' ///
-	`"Coal"' `"Coal\(^2\)"' `"Coal X Third Party"' `"Coal\(^2\) X Third Party"' ///
+	"\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}"  )  ///
+	labels(`"Gas, Coal X Third Party"' `"Gas\(^2\), Coal\(^2\) X Third Party"' ///
 	`"Year FEs"' `"Continent FEs"' ///
 	`"Geo Controls"' `"Lin. Com. Oil"' `"p-value Lin. Com. Oil"' ///
-	`"Lin. Com. Oil\(^2\)"'`"p-value Lin. Com. Oil\(^2\)"' `"Peak"' `"\(N\)"')) ///
+	`"Lin. Com. Oil\(^2\)"'`"p-value Lin. Com. Oil\(^2\)"' `"\(N\)"')) ///
 		mtitles("Conf." "Conf." "H. Conf." "H. Conf." "Conf." "Conf." "H. Conf." "H. Conf.") ///
 	postfoot("\hline\hline \end{tabular}}")
-
-
+	
+	stop
 	
 ********* Maps
 *ssc install spmap
@@ -1289,15 +1237,24 @@ kountry ccode, from(cown) to(iso3c)
 rename _ISO3C_ ISO_A3
 merge m:m ISO_A3 using  ${main}1_data/maps_utilities/worlddata_cleaned.dta
 duplicates drop ISO_A3, force
-spmap armstrade90 using ${main}1_data/maps_utilities/worldcoor.dta, id(id) fcolor(Reds2)
+spmap armstrade90 using ${main}1_data/maps_utilities/worldcoor.dta, id(id) fcolor(Greens2)
+graph save ${main}5_output/figures/armstrade90.pdf, replace
 
 use ${main}2_processed/data_regressions.dta, clear
 kountry ccode, from(cown) to(iso3c)
 rename _ISO3C_ ISO_A3
 merge m:m ISO_A3 using  ${main}1_data/maps_utilities/worlddata_cleaned.dta
 duplicates drop ISO_A3, force
-spmap contig_bases1000 using ${main}1_data/maps_utilities/worldcoor.dta, id(id) fcolor(Blues2)
-*graph save "Graph" "C:\Users\Franceschin\Dropbox\paperi network & job market\technology_conflict\output\map_natcap.pdf",replace
+spmap contig_bases1000 using ${main}1_data/maps_utilities/worldcoor.dta, id(id) fcolor(Greens2)
+graph save ${main}5_output/figures/bases1000.pdf, replace
+
+use ${main}2_processed/data_regressions.dta, clear
+kountry ccode, from(cown) to(iso3c)
+rename _ISO3C_ ISO_A3
+merge m:m ISO_A3 using  ${main}1_data/maps_utilities/worlddata_cleaned.dta
+duplicates drop ISO_A3, force
+spmap sedvol using ${main}1_data/maps_utilities/worldcoor.dta, id(id) fcolor(Greens2)
+graph save ${main}5_output/figures/sedvol.pdf, replace
 
 use ${main}2_processed/data_regressions.dta, clear
 kountry ccode, from(cown) to(iso3c)
@@ -1305,4 +1262,6 @@ rename _ISO3C_ ISO_A3
 merge m:m ISO_A3 using  ${main}1_data/maps_utilities/worlddata_cleaned.dta
 duplicates drop ISO_A3, force
 spmap oil using ${main}1_data/maps_utilities/worldcoor.dta, id(id) fcolor(Greens2)
+graph save ${main}5_output/figures/oil.pdf, replace
+
 	
