@@ -841,8 +841,7 @@ if (`r(p)' <= 1) {
 		}
 	}
 }
-
-estadd scalar peak = -_b[c.oil]/(2*_b[c.oil2])
+estadd local b2s = "`b2s'"
 est sto reg1
 
 ivreg2 conflict c.oil##i.thirdparty   c.oil2##i.thirdparty c.gas##i.thirdparty   c.gas2##i.thirdparty   c.coal##i.thirdparty   c.coal2##i.thirdparty i.year i.region `controls', cluster(ccode) partial(i.year i.region)
@@ -892,7 +891,7 @@ if (`r(p)' <= 1) {
 		}
 	}
 }
-estadd scalar peak = -_b[c.oil]/(2*_b[c.oil2])
+estadd local b2s = "`b2s'"
 est sto reg2
 
 ivreg2 conflict2   c.oil##i.thirdparty   c.oil2##i.thirdparty c.gas##i.thirdparty   c.gas2##i.thirdparty   c.coal##i.thirdparty   c.coal2##i.thirdparty i.year i.region , cluster(ccode) partial(i.year i.region)
@@ -941,7 +940,7 @@ if (`r(p)' <= 1) {
 		}
 	}
 }
-estadd scalar peak = -_b[c.oil]/(2*_b[c.oil2])
+estadd local b2s = "`b2s'"
 est sto reg3
 
 ivreg2 conflict2 c.oil##i.thirdparty   c.oil2##i.thirdparty c.gas##i.thirdparty   c.gas2##i.thirdparty   c.coal##i.thirdparty   c.coal2##i.thirdparty i.year i.region `controls', cluster(ccode) partial(i.year i.region)
@@ -990,8 +989,7 @@ if (`r(p)' <= 1) {
 		}
 	}
 }
-
-estadd scalar peak = -_b[c.oil]/(2*_b[c.oil2])
+estadd local b2s = "`b2s'"
 est sto reg4
 
 replace thirdparty = armstrade90
@@ -1021,7 +1019,6 @@ if (`r(p)' <= 1) {
 		}
 	}
 }
-
 estadd local b1s = "`b1s'"
 
 local se1 = `r(se)'
@@ -1042,8 +1039,7 @@ if (`r(p)' <= 1) {
 		}
 	}
 }
-
-estadd scalar peak = -_b[c.oil]/(2*_b[c.oil2])
+estadd local b2s = "`b2s'"
 est sto reg5
 
 ivreg2 conflict c.oil##i.thirdparty   c.oil2##i.thirdparty c.gas##i.thirdparty   c.gas2##i.thirdparty   c.coal##i.thirdparty   c.coal2##i.thirdparty i.year i.region `controls', cluster(ccode) partial(i.year i.region)
@@ -1054,7 +1050,7 @@ estadd local continentfe = "Yes"
 estadd local geocontrols = "Yes"
 
 * Save coefficients and p-values for linear combinations of linear term
-estadd scalar  b1 = _b[c.oil] + _b[c.oil#1.thirdparty]
+local  b1 = _b[c.oil] + _b[c.oil#1.thirdparty]
 qui lincom c.oil + c.oil#1.thirdparty
 estadd scalar p1 = `r(p)'
 
@@ -1094,8 +1090,6 @@ if (`r(p)' <= 1) {
 }
 
 estadd local b2s = "`b2s'"
-
-estadd scalar peak = -_b[c.oil]/(2*_b[c.oil2])
 est sto reg6
 
 ivreg2 conflict2   c.oil##i.thirdparty   c.oil2##i.thirdparty c.gas##i.thirdparty   c.gas2##i.thirdparty   c.coal##i.thirdparty   c.coal2##i.thirdparty i.year i.region , cluster(ccode) partial(i.year i.region)
@@ -1146,8 +1140,6 @@ if (`r(p)' <= 1) {
 }
 
 estadd local b2s = "`b2s'"
-
-estadd scalar peak = -_b[c.oil]/(2*_b[c.oil2])
 est sto reg7
 
 ivreg2 conflict2 c.oil##i.thirdparty   c.oil2##i.thirdparty c.gas##i.thirdparty   c.gas2##i.thirdparty   c.coal##i.thirdparty   c.coal2##i.thirdparty i.year i.region `controls', cluster(ccode) partial(i.year i.region)
@@ -1158,7 +1150,7 @@ estadd local continentfe = "Yes"
 estadd local geocontrols = "Yes"
 
 * Save coefficients and p-values for linear combinations of linear term
-estadd scalar  b1 = _b[c.oil] + _b[c.oil#1.thirdparty]
+local  b1 = _b[c.oil] + _b[c.oil#1.thirdparty]
 qui lincom c.oil + c.oil#1.thirdparty
 estadd scalar p1 = `r(p)'
 
@@ -1198,8 +1190,6 @@ if (`r(p)' <= 1) {
 }
 
 estadd local b2s = "`b2s'"
-
-estadd scalar peak = -_b[c.oil]/(2*_b[c.oil2])
 est sto reg8
 
 esttab reg1 reg2 reg3 reg4 reg5 reg6 reg7 reg8 using ///
