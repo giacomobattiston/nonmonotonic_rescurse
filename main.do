@@ -330,7 +330,7 @@ keep if year < 2000
 keep year region lnarea abslat elevavg elevstd temp prec lnpop14 ///
 	conflict conflict2 sedvol sedvol2 coal coal2 gas gas2 oil oil oil2  ///
 	contig_bases1000 armstrade90 ccode conf_years armstrade50 ///
-	armstrade75 armstrade95 armstrade0 armstrade0_ukr armstrade50_ukr ///
+	armstrade75 armstrade95 armstrade0 armstrade90_ukr armstrade50_ukr ///
 	armstrade75_ukr armstrade95_ukr armstrade0_ukr
 
 save ${main}2_processed/data_regressions.dta, replace
