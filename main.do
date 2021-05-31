@@ -611,7 +611,7 @@ ${main}5_output/tables/prio_oilint.tex, replace ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" )  ///
 	labels(`"\emph{Linear Combination:}"' `"\qquad \emph{Base + Inter. Coeff.}"' ///
 	`"\qquad Oil"' 	`"\qquad p-value"' `"\qquad Oil\(^2\)"'`"\qquad p-value"' `" "' ///
-	`"Gas, Coal X Third Party"' `"Gas\(^2\), Coal\(^2\) X Third Party"'  `" "' `"Year FEs"' ///
+	`"Gas, Coal X Third Party"' `"Gas\(^2\), Coal\(^2\) X Third Party"' `"Year FEs"' ///
 	`"Continent FEs"' `"Geo Controls"'  `"\(N\)"')) ///
 	mtitles("Conf." "Conf." "H. Conf." "H. Conf." "Conf." "Conf." "H. Conf." "H. Conf.") ///
 	postfoot("\hline\hline \end{tabular}}")
