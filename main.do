@@ -232,7 +232,7 @@ _pctile coal,  p(`perc')
 * Perform winsorization
 replace coal = `r(r1)' if coal > `r(r1)' & !missing(coal)
 * Rescale
-replace coal=coal/(10^3)
+replace coal=coal/(10^6)
 * Generate the squared term
 gen coal2=coal^2
 
@@ -406,795 +406,192 @@ starlevels(\sym{*} 0.1 \sym{**} 0.05 \sym{***} 0.01) ///
  nobaselevels nonumbers ///
 		mtitles("Bases" "Arms' Trade" ) ///
 			postfoot("\hline\hline \end{tabular}}")
-	
+
+* Globals for regression loops
+global thirdparty_list "contig_bases1000 armstrade90"
+global outcome_list "conflict conflict2"
+
 * Table 3: Sedimentary bases presence and conflict, with third party presence
 
-replace thirdparty = contig_bases1000
+local counter 0
 
-ivreg2 conflict c.sedvol##i.thirdparty c.sedvol2##i.thirdparty i.year i.region, cluster(ccode) partial(i.year i.region)
-estadd local yearfe = "Yes"
-estadd local continentfe = "Yes"
-estadd local geocontrols = "No"
+* For loop for regressions: iterates over third party measure, outcome, controls
+foreach thirdparty of varlist $thirdparty_list {
+	replace thirdparty = `thirdparty'
+		foreach outcome of varlist $outcome_list {
+			forval i_con = 1/2 {
+				local counter = `counter' + 1
+				if (`i_con' == 1) {
+					ivreg2 `outcome' c.sedvol##i.thirdparty c.sedvol2##i.thirdparty ///
+					i.year i.region, cluster(ccode) partial(i.year i.region)
+					* Save geographic controls indicator
+					estadd local geocontrols = "No"
+				}
+				else {
+					ivreg2 `outcome' c.sedvol##i.thirdparty ///
+					c.sedvol2##i.thirdparty i.year i.region `controls', ///
+					cluster(ccode) partial(i.year i.region)
+					* Save geographic controls indicator
+					estadd local geocontrols = "Yes"
+				}
+				
+				* Save time controls indicators
+				estadd local yearfe = "Yes"
+				estadd local continentfe = "Yes"
+				* Save auxiliary indicator for esttab
+				estadd local space = " "
 
-* Save coefficients and p-values for linear combinations of linear term
-local  b1 = _b[c.sedvol] + _b[c.sedvol#1.thirdparty]
-qui lincom c.sedvol + c.sedvol#1.thirdparty
-estadd scalar p1 = `r(p)'
+				* Save coefficients and p-values for linear combinations of linear term
+				local  b1 = _b[c.sedvol] + _b[c.sedvol#1.thirdparty]
+				qui lincom c.sedvol + c.sedvol#1.thirdparty
+				local p1_aux : di %6.3g scalar(`r(p)')
+				estadd scalar p1 = `p1_aux'
+				local b1s_aux : di %6.4f scalar(`b1')
+				if (`r(p)' <= 1) {
+					local b1s =  "`b1s_aux'"
+					if (`r(p)' < 0.1) {
+						local b1s =  "`b1s_aux'" + "\sym{*}"
+						if (`r(p)' < 0.05) {
+							local b1s =  "`b1s_aux'" + "\sym{**}"
+							if (`r(p)' < 0.01) {
+								local b1s =  "`b1s_aux'" + "\sym{***}"
+							}
+						}
+					}
+				}
+				estadd local b1s = "`b1s'"
+				local se1 = `r(se)'
 
-local b1s_aux : di %6.4f scalar(`b1')
-if (`r(p)' <= 1) {
-	local b1s =  "`b1s_aux'"
-	if (`r(p)' < 0.1) {
-		local b1s =  "`b1s_aux'" + "\sym{*}"
-		if (`r(p)' < 0.05) {
-			local b1s =  "`b1s_aux'" + "\sym{**}"
-			if (`r(p)' < 0.01) {
-				local b1s =  "`b1s_aux'" + "\sym{***}"
+				* Save coefficients and p-values for linear combinations of quadratic term
+				local  b2 = _b[c.sedvol2] + _b[c.sedvol2#1.thirdparty]
+				qui lincom c.sedvol2 + c.sedvol2#1.thirdparty
+				local p2_aux : di %6.3g scalar(`r(p)')
+				estadd scalar p2 = `p2_aux'
+				local b2s_aux : di %6.4f scalar(`b2')
+				if (`r(p)' <= 1) {
+					local b2s =  "`b2s_aux'"
+					if (`r(p)' < 0.1) {
+						local b2s =  "`b2s_aux'" + "\sym{*}"
+						if (`r(p)' < 0.05) {
+							local b2s =  "`b2s_aux'" + "\sym{**}"
+							if (`r(p)' < 0.01) {
+								local b2s =  "`b2s_aux'" + "\sym{***}"
+							}
+						}
+					}
+				}
+				estadd local b2s = "`b2s'"
+				
+				est sto reg`counter'
 			}
-		}
-	}
+
 }
-estadd local b1s = "`b1s'"
-local se1 = `r(se)'
-
-* Save coefficients and p-values for linear combinations of quadratic term
-local  b2 = _b[c.sedvol2] + _b[c.sedvol2#1.thirdparty]
-qui lincom c.sedvol2 + c.sedvol2#1.thirdparty
-estadd scalar p2 = `r(p)'
-local b2s_aux : di %6.4f scalar(`b2')
-if (`r(p)' <= 1) {
-	local b2s =  "`b2s_aux'"
-	if (`r(p)' < 0.1) {
-		local b2s =  "`b2s_aux'" + "\sym{*}"
-		if (`r(p)' < 0.05) {
-			local b2s =  "`b2s_aux'" + "\sym{**}"
-			if (`r(p)' < 0.01) {
-				local b2s =  "`b2s_aux'" + "\sym{***}"
-			}
-		}
-	}
 }
-estadd local b2s = "`b2s'"
-est sto reg1
-
-ivreg2 conflict c.sedvol##i.thirdparty c.sedvol2##i.thirdparty i.year i.region `controls', cluster(ccode) partial(i.year i.region)
-estadd local yearfe = "Yes"
-estadd local continentfe = "Yes"
-estadd local geocontrols = "Yes"
-
-* Save coefficients and p-values for linear combinations of linear term
-local  b1 = _b[c.sedvol] + _b[c.sedvol#1.thirdparty]
-qui lincom c.sedvol + c.sedvol#1.thirdparty
-estadd scalar p1 = `r(p)'
-local b1s_aux : di %6.4f scalar(`b1')
-if (`r(p)' <= 1) {
-	local b1s =  "`b1s_aux'"
-	if (`r(p)' < 0.1) {
-		local b1s =  "`b1s_aux'" + "\sym{*}"
-		if (`r(p)' < 0.05) {
-			local b1s =  "`b1s_aux'" + "\sym{**}"
-			if (`r(p)' < 0.01) {
-				local b1s =  "`b1s_aux'" + "\sym{***}"
-			}
-		}
-	}
-}
-estadd local b1s = "`b1s'"
-local se1 = `r(se)'
-
-* Save coefficients and p-values for linear combinations of quadratic term
-local  b2 = _b[c.sedvol2] + _b[c.sedvol2#1.thirdparty]
-qui lincom c.sedvol2 + c.sedvol2#1.thirdparty
-estadd scalar p2 = `r(p)'
-local b2s_aux : di %6.4f scalar(`b2')
-if (`r(p)' <= 1) {
-	local b2s =  "`b2s_aux'"
-	if (`r(p)' < 0.1) {
-		local b2s =  "`b2s_aux'" + "\sym{*}"
-		if (`r(p)' < 0.05) {
-			local b2s =  "`b2s_aux'" + "\sym{**}"
-			if (`r(p)' < 0.01) {
-				local b2s =  "`b2s_aux'" + "\sym{***}"
-			}
-		}
-	}
-}
-estadd local b2s = "`b2s'"
-est sto reg2
-
-ivreg2 conflict2 c.sedvol##i.thirdparty c.sedvol2##i.thirdparty i.year i.region , cluster(ccode) partial(i.year i.region)
-estadd local yearfe = "Yes"
-estadd local continentfe = "Yes"
-estadd local geocontrols = "No"
-
-* Save coefficients and p-values for linear combinations of linear term
-local  b1 = _b[c.sedvol] + _b[c.sedvol#1.thirdparty]
-qui lincom c.sedvol + c.sedvol#1.thirdparty
-estadd scalar p1 = `r(p)'
-local b1s_aux : di %6.4f scalar(`b1')
-if (`r(p)' <= 1) {
-	local b1s =  "`b1s_aux'"
-	if (`r(p)' < 0.1) {
-		local b1s =  "`b1s_aux'" + "\sym{*}"
-		if (`r(p)' < 0.05) {
-			local b1s =  "`b1s_aux'" + "\sym{**}"
-			if (`r(p)' < 0.01) {
-				local b1s =  "`b1s_aux'" + "\sym{***}"
-			}
-		}
-	}
-}
-estadd local b1s = "`b1s'"
-local se1 = `r(se)'
-
-* Save coefficients and p-values for linear combinations of quadratic term
-local  b2 = _b[c.sedvol2] + _b[c.sedvol2#1.thirdparty]
-qui lincom c.sedvol2 + c.sedvol2#1.thirdparty
-estadd scalar p2 = `r(p)'
-local b2s_aux : di %6.4f scalar(`b2')
-if (`r(p)' <= 1) {
-	local b2s =  "`b2s_aux'"
-	if (`r(p)' < 0.1) {
-		local b2s =  "`b2s_aux'" + "\sym{*}"
-		if (`r(p)' < 0.05) {
-			local b2s =  "`b2s_aux'" + "\sym{**}"
-			if (`r(p)' < 0.01) {
-				local b2s =  "`b2s_aux'" + "\sym{***}"
-			}
-		}
-	}
-}
-estadd local b2s = "`b2s'"
-est sto reg3
-
-ivreg2 conflict2 c.sedvol##i.thirdparty c.sedvol2##i.thirdparty i.year i.region `controls', cluster(ccode) partial(i.year i.region)
-estadd local yearfe = "Yes"
-estadd local continentfe = "Yes"
-estadd local geocontrols = "Yes"
-
-* Save coefficients and p-values for linear combinations of linear term
-local  b1 = _b[c.sedvol] + _b[c.sedvol#1.thirdparty]
-qui lincom c.sedvol + c.sedvol#1.thirdparty
-estadd scalar p1 = `r(p)'
-local b1s_aux : di %6.4f scalar(`b1')
-if (`r(p)' <= 1) {
-	local b1s =  "`b1s_aux'"
-	if (`r(p)' < 0.1) {
-		local b1s =  "`b1s_aux'" + "\sym{*}"
-		if (`r(p)' < 0.05) {
-			local b1s =  "`b1s_aux'" + "\sym{**}"
-			if (`r(p)' < 0.01) {
-				local b1s =  "`b1s_aux'" + "\sym{***}"
-			}
-		}
-	}
-}
-estadd local b1s = "`b1s'"
-local se1 = `r(se)'
-
-* Save coefficients and p-values for linear combinations of quadratic term
-local  b2 = _b[c.sedvol2] + _b[c.sedvol2#1.thirdparty]
-qui lincom c.sedvol2 + c.sedvol2#1.thirdparty
-estadd scalar p2 = `r(p)'
-local b2s_aux : di %6.4f scalar(`b2')
-if (`r(p)' <= 1) {
-	local b2s =  "`b2s_aux'"
-	if (`r(p)' < 0.1) {
-		local b2s =  "`b2s_aux'" + "\sym{*}"
-		if (`r(p)' < 0.05) {
-			local b2s =  "`b2s_aux'" + "\sym{**}"
-			if (`r(p)' < 0.01) {
-				local b2s =  "`b2s_aux'" + "\sym{***}"
-			}
-		}
-	}
-}
-estadd local b2s = "`b2s'"
-est sto reg4
-
-replace thirdparty = armstrade90
-
-ivreg2 conflict c.sedvol##i.thirdparty c.sedvol2##i.thirdparty i.year i.region, ///
-	cluster(ccode) partial(i.year i.region)
-estadd local yearfe = "Yes"
-estadd local continentfe = "Yes"
-estadd local geocontrols = "No"
-
-* Save coefficients and p-values for linear combinations of linear term
-local  b1 = _b[c.sedvol] + _b[c.sedvol#1.thirdparty]
-qui lincom c.sedvol + c.sedvol#1.thirdparty
-estadd scalar p1 = `r(p)'
-local b1s_aux : di %6.4f scalar(`b1')
-if (`r(p)' <= 1) {
-	local b1s =  "`b1s_aux'"
-	if (`r(p)' < 0.1) {
-		local b1s =  "`b1s_aux'" + "\sym{*}"
-		if (`r(p)' < 0.05) {
-			local b1s =  "`b1s_aux'" + "\sym{**}"
-			if (`r(p)' < 0.01) {
-				local b1s =  "`b1s_aux'" + "\sym{***}"
-			}
-		}
-	}
-}
-estadd local b1s = "`b1s'"
-local se1 = `r(se)'
-
-* Save coefficients and p-values for linear combinations of quadratic term
-local  b2 = _b[c.sedvol2] + _b[c.sedvol2#1.thirdparty]
-qui lincom c.sedvol2 + c.sedvol2#1.thirdparty
-estadd scalar p2 = `r(p)'
-local b2s_aux : di %6.4f scalar(`b2')
-if (`r(p)' <= 1) {
-	local b2s =  "`b2s_aux'"
-	if (`r(p)' < 0.1) {
-		local b2s =  "`b2s_aux'" + "\sym{*}"
-		if (`r(p)' < 0.05) {
-			local b2s =  "`b2s_aux'" + "\sym{**}"
-			if (`r(p)' < 0.01) {
-				local b2s =  "`b2s_aux'" + "\sym{***}"
-			}
-		}
-	}
-}
-estadd local b2s = "`b2s'"
-est sto reg5
-
-ivreg2 conflict c.sedvol##i.thirdparty c.sedvol2##i.thirdparty i.year i.region ///
-	`controls', cluster(ccode) partial(i.year i.region)
-estadd local yearfe = "Yes"
-estadd local continentfe = "Yes"
-estadd local geocontrols = "Yes"
-
-* Save coefficients and p-values for linear combinations of linear term
-local  b1 = _b[c.sedvol] + _b[c.sedvol#1.thirdparty]
-qui lincom c.sedvol + c.sedvol#1.thirdparty
-estadd scalar p1 = `r(p)'
-local b1s_aux : di %6.4f scalar(`b1')
-if (`r(p)' <= 1) {
-	local b1s =  "`b1s_aux'"
-	if (`r(p)' < 0.1) {
-		local b1s =  "`b1s_aux'" + "\sym{*}"
-		if (`r(p)' < 0.05) {
-			local b1s =  "`b1s_aux'" + "\sym{**}"
-			if (`r(p)' < 0.01) {
-				local b1s =  "`b1s_aux'" + "\sym{***}"
-			}
-		}
-	}
-}
-estadd local b1s = "`b1s'"
-local se1 = `r(se)'
-
-* Save coefficients and p-values for linear combinations of quadratic term
-local  b2 = _b[c.sedvol2] + _b[c.sedvol2#1.thirdparty]
-qui lincom c.sedvol2 + c.sedvol2#1.thirdparty
-estadd scalar p2 = `r(p)'
-local b2s_aux : di %6.4f scalar(`b2')
-if (`r(p)' <= 1) {
-	local b2s =  "`b2s_aux'"
-	if (`r(p)' < 0.1) {
-		local b2s =  "`b2s_aux'" + "\sym{*}"
-		if (`r(p)' < 0.05) {
-			local b2s =  "`b2s_aux'" + "\sym{**}"
-			if (`r(p)' < 0.01) {
-				local b2s =  "`b2s_aux'" + "\sym{***}"
-			}
-		}
-	}
-}
-estadd local b2s = "`b2s'"
-
-est sto reg6
-
-ivreg2 conflict2 c.sedvol##i.thirdparty c.sedvol2##i.thirdparty i.year i.region , cluster(ccode) partial(i.year i.region)
-estadd local yearfe = "Yes"
-estadd local continentfe = "Yes"
-estadd local geocontrols = "No"
-
-* Save coefficients and p-values for linear combinations of linear term
-local  b1 = _b[c.sedvol] + _b[c.sedvol#1.thirdparty]
-qui lincom c.sedvol + c.sedvol#1.thirdparty
-estadd scalar p1 = `r(p)'
-local b1s_aux : di %6.4f scalar(`b1')
-if (`r(p)' <= 1) {
-	local b1s =  "`b1s_aux'"
-	if (`r(p)' < 0.1) {
-		local b1s =  "`b1s_aux'" + "\sym{*}"
-		if (`r(p)' < 0.05) {
-			local b1s =  "`b1s_aux'" + "\sym{**}"
-			if (`r(p)' < 0.01) {
-				local b1s =  "`b1s_aux'" + "\sym{***}"
-			}
-		}
-	}
-}
-estadd local b1s = "`b1s'"
-local se1 = `r(se)'
-
-* Save coefficients and p-values for linear combinations of quadratic term
-local  b2 = _b[c.sedvol2] + _b[c.sedvol2#1.thirdparty]
-qui lincom c.sedvol2 + c.sedvol2#1.thirdparty
-estadd scalar p2 = `r(p)'
-local b2s_aux : di %6.4f scalar(`b2')
-if (`r(p)' <= 1) {
-	local b2s =  "`b2s_aux'"
-	if (`r(p)' < 0.1) {
-		local b2s =  "`b2s_aux'" + "\sym{*}"
-		if (`r(p)' < 0.05) {
-			local b2s =  "`b2s_aux'" + "\sym{**}"
-			if (`r(p)' < 0.01) {
-				local b2s =  "`b2s_aux'" + "\sym{***}"
-			}
-		}
-	}
-}
-estadd local b2s = "`b2s'"
-
-est sto reg7
-
-ivreg2 conflict2 c.sedvol##i.thirdparty c.sedvol2##i.thirdparty i.year i.region `controls', cluster(ccode) partial(i.year i.region)
-estadd local yearfe = "Yes"
-estadd local continentfe = "Yes"
-estadd local geocontrols = "Yes"
-
-* Save coefficients and p-values for linear combinations of linear term
-local  b1 = _b[c.sedvol] + _b[c.sedvol#1.thirdparty]
-qui lincom c.sedvol + c.sedvol#1.thirdparty
-estadd scalar p1 = `r(p)'
-local b1s_aux : di %6.4f scalar(`b1')
-if (`r(p)' <= 1) {
-	local b1s =  "`b1s_aux'"
-	if (`r(p)' < 0.1) {
-		local b1s =  "`b1s_aux'" + "\sym{*}"
-		if (`r(p)' < 0.05) {
-			local b1s =  "`b1s_aux'" + "\sym{**}"
-			if (`r(p)' < 0.01) {
-				local b1s =  "`b1s_aux'" + "\sym{***}"
-			}
-		}
-	}
-}
-
-estadd local b1s = "`b1s'"
-local se1 = `r(se)'
-
-* Save coefficients and p-values for linear combinations of quadratic term
-local  b2 = _b[c.sedvol2] + _b[c.sedvol2#1.thirdparty]
-qui lincom c.sedvol2 + c.sedvol2#1.thirdparty
-estadd scalar p2 = `r(p)'
-
-local b2s_aux : di %6.4f scalar(`b2')
-if (`r(p)' <= 1) {
-	local b2s =  "`b2s_aux'"
-	if (`r(p)' < 0.1) {
-		local b2s =  "`b2s_aux'" + "\sym{*}"
-		if (`r(p)' < 0.05) {
-			local b2s =  "`b2s_aux'" + "\sym{**}"
-			if (`r(p)' < 0.01) {
-				local b2s =  "`b2s_aux'" + "\sym{***}"
-			}
-		}
-	}
-}
-
-estadd local b2s = "`b2s'"
-
-est sto reg8
 
 esttab reg1 reg2 reg3 reg4 reg5 reg6 reg7 reg8 using ///
-${main}5_output/tables/prio_sedint.tex, replace ///
- drop(`controls') coeflabels(1.thirdparty "Third Party Presence" c.sedvol#1.thirdparty "Sed. Vol. X Third Party" 1.thirdparty#c.sedvol "Sed. Vol. X Third Party" 1.thirdparty#c.sedvol2 "Sed. Vol.\(^2\) X Third Party" c.sedvol2#1.thirdparty "Sed. Vol.\(^2\) X Third Party" sedvol "Sed. Vol." sedvol2 "Sed. Vol.\(^2\)") se ///
-starlevels(\sym{*} 0.1 \sym{**} 0.05 \sym{***} 0.01) ///
- nobaselevels nonumbers ///
-	mgroups("Third Party: US Bases" "Third Party: US Arms' Trade" , pattern(1 0 0 0 1 0 0 0) prefix(\multicolumn{@span}{c}{) suffix(}) span) ///
- 	stats(yearfe continentfe geocontrols b1s p1 b2s p2 N, fmt(s s s s a2 s a2  a2)  ///
+	${main}5_output/tables/prio_sedint.tex, replace ///
+	drop(`controls') coeflabels(1.thirdparty "Third Party Presence" ///
+	c.sedvol#1.thirdparty "Sed. Vol. X Third Party" 1.thirdparty#c.sedvol ///
+	"Sed. Vol. X Third Party" 1.thirdparty#c.sedvol2 ///
+	"Sed. Vol.\(^2\) X Third Party" c.sedvol2#1.thirdparty ///
+	"Sed. Vol.\(^2\) X Third Party" sedvol "Sed. Vol." sedvol2 "Sed. Vol.\(^2\)") se ///
+	starlevels(\sym{*} 0.1 \sym{**} 0.05 \sym{***} 0.01) ///
+	nobaselevels nonumbers ///
+	mgroups("Third Party: US Bases" "Third Party: US Arms' Trade" , ///
+	pattern(1 0 0 0 1 0 0 0) prefix(\multicolumn{@span}{c}{) suffix(}) span) ///
+ 	stats(space space b1s p1 b2s p2 space yearfe continentfe geocontrols N, ///
+	fmt(s s s  %6.3f s %6.3f s s s s   a2)  ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" )  ///
-	labels(`"Year FEs"' `"Continent FEs"' `"Geo Controls"' `"Lin. Com. Oil"' `"p-value Lin. Com. Oil"' `"Lin. Com. Oil\(^2\)"'`"p-value Lin. Com. Oil\(^2\)"' `"\(N\)"')) ///
-		mtitles("Conf." "Conf." "H. Conf." "H. Conf." "Conf." "Conf." "H. Conf." "H. Conf.") ///
+	labels(`"\emph{Linear Combination:}"' `"\qquad \emph{Base + Inter. Coeff.}"'  `"\qquad Sed. Vol."' 	`"\qquad p-value"' `"\qquad Sed. Vol.\(^2\)"'`"\qquad p-value"'  `" "' `"Year FEs"' ///
+	`"Continent FEs"' `"Geo Controls"'  `"\(N\)"')) ///
+	mtitles("Conf." "Conf." "H. Conf." "H. Conf." "Conf." "Conf." "H. Conf." "H. Conf.") ///
 	postfoot("\hline\hline \end{tabular}}")
-
-
+	
+	
 * Table 4: WB resources presence and conflict, with third party presence
 
-replace thirdparty = contig_bases1000
+local counter 0
 
-ivreg2 conflict  c.oil##i.thirdparty   c.oil2##i.thirdparty c.gas##i.thirdparty   c.gas2##i.thirdparty   c.coal##i.thirdparty   c.coal2##i.thirdparty  i.year i.region, cluster(ccode) partial(i.year i.region)
-estadd local gascoal = "Yes"
-estadd local gascoalsq = "Yes"
-estadd local yearfe = "Yes"
-estadd local continentfe = "Yes"
-estadd local geocontrols = "No"
+* For loop for regressions: iterates over third party measure, outcome, controls
+foreach thirdparty of varlist $thirdparty_list {
+	replace thirdparty = `thirdparty'
+		foreach outcome of varlist $outcome_list {
+			forval i_con = 1/2 {
+				local counter = `counter' + 1
+				if (`i_con' == 1) {
+					ivreg2 `outcome' c.oil##i.thirdparty   c.oil2##i.thirdparty ///
+					c.gas##i.thirdparty c.gas2##i.thirdparty   ///
+					c.coal##i.thirdparty c.coal2##i.thirdparty ///
+					i.year i.region, cluster(ccode) partial(i.year i.region)
+					* Save geographic controls indicator
+					estadd local geocontrols = "No"
+				}
+				else {
+					ivreg2 `outcome' c.oil##i.thirdparty c.oil2##i.thirdparty ///
+					c.gas##i.thirdparty c.gas2##i.thirdparty ///
+					c.coal##i.thirdparty c.coal2##i.thirdparty ///
+					i.year i.region `controls', ///
+					cluster(ccode) partial(i.year i.region)
+					* Save geographic controls indicator
+					estadd local geocontrols = "Yes"
+				}
+				
+				* Save time controls indicators
+				estadd local yearfe = "Yes"
+				estadd local continentfe = "Yes"
+				* Save resource controls indicators
+				estadd local gascoal = "Yes"
+				estadd local gascoalsq = "Yes"
+				* Save auxiliary indicator for esttab
+				estadd local space = " "
 
-* Save coefficients and p-values for linear combinations of linear term
-local  b1 = _b[c.oil] + _b[c.oil#1.thirdparty]
-qui lincom c.oil + c.oil#1.thirdparty
-estadd scalar p1 = `r(p)'
+				* Save coefficients and p-values for linear combinations of linear term
+				local  b1 = _b[c.oil] + _b[c.oil#1.thirdparty]
+				qui lincom c.oil + c.oil#1.thirdparty
+				local p1_aux : di %6.3g scalar(`r(p)')
+				estadd scalar p1 = `p1_aux'
+				local b1s_aux : di %6.4f scalar(`b1')
+				if (`r(p)' <= 1) {
+					local b1s =  "`b1s_aux'"
+					if (`r(p)' < 0.1) {
+						local b1s =  "`b1s_aux'" + "\sym{*}"
+						if (`r(p)' < 0.05) {
+							local b1s =  "`b1s_aux'" + "\sym{**}"
+							if (`r(p)' < 0.01) {
+								local b1s =  "`b1s_aux'" + "\sym{***}"
+							}
+						}
+					}
+				}
+				estadd local b1s = "`b1s'"
+				local se1 = `r(se)'
 
-local b1s_aux : di %6.4f scalar(`b1')
-if (`r(p)' <= 1) {
-	local b1s =  "`b1s_aux'"
-	if (`r(p)' < 0.1) {
-		local b1s =  "`b1s_aux'" + "\sym{*}"
-		if (`r(p)' < 0.05) {
-			local b1s =  "`b1s_aux'" + "\sym{**}"
-			if (`r(p)' < 0.01) {
-				local b1s =  "`b1s_aux'" + "\sym{***}"
+				* Save coefficients and p-values for linear combinations of quadratic term
+				local  b2 = _b[c.oil2] + _b[c.oil2#1.thirdparty]
+				qui lincom c.oil2 + c.oil2#1.thirdparty
+				local p2_aux : di %6.3g scalar(`r(p)')
+				estadd scalar p2 = `p2_aux'
+				local b2s_aux : di %6.4f scalar(`b2')
+				if (`r(p)' <= 1) {
+					local b2s =  "`b2s_aux'"
+					if (`r(p)' < 0.1) {
+						local b2s =  "`b2s_aux'" + "\sym{*}"
+						if (`r(p)' < 0.05) {
+							local b2s =  "`b2s_aux'" + "\sym{**}"
+							if (`r(p)' < 0.01) {
+								local b2s =  "`b2s_aux'" + "\sym{***}"
+							}
+						}
+					}
+				}
+				estadd local b2s = "`b2s'"
+				
+				est sto reg`counter'
 			}
-		}
-	}
+
+}
 }
 
-estadd local b1s = "`b1s'"
-
-local se1 = `r(se)'
-local  b2 = _b[c.oil2] + _b[c.oil2#1.thirdparty]
-qui lincom c.oil2 + c.oil2#1.thirdparty
-estadd scalar p2 = `r(p)'
-
-local b2s_aux : di %6.4f scalar(`b2')
-if (`r(p)' <= 1) {
-	local b2s =  "`b2s_aux'"
-	if (`r(p)' < 0.1) {
-		local b2s =  "`b2s_aux'" + "\sym{*}"
-		if (`r(p)' < 0.05) {
-			local b2s =  "`b2s_aux'" + "\sym{**}"
-			if (`r(p)' < 0.01) {
-				local b2s =  "`b2s_aux'" + "\sym{***}"
-			}
-		}
-	}
-}
-estadd local b2s = "`b2s'"
-est sto reg1
-
-ivreg2 conflict c.oil##i.thirdparty   c.oil2##i.thirdparty c.gas##i.thirdparty   c.gas2##i.thirdparty   c.coal##i.thirdparty   c.coal2##i.thirdparty i.year i.region `controls', cluster(ccode) partial(i.year i.region)
-estadd local gascoal = "Yes"
-estadd local gascoalsq = "Yes"
-estadd local yearfe = "Yes"
-estadd local continentfe = "Yes"
-estadd local geocontrols = "Yes"
-
-* Save coefficients and p-values for linear combinations of linear term
-local  b1 = _b[c.oil] + _b[c.oil#1.thirdparty]
-qui lincom c.oil + c.oil#1.thirdparty
-estadd scalar p1 = `r(p)'
-
-
-local b1s_aux : di %6.4f scalar(`b1')
-if (`r(p)' <= 1) {
-	local b1s =  "`b1s_aux'"
-	if (`r(p)' < 0.1) {
-		local b1s =  "`b1s_aux'" + "\sym{*}"
-		if (`r(p)' < 0.05) {
-			local b1s =  "`b1s_aux'" + "\sym{**}"
-			if (`r(p)' < 0.01) {
-				local b1s =  "`b1s_aux'" + "\sym{***}"
-			}
-		}
-	}
-}
-
-estadd local b1s = "`b1s'"
-
-local se1 = `r(se)'
-local  b2 = _b[c.oil2] + _b[c.oil2#1.thirdparty]
-qui lincom c.oil2 + c.oil2#1.thirdparty
-estadd scalar p2 = `r(p)'
-
-local b2s_aux : di %6.4f scalar(`b2')
-if (`r(p)' <= 1) {
-	local b2s =  "`b2s_aux'"
-	if (`r(p)' < 0.1) {
-		local b2s =  "`b2s_aux'" + "\sym{*}"
-		if (`r(p)' < 0.05) {
-			local b2s =  "`b2s_aux'" + "\sym{**}"
-			if (`r(p)' < 0.01) {
-				local b2s =  "`b2s_aux'" + "\sym{***}"
-			}
-		}
-	}
-}
-estadd local b2s = "`b2s'"
-est sto reg2
-
-ivreg2 conflict2   c.oil##i.thirdparty   c.oil2##i.thirdparty c.gas##i.thirdparty   c.gas2##i.thirdparty   c.coal##i.thirdparty   c.coal2##i.thirdparty i.year i.region , cluster(ccode) partial(i.year i.region)
-estadd local gascoal = "Yes"
-estadd local gascoalsq = "Yes"
-estadd local yearfe = "Yes"
-estadd local continentfe = "Yes"
-estadd local geocontrols = "No"
-
-* Save coefficients and p-values for linear combinations of linear term
-local b1 = _b[c.oil] + _b[c.oil#1.thirdparty]
-qui lincom c.oil + c.oil#1.thirdparty
-estadd scalar p1 = `r(p)'
-
-local b1s_aux : di %6.4f scalar(`b1')
-if (`r(p)' <= 1) {
-	local b1s =  "`b1s_aux'"
-	if (`r(p)' < 0.1) {
-		local b1s =  "`b1s_aux'" + "\sym{*}"
-		if (`r(p)' < 0.05) {
-			local b1s =  "`b1s_aux'" + "\sym{**}"
-			if (`r(p)' < 0.01) {
-				local b1s =  "`b1s_aux'" + "\sym{***}"
-			}
-		}
-	}
-}
-
-estadd local b1s = "`b1s'"
-
-local se1 = `r(se)'
-local  b2 = _b[c.oil2] + _b[c.oil2#1.thirdparty]
-qui lincom c.oil2 + c.oil2#1.thirdparty
-estadd scalar p2 = `r(p)'
-
-local b2s_aux : di %6.4f scalar(`b2')
-if (`r(p)' <= 1) {
-	local b2s =  "`b2s_aux'"
-	if (`r(p)' < 0.1) {
-		local b2s =  "`b2s_aux'" + "\sym{*}"
-		if (`r(p)' < 0.05) {
-			local b2s =  "`b2s_aux'" + "\sym{**}"
-			if (`r(p)' < 0.01) {
-				local b2s =  "`b2s_aux'" + "\sym{***}"
-			}
-		}
-	}
-}
-estadd local b2s = "`b2s'"
-est sto reg3
-
-ivreg2 conflict2 c.oil##i.thirdparty   c.oil2##i.thirdparty c.gas##i.thirdparty   c.gas2##i.thirdparty   c.coal##i.thirdparty   c.coal2##i.thirdparty i.year i.region `controls', cluster(ccode) partial(i.year i.region)
-estadd local gascoal = "Yes"
-estadd local gascoalsq = "Yes"
-estadd local yearfe = "Yes"
-estadd local continentfe = "Yes"
-estadd local geocontrols = "Yes"
-
-* Save coefficients and p-values for linear combinations of linear term
-local  b1 = _b[c.oil] + _b[c.oil#1.thirdparty]
-qui lincom c.oil + c.oil#1.thirdparty
-estadd scalar p1 = `r(p)'
-
-local b1s_aux : di %6.4f scalar(`b1')
-if (`r(p)' <= 1) {
-	local b1s =  "`b1s_aux'"
-	if (`r(p)' < 0.1) {
-		local b1s =  "`b1s_aux'" + "\sym{*}"
-		if (`r(p)' < 0.05) {
-			local b1s =  "`b1s_aux'" + "\sym{**}"
-			if (`r(p)' < 0.01) {
-				local b1s =  "`b1s_aux'" + "\sym{***}"
-			}
-		}
-	}
-}
-
-estadd local b1s = "`b1s'"
-
-local se1 = `r(se)'
-local  b2 = _b[c.oil2] + _b[c.oil2#1.thirdparty]
-qui lincom c.oil2 + c.oil2#1.thirdparty
-estadd scalar p2 = `r(p)'
-
-local b2s_aux : di %6.4f scalar(`b2')
-if (`r(p)' <= 1) {
-	local b2s =  "`b2s_aux'"
-	if (`r(p)' < 0.1) {
-		local b2s =  "`b2s_aux'" + "\sym{*}"
-		if (`r(p)' < 0.05) {
-			local b2s =  "`b2s_aux'" + "\sym{**}"
-			if (`r(p)' < 0.01) {
-				local b2s =  "`b2s_aux'" + "\sym{***}"
-			}
-		}
-	}
-}
-estadd local b2s = "`b2s'"
-est sto reg4
-
-replace thirdparty = armstrade90
-
-ivreg2 conflict  c.oil##i.thirdparty   c.oil2##i.thirdparty c.gas##i.thirdparty   c.gas2##i.thirdparty   c.coal##i.thirdparty   c.coal2##i.thirdparty  i.year i.region, cluster(ccode) partial(i.year i.region)
-estadd local gascoal = "Yes"
-estadd local gascoalsq = "Yes"
-estadd local yearfe = "Yes"
-estadd local continentfe = "Yes"
-estadd local geocontrols = "No"
-
-* Save coefficients and p-values for linear combinations of linear term
-local  b1 = _b[c.oil] + _b[c.oil#1.thirdparty]
-qui lincom c.oil + c.oil#1.thirdparty
-estadd scalar p1 = `r(p)'
-
-local b1s_aux : di %6.4f scalar(`b1')
-if (`r(p)' <= 1) {
-	local b1s =  "`b1s_aux'"
-	if (`r(p)' < 0.1) {
-		local b1s =  "`b1s_aux'" + "\sym{*}"
-		if (`r(p)' < 0.05) {
-			local b1s =  "`b1s_aux'" + "\sym{**}"
-			if (`r(p)' < 0.01) {
-				local b1s =  "`b1s_aux'" + "\sym{***}"
-			}
-		}
-	}
-}
-estadd local b1s = "`b1s'"
-
-local se1 = `r(se)'
-local  b2 = _b[c.oil2] + _b[c.oil2#1.thirdparty]
-qui lincom c.oil2 + c.oil2#1.thirdparty
-estadd scalar p2 = `r(p)'
-
-local b2s_aux : di %6.4f scalar(`b2')
-if (`r(p)' <= 1) {
-	local b2s =  "`b2s_aux'"
-	if (`r(p)' < 0.1) {
-		local b2s =  "`b2s_aux'" + "\sym{*}"
-		if (`r(p)' < 0.05) {
-			local b2s =  "`b2s_aux'" + "\sym{**}"
-			if (`r(p)' < 0.01) {
-				local b2s =  "`b2s_aux'" + "\sym{***}"
-			}
-		}
-	}
-}
-estadd local b2s = "`b2s'"
-est sto reg5
-
-ivreg2 conflict c.oil##i.thirdparty   c.oil2##i.thirdparty c.gas##i.thirdparty   c.gas2##i.thirdparty   c.coal##i.thirdparty   c.coal2##i.thirdparty i.year i.region `controls', cluster(ccode) partial(i.year i.region)
-estadd local gascoal = "Yes"
-estadd local gascoalsq = "Yes"
-estadd local yearfe = "Yes"
-estadd local continentfe = "Yes"
-estadd local geocontrols = "Yes"
-
-* Save coefficients and p-values for linear combinations of linear term
-local  b1 = _b[c.oil] + _b[c.oil#1.thirdparty]
-qui lincom c.oil + c.oil#1.thirdparty
-estadd scalar p1 = `r(p)'
-
-local b1s_aux : di %6.4f scalar(`b1')
-if (`r(p)' <= 1) {
-	local b1s =  "`b1s_aux'"
-	if (`r(p)' < 0.1) {
-		local b1s =  "`b1s_aux'" + "\sym{*}"
-		if (`r(p)' < 0.05) {
-			local b1s =  "`b1s_aux'" + "\sym{**}"
-			if (`r(p)' < 0.01) {
-				local b1s =  "`b1s_aux'" + "\sym{***}"
-			}
-		}
-	}
-}
-
-estadd local b1s = "`b1s'"
-
-local se1 = `r(se)'
-local b2 = _b[c.oil2] + _b[c.oil2#1.thirdparty]
-qui lincom c.oil2 + c.oil2#1.thirdparty
-estadd scalar p2 = `r(p)'
-
-local b2s_aux : di %6.4f scalar(`b2')
-if (`r(p)' <= 1) {
-	local b2s =  "`b2s_aux'"
-	if (`r(p)' < 0.1) {
-		local b2s =  "`b2s_aux'" + "\sym{*}"
-		if (`r(p)' < 0.05) {
-			local b2s =  "`b2s_aux'" + "\sym{**}"
-			if (`r(p)' < 0.01) {
-				local b2s =  "`b2s_aux'" + "\sym{***}"
-			}
-		}
-	}
-}
-
-estadd local b2s = "`b2s'"
-est sto reg6
-
-ivreg2 conflict2   c.oil##i.thirdparty   c.oil2##i.thirdparty c.gas##i.thirdparty   c.gas2##i.thirdparty   c.coal##i.thirdparty   c.coal2##i.thirdparty i.year i.region , cluster(ccode) partial(i.year i.region)
-estadd local gascoal = "Yes"
-estadd local gascoalsq = "Yes"
-estadd local yearfe = "Yes"
-estadd local continentfe = "Yes"
-estadd local geocontrols = "No"
-
-* Save coefficients and p-values for linear combinations of linear term
-local  b1 = _b[c.oil] + _b[c.oil#1.thirdparty]
-qui lincom c.oil + c.oil#1.thirdparty
-estadd scalar p1 = `r(p)'
-
-local b1s_aux : di %6.4f scalar(`b1')
-if (`r(p)' <= 1) {
-	local b1s =  "`b1s_aux'"
-	if (`r(p)' < 0.1) {
-		local b1s =  "`b1s_aux'" + "\sym{*}"
-		if (`r(p)' < 0.05) {
-			local b1s =  "`b1s_aux'" + "\sym{**}"
-			if (`r(p)' < 0.01) {
-				local b1s =  "`b1s_aux'" + "\sym{***}"
-			}
-		}
-	}
-}
-
-estadd local b1s = "`b1s'"
-
-local se1 = `r(se)'
-local  b2 = _b[c.oil2] + _b[c.oil2#1.thirdparty]
-qui lincom c.oil2 + c.oil2#1.thirdparty
-estadd scalar p2 = `r(p)'
-
-local b2s_aux : di %6.4f scalar(`b2')
-if (`r(p)' <= 1) {
-	local b2s =  "`b2s_aux'"
-	if (`r(p)' < 0.1) {
-		local b2s =  "`b2s_aux'" + "\sym{*}"
-		if (`r(p)' < 0.05) {
-			local b2s =  "`b2s_aux'" + "\sym{**}"
-			if (`r(p)' < 0.01) {
-				local b2s =  "`b2s_aux'" + "\sym{***}"
-			}
-		}
-	}
-}
-
-estadd local b2s = "`b2s'"
-est sto reg7
-
-ivreg2 conflict2 c.oil##i.thirdparty   c.oil2##i.thirdparty c.gas##i.thirdparty   c.gas2##i.thirdparty   c.coal##i.thirdparty   c.coal2##i.thirdparty i.year i.region `controls', cluster(ccode) partial(i.year i.region)
-estadd local gascoal = "Yes"
-estadd local gascoalsq = "Yes"
-estadd local yearfe = "Yes"
-estadd local continentfe = "Yes"
-estadd local geocontrols = "Yes"
-
-* Save coefficients and p-values for linear combinations of linear term
-local  b1 = _b[c.oil] + _b[c.oil#1.thirdparty]
-qui lincom c.oil + c.oil#1.thirdparty
-estadd scalar p1 = `r(p)'
-
-local b1s_aux : di %6.4f scalar(`b1')
-if (`r(p)' <= 1) {
-	local b1s =  "`b1s_aux'"
-	if (`r(p)' < 0.1) {
-		local b1s =  "`b1s_aux'" + "\sym{*}"
-		if (`r(p)' < 0.05) {
-			local b1s =  "`b1s_aux'" + "\sym{**}"
-			if (`r(p)' < 0.01) {
-				local b1s =  "`b1s_aux'" + "\sym{***}"
-			}
-		}
-	}
-}
-
-estadd local b1s = "`b1s'"
-
-local se1 = `r(se)'
-local  b2 = _b[c.oil2] + _b[c.oil2#1.thirdparty]
-qui lincom c.oil2 + c.oil2#1.thirdparty
-estadd scalar p2 = `r(p)'
-
-local b2s_aux : di %6.4f scalar(`b2')
-if (`r(p)' <= 1) {
-	local b2s =  "`b2s_aux'"
-	if (`r(p)' < 0.1) {
-		local b2s =  "`b2s_aux'" + "\sym{*}"
-		if (`r(p)' < 0.05) {
-			local b2s =  "`b2s_aux'" + "\sym{**}"
-			if (`r(p)' < 0.01) {
-				local b2s =  "`b2s_aux'" + "\sym{***}"
-			}
-		}
-	}
-}
-
-estadd local b2s = "`b2s'"
-est sto reg8
 
 esttab reg1 reg2 reg3 reg4 reg5 reg6 reg7 reg8 using ///
 ${main}5_output/tables/prio_oilint.tex, replace ///
@@ -1205,18 +602,18 @@ ${main}5_output/tables/prio_oilint.tex, replace ///
 	"Oil X Third Party" 1.thirdparty#c.oil "Oil X Third Party" ///
 	1.thirdparty#c.oil2 "Oil\(^2\) X Third Party" c.oil2#1.thirdparty ///
 	"Oil\(^2\) X Third Party" oil "Oil" oil2 "Oil\(^2\)") se ///
-starlevels(\sym{*} 0.1 \sym{**} 0.05 \sym{***} 0.01) ///
- nobaselevels nonumbers ///
-	mgroups("Third Party: US Bases" "Third Party: US Arms' Trade" , pattern(1 0 0 0 1 0 0 0) prefix(\multicolumn{@span}{c}{) suffix(}) span) ///
- 	stats(gascoal gascoalsq yearfe continentfe geocontrols b1s p1 b2s p2 N, ///
-	fmt(s s s s s s a2 s a2  a2)  ///
-	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" /// 
-	"\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}"  )  ///
-	labels(`"Gas, Coal X Third Party"' `"Gas\(^2\), Coal\(^2\) X Third Party"' ///
-	`"Year FEs"' `"Continent FEs"' ///
-	`"Geo Controls"' `"Lin. Com. Oil"' `"p-value Lin. Com. Oil"' ///
-	`"Lin. Com. Oil\(^2\)"'`"p-value Lin. Com. Oil\(^2\)"' `"\(N\)"')) ///
-		mtitles("Conf." "Conf." "H. Conf." "H. Conf." "Conf." "Conf." "H. Conf." "H. Conf.") ///
+	starlevels(\sym{*} 0.1 \sym{**} 0.05 \sym{***} 0.01) ///
+	nobaselevels nonumbers ///
+	mgroups("Third Party: US Bases" "Third Party: US Arms' Trade" , ///
+	pattern(1 0 0 0 1 0 0 0) prefix(\multicolumn{@span}{c}{) suffix(}) span) ///
+ 	stats(space space b1s p1 b2s p2 space gascoal gascoalsq yearfe continentfe geocontrols N, ///
+	fmt(s s s  %6.3f s %6.3f s s s s s s   a2)  ///
+	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" )  ///
+	labels(`"\emph{Linear Combination:}"' `"\qquad \emph{Base + Inter. Coeff.}"' ///
+	`"\qquad Sed. Vol."' 	`"\qquad p-value"' `"\qquad Sed. Vol.\(^2\)"'`"\qquad p-value"' `" "' ///
+	`"Gas, Coal X Third Party"' `"Gas\(^2\), Coal\(^2\) X Third Party"'  `" "' `"Year FEs"' ///
+	`"Continent FEs"' `"Geo Controls"'  `"\(N\)"')) ///
+	mtitles("Conf." "Conf." "H. Conf." "H. Conf." "Conf." "Conf." "H. Conf." "H. Conf.") ///
 	postfoot("\hline\hline \end{tabular}}")
 	
 	
