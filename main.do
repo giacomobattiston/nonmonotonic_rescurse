@@ -1162,7 +1162,7 @@ ${main}5_output/tables/prio_oilint_logit.tex, replace ///
 
 	
 
-global thirdparty_list "contig_bases1000 armstrade50"
+global thirdparty_list "armstrade50"
 	
 * Table 10: Sedimentary bases presence and conflict, with third party presence
 * armstrade50
@@ -1242,7 +1242,7 @@ foreach thirdparty of varlist $thirdparty_list {
 }
 }
 
-esttab reg1 reg2 reg3 reg4 reg5 reg6 reg7 reg8 using ///
+esttab reg1 reg2 reg3 reg4 using ///
 	${main}5_output/tables/prio_sedint_arms50.tex, replace ///
 	drop(`controls') coeflabels(1.thirdparty "Third Party Presence" ///
 	c.sedvol#1.thirdparty "Sed. Vol. X Third Party" 1.thirdparty#c.sedvol ///
@@ -1348,7 +1348,7 @@ foreach thirdparty of varlist $thirdparty_list {
 }
 
 
-esttab reg1 reg2 reg3 reg4 reg5 reg6 reg7 reg8 using ///
+esttab reg1 reg2 reg3 reg4 using ///
 ${main}5_output/tables/prio_oilint_arms50.tex, replace ///
  drop(`controls' 1.thirdparty#c.gas 1.thirdparty#c.gas2 ///
 	gas gas2 1.thirdparty#c.coal ///
@@ -1375,7 +1375,7 @@ ${main}5_output/tables/prio_oilint_arms50.tex, replace ///
 	
 	
 	
-global thirdparty_list "contig_bases1000 armstrade75"
+global thirdparty_list "armstrade75"
 	
 * Table 12: Sedimentary bases presence and conflict, with third party presence
 * armstrade50
@@ -1455,7 +1455,7 @@ foreach thirdparty of varlist $thirdparty_list {
 }
 }
 
-esttab reg1 reg2 reg3 reg4 reg5 reg6 reg7 reg8 using ///
+esttab reg1 reg2 reg3 reg4 using ///
 	${main}5_output/tables/prio_sedint_arms75.tex, replace ///
 	drop(`controls') coeflabels(1.thirdparty "Third Party Presence" ///
 	c.sedvol#1.thirdparty "Sed. Vol. X Third Party" 1.thirdparty#c.sedvol ///
@@ -1561,7 +1561,7 @@ foreach thirdparty of varlist $thirdparty_list {
 }
 
 
-esttab reg1 reg2 reg3 reg4 reg5 reg6 reg7 reg8 using ///
+esttab reg1 reg2 reg3 reg4 using ///
 ${main}5_output/tables/prio_oilint_arms75.tex, replace ///
  drop(`controls' 1.thirdparty#c.gas 1.thirdparty#c.gas2 ///
 	gas gas2 1.thirdparty#c.coal ///
@@ -1586,7 +1586,7 @@ ${main}5_output/tables/prio_oilint_arms75.tex, replace ///
 	
 	
 
-global thirdparty_list "contig_bases1000 armstrade95"
+global thirdparty_list "armstrade95"
 	
 * Table 14: Sedimentary bases presence and conflict, with third party presence
 * armstrade50
@@ -1666,7 +1666,7 @@ foreach thirdparty of varlist $thirdparty_list {
 }
 }
 
-esttab reg1 reg2 reg3 reg4 reg5 reg6 reg7 reg8 using ///
+esttab reg1 reg2 reg3 reg4 using ///
 	${main}5_output/tables/prio_sedint_arms95.tex, replace ///
 	drop(`controls') coeflabels(1.thirdparty "Third Party Presence" ///
 	c.sedvol#1.thirdparty "Sed. Vol. X Third Party" 1.thirdparty#c.sedvol ///
@@ -1772,7 +1772,7 @@ foreach thirdparty of varlist $thirdparty_list {
 }
 
 
-esttab reg1 reg2 reg3 reg4 reg5 reg6 reg7 reg8 using ///
+esttab reg1 reg2 reg3 reg4 using ///
 ${main}5_output/tables/prio_oilint_arms95.tex, replace ///
  drop(`controls' 1.thirdparty#c.gas 1.thirdparty#c.gas2 ///
 	gas gas2 1.thirdparty#c.coal ///
@@ -1796,7 +1796,7 @@ ${main}5_output/tables/prio_oilint_arms95.tex, replace ///
 	postfoot("\hline\hline \end{tabular}}")
 
 	
-global thirdparty_list "contig_bases1000 armstrade0"
+global thirdparty_list "armstrade0"
 
 * Table 16: Sedimentary bases presence and conflict, with third party presence
 * armstrade0
@@ -1876,7 +1876,7 @@ foreach thirdparty of varlist $thirdparty_list {
 }
 }
 
-esttab reg1 reg2 reg3 reg4 reg5 reg6 reg7 reg8 using ///
+esttab reg1 reg2 reg3 reg4 using ///
 	${main}5_output/tables/prio_sedint_arms0.tex, replace ///
 	drop(`controls') coeflabels(1.thirdparty "Third Party Presence" ///
 	c.sedvol#1.thirdparty "Sed. Vol. X Third Party" 1.thirdparty#c.sedvol ///
@@ -1982,7 +1982,7 @@ foreach thirdparty of varlist $thirdparty_list {
 }
 
 
-esttab reg1 reg2 reg3 reg4 reg5 reg6 reg7 reg8 using ///
+esttab reg1 reg2 reg3 reg4 using ///
 ${main}5_output/tables/prio_oilint_arms0.tex, replace ///
  drop(`controls' 1.thirdparty#c.gas 1.thirdparty#c.gas2 ///
 	gas gas2 1.thirdparty#c.coal ///
@@ -2007,10 +2007,9 @@ ${main}5_output/tables/prio_oilint_arms0.tex, replace ///
 	
 
 
-global thirdparty_list "contig_bases1000 armstrade75"
+global thirdparty_list "armstrade75"
 	
 * Table 18: Sedimentary bases presence and conflict, with third party presence
-* Ukraine's armstrade75
 
 local counter 0
 
@@ -2087,7 +2086,7 @@ foreach thirdparty of varlist $thirdparty_list {
 }
 }
 
-esttab reg1 reg2 reg3 reg4 reg5 reg6 reg7 reg8 using ///
+esttab reg1 reg2 reg3 reg4 using ///
 	${main}5_output/tables/prio_sedint_arms75.tex, replace ///
 	drop(`controls') coeflabels(1.thirdparty "Third Party Presence" ///
 	c.sedvol#1.thirdparty "Sed. Vol. X Third Party" 1.thirdparty#c.sedvol ///
@@ -2096,8 +2095,8 @@ esttab reg1 reg2 reg3 reg4 reg5 reg6 reg7 reg8 using ///
 	"Sed. Vol.\(^2\) X Third Party" sedvol "Sed. Vol." sedvol2 "Sed. Vol.\(^2\)") se ///
 	starlevels(\sym{*} 0.1 \sym{**} 0.05 \sym{***} 0.01) ///
 	nobaselevels nonumbers ///
-	mgroups("Third Party: US Bases" "Third Party: US Arms' Trade" , ///
-	pattern(1 0 0 0 1 0 0 0) prefix(\multicolumn{@span}{c}{) suffix(}) span) ///
+	mgroups("Third Party: Ukraine's Arms' Trade" , ///
+	pattern(1 0 0 0) prefix(\multicolumn{@span}{c}{) suffix(}) span) ///
  	stats(space space b1s p1 b2s p2 space yearfe continentfe geocontrols N, ///
 	fmt(s s s  %6.3f s %6.3f s s s s   a2)  ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" )  ///
@@ -2193,7 +2192,7 @@ foreach thirdparty of varlist $thirdparty_list {
 }
 
 
-esttab reg1 reg2 reg3 reg4 reg5 reg6 reg7 reg8 using ///
+esttab reg1 reg2 reg3 reg4 using ///
 ${main}5_output/tables/prio_oilint_arms75_ukr.tex, replace ///
  drop(`controls' 1.thirdparty#c.gas 1.thirdparty#c.gas2 ///
 	gas gas2 1.thirdparty#c.coal ///
@@ -2204,8 +2203,8 @@ ${main}5_output/tables/prio_oilint_arms75_ukr.tex, replace ///
 	"Oil\(^2\) X Third Party" oil "Oil" oil2 "Oil\(^2\)") se ///
 	starlevels(\sym{*} 0.1 \sym{**} 0.05 \sym{***} 0.01) ///
 	nobaselevels nonumbers ///
-	mgroups("Third Party: US Bases" "Third Party: US Arms' Trade" , ///
-	pattern(1 0 0 0 1 0 0 0) prefix(\multicolumn{@span}{c}{) suffix(}) span) ///
+	mgroups("Third Party: Ukraine's Arms' Trade" , ///
+	pattern(1 0 0 0) prefix(\multicolumn{@span}{c}{) suffix(}) span) ///
  	stats(space space b1s p1 b2s p2 space gascoal gascoalsq yearfe continentfe geocontrols N, ///
 	fmt(s s s  %6.3f s %6.3f s s s s s s   a2)  ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" )  ///
@@ -2218,7 +2217,7 @@ ${main}5_output/tables/prio_oilint_arms75_ukr.tex, replace ///
 	
 	
 
-global thirdparty_list "contig_bases1000 armstrade95_ukr"
+global thirdparty_list "armstrade95_ukr"
 	
 * Table 20: Sedimentary bases presence and conflict, with third party presence
 * Ukraine's armstrade95
@@ -2298,7 +2297,7 @@ foreach thirdparty of varlist $thirdparty_list {
 }
 }
 
-esttab reg1 reg2 reg3 reg4 reg5 reg6 reg7 reg8 using ///
+esttab reg1 reg2 reg3 reg4 using ///
 	${main}5_output/tables/prio_sedint_arms95_ukr.tex, replace ///
 	drop(`controls') coeflabels(1.thirdparty "Third Party Presence" ///
 	c.sedvol#1.thirdparty "Sed. Vol. X Third Party" 1.thirdparty#c.sedvol ///
@@ -2307,8 +2306,8 @@ esttab reg1 reg2 reg3 reg4 reg5 reg6 reg7 reg8 using ///
 	"Sed. Vol.\(^2\) X Third Party" sedvol "Sed. Vol." sedvol2 "Sed. Vol.\(^2\)") se ///
 	starlevels(\sym{*} 0.1 \sym{**} 0.05 \sym{***} 0.01) ///
 	nobaselevels nonumbers ///
-	mgroups("Third Party: US Bases" "Third Party: US Arms' Trade" , ///
-	pattern(1 0 0 0 1 0 0 0) prefix(\multicolumn{@span}{c}{) suffix(}) span) ///
+	mgroups("Third Party: Ukraine's Arms' Trade" , ///
+	pattern(1 0 0 0) prefix(\multicolumn{@span}{c}{) suffix(}) span) ///
  	stats(space space b1s p1 b2s p2 space yearfe continentfe geocontrols N, ///
 	fmt(s s s  %6.3f s %6.3f s s s s   a2)  ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" )  ///
@@ -2403,20 +2402,20 @@ foreach thirdparty of varlist $thirdparty_list {
 }
 }
 
-
-esttab reg1 reg2 reg3 reg4 reg5 reg6 reg7 reg8 using ///
+* Drop 1.thirdparty#c.coal 1.thirdparty#c.coal2 since collinear
+esttab reg1 reg2 reg3 reg4 using ///
 ${main}5_output/tables/prio_oilint_arms95_ukr.tex, replace ///
  drop(`controls' 1.thirdparty#c.gas 1.thirdparty#c.gas2 ///
-	gas gas2 1.thirdparty#c.coal ///
-	1.thirdparty#c.coal2 coal coal2) /// 
+	gas gas2 ///
+	coal coal2) /// 
 	coeflabels(1.thirdparty "Third Party Presence" c.oil#1.thirdparty ///
 	"Oil X Third Party" 1.thirdparty#c.oil "Oil X Third Party" ///
 	1.thirdparty#c.oil2 "Oil\(^2\) X Third Party" c.oil2#1.thirdparty ///
 	"Oil\(^2\) X Third Party" oil "Oil" oil2 "Oil\(^2\)") se ///
 	starlevels(\sym{*} 0.1 \sym{**} 0.05 \sym{***} 0.01) ///
 	nobaselevels nonumbers ///
-	mgroups("Third Party: US Bases" "Third Party: US Arms' Trade" , ///
-	pattern(1 0 0 0 1 0 0 0) prefix(\multicolumn{@span}{c}{) suffix(}) span) ///
+	mgroups("Third Party: Ukraine's Arms' Trade" , ///
+	pattern(1 0 0 0) prefix(\multicolumn{@span}{c}{) suffix(}) span) ///
  	stats(space space b1s p1 b2s p2 space gascoal gascoalsq yearfe continentfe geocontrols N, ///
 	fmt(s s s  %6.3f s %6.3f s s s s s s   a2)  ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" )  ///
@@ -2426,9 +2425,8 @@ ${main}5_output/tables/prio_oilint_arms95_ukr.tex, replace ///
 	`"Continent FEs"' `"Geo Controls"'  `"\(N\)"')) ///
 	mtitles("Conf." "Conf." "H. Conf." "H. Conf." "Conf." "Conf." "H. Conf." "H. Conf.") ///
 	postfoot("\hline\hline \end{tabular}}")
-
 	
-global thirdparty_list "contig_bases1000 armstrade0_ukr"
+global thirdparty_list "armstrade0_ukr"
 
 * Table 22: Sedimentary bases presence and conflict, with third party presence
 * Ukraine's armstrade0
@@ -2508,7 +2506,7 @@ foreach thirdparty of varlist $thirdparty_list {
 }
 }
 
-esttab reg1 reg2 reg3 reg4 reg5 reg6 reg7 reg8 using ///
+esttab reg1 reg2 reg3 reg4 using ///
 	${main}5_output/tables/prio_sedint_arms0_ukr.tex, replace ///
 	drop(`controls') coeflabels(1.thirdparty "Third Party Presence" ///
 	c.sedvol#1.thirdparty "Sed. Vol. X Third Party" 1.thirdparty#c.sedvol ///
@@ -2517,8 +2515,8 @@ esttab reg1 reg2 reg3 reg4 reg5 reg6 reg7 reg8 using ///
 	"Sed. Vol.\(^2\) X Third Party" sedvol "Sed. Vol." sedvol2 "Sed. Vol.\(^2\)") se ///
 	starlevels(\sym{*} 0.1 \sym{**} 0.05 \sym{***} 0.01) ///
 	nobaselevels nonumbers ///
-	mgroups("Third Party: US Bases" "Third Party: US Arms' Trade" , ///
-	pattern(1 0 0 0 1 0 0 0) prefix(\multicolumn{@span}{c}{) suffix(}) span) ///
+	mgroups("Third Party: Ukraine's Arms' Trade" , ///
+	pattern(1 0 0 0) prefix(\multicolumn{@span}{c}{) suffix(}) span) ///
  	stats(space space b1s p1 b2s p2 space yearfe continentfe geocontrols N, ///
 	fmt(s s s  %6.3f s %6.3f s s s s   a2)  ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" )  ///
@@ -2526,6 +2524,7 @@ esttab reg1 reg2 reg3 reg4 reg5 reg6 reg7 reg8 using ///
 	`"Continent FEs"' `"Geo Controls"'  `"\(N\)"')) ///
 	mtitles("Conf." "Conf." "H. Conf." "H. Conf." "Conf." "Conf." "H. Conf." "H. Conf.") ///
 	postfoot("\hline\hline \end{tabular}}")
+	
 	
 	
 * Table 23: WB resources presence and conflict, with third party presence
@@ -2614,7 +2613,7 @@ foreach thirdparty of varlist $thirdparty_list {
 }
 
 
-esttab reg1 reg2 reg3 reg4 reg5 reg6 reg7 reg8 using ///
+esttab reg1 reg2 reg3 reg4 using ///
 ${main}5_output/tables/prio_oilint_arms0_ukr.tex, replace ///
  drop(`controls' 1.thirdparty#c.gas 1.thirdparty#c.gas2 ///
 	gas gas2 1.thirdparty#c.coal ///
@@ -2625,8 +2624,8 @@ ${main}5_output/tables/prio_oilint_arms0_ukr.tex, replace ///
 	"Oil\(^2\) X Third Party" oil "Oil" oil2 "Oil\(^2\)") se ///
 	starlevels(\sym{*} 0.1 \sym{**} 0.05 \sym{***} 0.01) ///
 	nobaselevels nonumbers ///
-	mgroups("Third Party: US Bases" "Third Party: US Arms' Trade" , ///
-	pattern(1 0 0 0 1 0 0 0) prefix(\multicolumn{@span}{c}{) suffix(}) span) ///
+	mgroups("Third Party: Ukraine's Arms' Trade" , ///
+	pattern(1 0 0 0) prefix(\multicolumn{@span}{c}{) suffix(}) span) ///
  	stats(space space b1s p1 b2s p2 space gascoal gascoalsq yearfe continentfe geocontrols N, ///
 	fmt(s s s  %6.3f s %6.3f s s s s s s   a2)  ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" )  ///
@@ -2718,7 +2717,7 @@ foreach thirdparty of varlist $thirdparty_list {
 }
 }
 
-esttab reg1 reg2 reg3 reg4 reg5 reg6 reg7 reg8 using ///
+esttab reg1 reg2 reg3 reg4 using ///
 	${main}5_output/tables/prio_sedint_arms90_ukr.tex, replace ///
 	drop(`controls') coeflabels(1.thirdparty "Third Party Presence" ///
 	c.sedvol#1.thirdparty "Sed. Vol. X Third Party" 1.thirdparty#c.sedvol ///
@@ -2727,8 +2726,8 @@ esttab reg1 reg2 reg3 reg4 reg5 reg6 reg7 reg8 using ///
 	"Sed. Vol.\(^2\) X Third Party" sedvol "Sed. Vol." sedvol2 "Sed. Vol.\(^2\)") se ///
 	starlevels(\sym{*} 0.1 \sym{**} 0.05 \sym{***} 0.01) ///
 	nobaselevels nonumbers ///
-	mgroups("Third Party: US Bases" "Third Party: US Arms' Trade" , ///
-	pattern(1 0 0 0 1 0 0 0) prefix(\multicolumn{@span}{c}{) suffix(}) span) ///
+	mgroups("Third Party: Ukraine's Arms' Trade" , ///
+	pattern(1 0 0 0) prefix(\multicolumn{@span}{c}{) suffix(}) span) ///
  	stats(space space b1s p1 b2s p2 space yearfe continentfe geocontrols N, ///
 	fmt(s s s  %6.3f s %6.3f s s s s   a2)  ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" )  ///
@@ -2824,7 +2823,7 @@ foreach thirdparty of varlist $thirdparty_list {
 }
 
 
-esttab reg1 reg2 reg3 reg4 reg5 reg6 reg7 reg8 using ///
+esttab reg1 reg2 reg3 reg4 using ///
 ${main}5_output/tables/prio_oilint_arms90_ukr.tex, replace ///
  drop(`controls' 1.thirdparty#c.gas 1.thirdparty#c.gas2 ///
 	gas gas2 1.thirdparty#c.coal ///
@@ -2835,8 +2834,8 @@ ${main}5_output/tables/prio_oilint_arms90_ukr.tex, replace ///
 	"Oil\(^2\) X Third Party" oil "Oil" oil2 "Oil\(^2\)") se ///
 	starlevels(\sym{*} 0.1 \sym{**} 0.05 \sym{***} 0.01) ///
 	nobaselevels nonumbers ///
-	mgroups("Third Party: US Bases" "Third Party: US Arms' Trade" , ///
-	pattern(1 0 0 0 1 0 0 0) prefix(\multicolumn{@span}{c}{) suffix(}) span) ///
+	mgroups("Third Party: Ukraine's Arms' Trade" , ///
+	pattern(1 0 0 0) prefix(\multicolumn{@span}{c}{) suffix(}) span) ///
  	stats(space space b1s p1 b2s p2 space gascoal gascoalsq yearfe continentfe geocontrols N, ///
 	fmt(s s s  %6.3f s %6.3f s s s s s s   a2)  ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" )  ///
