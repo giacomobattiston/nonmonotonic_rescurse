@@ -276,6 +276,9 @@ drop if ccode == 710
 qui sum armstrade, detail
 gen armstrade90 = armstrade >  `r(p90)' if !missing(armstrade)
 
+* Generate variable recording total conflict years
+egen conf_years = sum(conflict), by(ccode)
+
 *label controls used in 
 la var lnarea "Area, log Km\(^2\)"
 la var abslat "Absolute latitude"
@@ -295,13 +298,14 @@ la var gas2 "Gas value pc squared"
 la var coal "Coal value pc"
 la var coal2 "Coal value pc squared"
 la var ccode "Country code"
+la var conf_years "Years of conflict in country"
 
 * Sample from 1950 to 1999
 keep if year < 2000
 
 keep year region lnarea abslat elevavg elevstd temp prec lnpop14 ///
 	conflict conflict2 sedvol sedvol2 coal coal2 gas gas2 oil oil oil2  ///
-	contig_bases1000 armstrade90 ccode
+	contig_bases1000 armstrade90 ccode conf_years
 
 save ${main}2_processed/data_regressions.dta, replace
 
@@ -1215,7 +1219,6 @@ starlevels(\sym{*} 0.1 \sym{**} 0.05 \sym{***} 0.01) ///
 		mtitles("Conf." "Conf." "H. Conf." "H. Conf." "Conf." "Conf." "H. Conf." "H. Conf.") ///
 	postfoot("\hline\hline \end{tabular}}")
 	
-	stop
 	
 ********* Maps
 *ssc install spmap
@@ -1228,7 +1231,7 @@ rename _ISO3C_ ISO_A3
 merge m:m ISO_A3 using  ${main}1_data/maps_utilities/worlddata_cleaned.dta
 duplicates drop ISO_A3, force
 spmap armstrade90 using ${main}1_data/maps_utilities/worldcoor.dta, id(id) fcolor(Greens2)
-graph save ${main}5_output/figures/armstrade90.pdf, replace
+graph export ${main}5_output/figures/armstrade90.png, replace
 
 use ${main}2_processed/data_regressions.dta, clear
 kountry ccode, from(cown) to(iso3c)
@@ -1236,7 +1239,7 @@ rename _ISO3C_ ISO_A3
 merge m:m ISO_A3 using  ${main}1_data/maps_utilities/worlddata_cleaned.dta
 duplicates drop ISO_A3, force
 spmap contig_bases1000 using ${main}1_data/maps_utilities/worldcoor.dta, id(id) fcolor(Greens2)
-graph save ${main}5_output/figures/bases1000.pdf, replace
+graph export ${main}5_output/figures/bases1000.png, replace
 
 use ${main}2_processed/data_regressions.dta, clear
 kountry ccode, from(cown) to(iso3c)
@@ -1244,7 +1247,7 @@ rename _ISO3C_ ISO_A3
 merge m:m ISO_A3 using  ${main}1_data/maps_utilities/worlddata_cleaned.dta
 duplicates drop ISO_A3, force
 spmap sedvol using ${main}1_data/maps_utilities/worldcoor.dta, id(id) fcolor(Greens2)
-graph save ${main}5_output/figures/sedvol.pdf, replace
+graph export ${main}5_output/figures/sedvol.png, replace
 
 use ${main}2_processed/data_regressions.dta, clear
 kountry ccode, from(cown) to(iso3c)
@@ -1252,6 +1255,15 @@ rename _ISO3C_ ISO_A3
 merge m:m ISO_A3 using  ${main}1_data/maps_utilities/worlddata_cleaned.dta
 duplicates drop ISO_A3, force
 spmap oil using ${main}1_data/maps_utilities/worldcoor.dta, id(id) fcolor(Greens2)
-graph save ${main}5_output/figures/oil.pdf, replace
+graph export ${main}5_output/figures/oil.png, replace
+
+use ${main}2_processed/data_regressions.dta, clear
+kountry ccode, from(cown) to(iso3c)
+rename _ISO3C_ ISO_A3
+merge m:m ISO_A3 using  ${main}1_data/maps_utilities/worlddata_cleaned.dta
+duplicates drop ISO_A3, force
+spmap conf_years using ${main}1_data/maps_utilities/worldcoor.dta, id(id) fcolor(Greens2)
+graph export ${main}5_output/figures/conflict_years.png, replace
+
 
 	
