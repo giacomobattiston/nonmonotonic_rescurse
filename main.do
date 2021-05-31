@@ -276,20 +276,14 @@ drop if ccode == 710
 qui sum armstrade, detail
 gen armstrade90 = armstrade >  `r(p90)' if !missing(armstrade)
 
-* Define US arms trade dummy taking value 1 for other percentiles
-gen armstrade50 = armstrade >  `r(p50)' if !missing(armstrade)
-gen armstrade75 = armstrade >  `r(p75)' if !missing(armstrade)
-gen armstrade95 = armstrade >  `r(p95)' if !missing(armstrade)
+* Define US arms trade dummy taking value 1 for larger than 0
 gen armstrade0 = armstrade >  0 if !missing(armstrade)
 
 * Define Ukraine's arms trade dummy taking value 1 for values above 90th percentile
 qui sum armstrade_ukr, detail
 gen armstrade90_ukr = armstrade >  `r(p90)' if !missing(armstrade)
 
-* Define Ukraine's arms trade dummy taking value 1 for other percentiles
-gen armstrade50_ukr = armstrade_ukr >  `r(p50)' if !missing(armstrade_ukr)
-gen armstrade75_ukr = armstrade_ukr >  `r(p75)' if !missing(armstrade_ukr)
-gen armstrade95_ukr = armstrade_ukr >  `r(p95)' if !missing(armstrade_ukr)
+* Define Ukraine's arms trade dummy taking value 1 for larger than 0
 gen armstrade0_ukr = armstrade_ukr >  0 if !missing(armstrade_ukr)
 
 * Generate variable recording total conflict years
@@ -304,14 +298,8 @@ la var temp "Average temperature, Celsius degrees"
 la var prec "Average precipitation, mm"
 la var lnpop14 "Population, logs"
 la var armstrade90 "US arms imports above the 90th percentile"
-la var armstrade50 "US arms imports above the 50th percentile"
-la var armstrade75 "US arms imports above the 75th percentile"
-la var armstrade95 "US arms imports above the 95th percentile"
 la var armstrade0 "US arms imports above 0"
 la var armstrade90_ukr "Ukraine's arms imports above the 90th percentile"
-la var armstrade50_ukr "Ukraine's arms imports above the 50th percentile"
-la var armstrade75_ukr "Ukraine's arms imports above the 75th percentile"
-la var armstrade95_ukr "Ukraine's arms imports above the 95th percentile"
 la var armstrade0_ukr "Ukraine's arms imports above 0"
 la var contig_bases1000 "Country with or contig. to US base (1000p)"
 la var sedvol "Sedimentary basins volume"
@@ -330,9 +318,8 @@ keep if year < 2000
 
 keep year region lnarea abslat elevavg elevstd temp prec lnpop14 ///
 	conflict conflict2 sedvol sedvol2 coal coal2 gas gas2 oil oil oil2  ///
-	contig_bases1000 armstrade90 ccode conf_years armstrade50 ///
-	armstrade75 armstrade95 armstrade0 armstrade90_ukr armstrade50_ukr ///
-	armstrade75_ukr armstrade95_ukr armstrade0_ukr
+	contig_bases1000 armstrade90 ccode conf_years ///
+	armstrade0 armstrade90_ukr armstrade0_ukr
 
 save ${main}2_processed/data_regressions.dta, replace
 
