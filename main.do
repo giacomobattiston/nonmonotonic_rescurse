@@ -264,6 +264,7 @@ rename _merge mergeBASES
 merge m:1 ccode using ${main}2_processed/dist_arms_UKR.dta
 rename _merge mergeARMS_UKR
 
+
 * Drop Germany, GFR
 drop if ccode == 260
 *GDR
@@ -340,7 +341,6 @@ save ${main}2_processed/data_regressions.dta, replace
 gen thirdparty = .
 
 local controls "lnarea  abslat elevavg elevstd temp precip lnpop14  "
-
 			
 * Table 1: Conflict and resources		
 
@@ -2846,9 +2846,10 @@ ${main}5_output/tables/prio_oilint_arms90_ukr.tex, replace ///
 	`"Continent FEs"' `"Geo Controls"'  `"\(N\)"')) ///
 	mtitles("Conf." "Conf." "H. Conf." "H. Conf." "Conf." "Conf." "H. Conf." "H. Conf.") ///
 	postfoot("\hline\hline \end{tabular}}")
+
 	
-	
-	
+
+stop
 	
 ********* Maps
 *ssc install spmap

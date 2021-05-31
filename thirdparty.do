@@ -51,6 +51,8 @@ replace country = "Syrian Arab Republic" if country == "Syria"
 replace country = "Tanzania, United Rep. of " if country == "Tanzania"
 replace country = "Saint Vincent and the Grenadines" if country == "Saint Vincent"
 replace country = "United Arab Emirates" if country == "UAE"
+replace country = "Congo (Democratic Republic of the)" if country == "DR Congo"
+
 
 * armstrade will store overall quantity of armstrade from the US 1950-99
 gen armstrade = 0
@@ -121,6 +123,7 @@ rename id_country iso_3
 * Use country package to generate COW country codes
 * DRC has old code in geodist. Change to new:
 replace iso_3 = "COD" if iso_3 == "ZAR"
+
 * ssc install kountry
 kountry iso_3, from(iso3c) to(cown)
 rename _COWN_ ccode
@@ -185,6 +188,10 @@ replace country = "Syrian Arab Republic" if country == "Syria"
 replace country = "Tanzania, United Rep. of " if country == "Tanzania"
 replace country = "Saint Vincent and the Grenadines" if country == "Saint Vincent"
 replace country = "United Arab Emirates" if country == "UAE"
+replace country = "Congo (Democratic Republic of the)" if country == "DR Congo"
+replace country = "Russian Federation" if country == "Russia"
+replace country = "Macedonia (the former Yugoslav Rep. of)" if country == "North Macedonia"
+replace country = "United States of America" if country == "United States"
 
 * armstrade will store overall quantity of armstrade from the US 1950-99
 gen armstrade_ukr = 0
@@ -196,6 +203,11 @@ foreach var of varlist v* {
 	replace armstrade_ukr = armstrade_ukr + `var'
 }
 drop v*
+
+* Merge Sudan
+qui sum armstrade if country == "South Sudan"
+replace armstrade = armstrade + `r(mean)' if country == "Sudan"
+drop if country == "South Sudan"
 
 * armstrade dummy
 gen armstrade_dummy_ukr = 1 if armstrade_ukr > 0
