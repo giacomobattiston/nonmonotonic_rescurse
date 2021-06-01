@@ -299,6 +299,7 @@ la var prec "Average precipitation, mm"
 la var lnpop14 "Population, logs"
 la var armstrade90 "US arms imports above the 90th percentile"
 la var armstrade0 "US arms imports above 0"
+la var armstrade "US arms imports above"
 la var armstrade90_ukr "Ukraine's arms imports above the 90th percentile"
 la var armstrade0_ukr "Ukraine's arms imports above 0"
 la var contig_bases1000 "Country with or contig. to US base (1000p)"
@@ -318,10 +319,11 @@ keep if year < 2000
 
 keep year region lnarea abslat elevavg elevstd temp prec lnpop14 ///
 	conflict conflict2 sedvol sedvol2 coal coal2 gas gas2 oil oil oil2  ///
-	contig_bases1000 armstrade90 ccode conf_years ///
+	contig_bases1000 armstrade90 armstrade ccode conf_years ///
 	armstrade0 armstrade90_ukr armstrade0_ukr
 
 save ${main}2_processed/data_regressions.dta, replace
+
 
 ******ANALYSIS
 
@@ -1777,6 +1779,14 @@ ${main}5_output/tables/prio_oilint_arms90_ukr.tex, replace ///
 	postfoot("\hline\hline \end{tabular}}")
 
 	
+********* Histogram Arms Trade
+
+* Notice that the year condition does not influence the year in which trade iso3c
+* measured since the measure is not time-varying. Rather, it allows to draw
+* the historgram without repeated data.
+hist armstrade if year == 1950, bin(50) col(blue) graphregion(color(white))
+graph export ${main}5_output/figures/armstrade_hist.png, replace
+
 ********* Maps
 *ssc install spmap
 *ssc install shp2dta
@@ -1822,19 +1832,5 @@ duplicates drop ISO_A3, force
 spmap conf_years using ${main}1_data/maps_utilities/worldcoor.dta, id(id) fcolor(Greens2)
 graph export ${main}5_output/figures/conflict_years.png, replace
 
-use ${main}2_processed/data_regressions.dta, clear
-kountry ccode, from(cown) to(iso3c)
-rename _ISO3C_ ISO_A3
-merge m:m ISO_A3 using  ${main}1_data/maps_utilities/worlddata_cleaned.dta
-duplicates drop ISO_A3, force
-spmap armstrade50 using ${main}1_data/maps_utilities/worldcoor.dta, id(id) fcolor(Greens2)
-graph export ${main}5_output/figures/armstrade50.png, replace
 
-use ${main}2_processed/data_regressions.dta, clear
-kountry ccode, from(cown) to(iso3c)
-rename _ISO3C_ ISO_A3
-merge m:m ISO_A3 using  ${main}1_data/maps_utilities/worlddata_cleaned.dta
-duplicates drop ISO_A3, force
-spmap armstrade50 using ${main}1_data/maps_utilities/worldcoor.dta, id(id) fcolor(Greens2)
-graph export ${main}5_output/figures/armstrade0.png, replace
 	
