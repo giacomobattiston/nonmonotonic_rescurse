@@ -327,6 +327,7 @@ save ${main}2_processed/data_regressions.dta, replace
 
 gen thirdparty = .
 
+global outcome_list "conflict conflict2"
 local controls "lnarea  abslat elevavg elevstd temp precip lnpop14  "
 			
 * Table 1: Conflict and resources		
@@ -399,7 +400,6 @@ starlevels(\sym{*} 0.1 \sym{**} 0.05 \sym{***} 0.01) ///
 
 * Globals for regression loops
 global thirdparty_list "contig_bases1000 armstrade90"
-global outcome_list "conflict conflict2"
 
 * Table 3: Sedimentary bases presence and conflict, with third party presence
 
