@@ -1,11 +1,7 @@
 clear all
 set more off
 
-cd "C:\Users\BattistonG\Documents\GitHub\technology_conflict"
-
-global main "C:\Users\BattistonG\Dropbox\ricerca_dropbox\bbf\technology_conflict\"
-*global main "/Users/giacomobattiston/Dropbox/ricerca_dropbox/bbf/technology_conflict/"
-*global main "C:\Users\Franceschin\Dropbox\bbf\technology_conflict\"
+do config.do
 
 * Clean data on US bases and arms' trade
 do thirdparty.do
@@ -1788,9 +1784,6 @@ hist armstrade if year == 1950, bin(50) col(blue) graphregion(color(white))
 graph export ${main}5_output/figures/armstrade_hist.png, replace
 
 ********* Maps
-*ssc install spmap
-*ssc install shp2dta
-*ssc install mif2dta
 
 use ${main}2_processed/data_regressions.dta, clear
 kountry ccode, from(cown) to(iso3c)
