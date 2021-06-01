@@ -331,7 +331,6 @@ local controls "lnarea  abslat elevavg elevstd temp precip lnpop14  "
 			
 * Table 1: Conflict and resources		
 
-
 * For loop for regressions: iterates over third party measure, outcome, controls
 forval i_indep = 1/2 {
 	if (`i_indep' == 1) {
@@ -413,14 +412,15 @@ foreach thirdparty of varlist $thirdparty_list {
 			forval i_con = 1/2 {
 				local counter = `counter' + 1
 				if (`i_con' == 1) {
-					ivreg2 `outcome' c.sedvol##i.thirdparty c.sedvol2##i.thirdparty ///
+					ivreg2 `outcome' c.sedvol c.sedvol#i.thirdparty c.sedvol2 ///
+					c.sedvol2#i.thirdparty i.thirdparty ///
 					i.year i.region, cluster(ccode) partial(i.year i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "No"
 				}
 				else {
-					ivreg2 `outcome' c.sedvol##i.thirdparty ///
-					c.sedvol2##i.thirdparty i.year i.region `controls', ///
+					ivreg2 `outcome' c.sedvol c.sedvol#i.thirdparty ///
+					c.sedvol2 c.sedvol2#i.thirdparty i.thirdparty i.year i.region `controls', ///
 					cluster(ccode) partial(i.year i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "Yes"
@@ -510,17 +510,17 @@ foreach thirdparty of varlist $thirdparty_list {
 			forval i_con = 1/2 {
 				local counter = `counter' + 1
 				if (`i_con' == 1) {
-					ivreg2 `outcome' c.oil##i.thirdparty   c.oil2##i.thirdparty ///
-					c.gas##i.thirdparty c.gas2##i.thirdparty   ///
-					c.coal##i.thirdparty c.coal2##i.thirdparty ///
+					ivreg2 `outcome' c.oil c.oil#i.thirdparty   c.oil2 c.oil2#i.thirdparty i.thirdparty ///
+					c.gas c.gas#i.thirdparty c.gas2 c.gas2#i.thirdparty   ///
+					c.coal c.coal#i.thirdparty c.coal2 c.coal2#i.thirdparty ///
 					i.year i.region, cluster(ccode) partial(i.year i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "No"
 				}
 				else {
-					ivreg2 `outcome' c.oil##i.thirdparty c.oil2##i.thirdparty ///
-					c.gas##i.thirdparty c.gas2##i.thirdparty ///
-					c.coal##i.thirdparty c.coal2##i.thirdparty ///
+					ivreg2 `outcome' c.oil c.oil#i.thirdparty c.oil2 c.oil2#i.thirdparty i.thirdparty ///
+					c.gas c.gas#i.thirdparty c.gas2 c.gas2#i.thirdparty ///
+					c.coal c.coal#i.thirdparty c.coal2 c.coal2#i.thirdparty ///
 					i.year i.region `controls', ///
 					cluster(ccode) partial(i.year i.region)
 					* Save geographic controls indicator
@@ -681,15 +681,16 @@ foreach thirdparty of varlist $thirdparty_list {
 			forval i_con = 1/2 {
 				local counter = `counter' + 1
 				if (`i_con' == 1) {
-					ivreg2 `outcome' c.sedvol##i.thirdparty c.sedvol2##i.thirdparty ///
+					ivreg2 `outcome' c.sedvol c.sedvol#i.thirdparty c.sedvol2 ///
+					c.sedvol2#i.thirdparty i.thirdparty ///
 					i.year i.region if ccode != 900, ///
 					cluster(ccode) partial(i.year i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "No"
 				}
 				else {
-					ivreg2 `outcome' c.sedvol##i.thirdparty ///
-					c.sedvol2##i.thirdparty i.year i.region `controls' ///
+					ivreg2 `outcome' c.sedvol c.sedvol#i.thirdparty ///
+					c.sedvol2 c.sedvol2#i.thirdparty i.thirdparty i.year i.region `controls' ///
 					if ccode != 900, ///
 					cluster(ccode) partial(i.year i.region)
 					* Save geographic controls indicator
@@ -781,18 +782,18 @@ foreach thirdparty of varlist $thirdparty_list {
 			forval i_con = 1/2 {
 				local counter = `counter' + 1
 				if (`i_con' == 1) {
-					ivreg2 `outcome' c.oil##i.thirdparty   c.oil2##i.thirdparty ///
-					c.gas##i.thirdparty c.gas2##i.thirdparty   ///
-					c.coal##i.thirdparty c.coal2##i.thirdparty ///
+					ivreg2 `outcome' c.oil c.oil#i.thirdparty   c.oil2 c.oil2#i.thirdparty i.thirdparty ///
+					c.gas c.gas#i.thirdparty c.gas2 c.gas2#i.thirdparty   ///
+					c.coal c.coal#i.thirdparty c.coal2 c.coal2#i.thirdparty ///
 					i.year i.region if ccode != 900, cluster(ccode) ///
 					partial(i.year i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "No"
 				}
 				else {
-					ivreg2 `outcome' c.oil##i.thirdparty c.oil2##i.thirdparty ///
-					c.gas##i.thirdparty c.gas2##i.thirdparty ///
-					c.coal##i.thirdparty c.coal2##i.thirdparty ///
+					ivreg2 `outcome' c.oil c.oil#i.thirdparty c.oil2 c.oil2#i.thirdparty i.thirdparty ///
+					c.gas c.gas#i.thirdparty c.gas2 c.gas2#i.thirdparty ///
+					c.coal c.coal#i.thirdparty c.coal2 c.coal2#i.thirdparty ///
 					i.year i.region `controls' if ccode != 900, ///
 					cluster(ccode) partial(i.year i.region)
 					* Save geographic controls indicator
@@ -951,14 +952,15 @@ foreach thirdparty of varlist $thirdparty_list {
 			forval i_con = 1/2 {
 				local counter = `counter' + 1
 				if (`i_con' == 1) {
-					logit `outcome' c.sedvol##i.thirdparty c.sedvol2##i.thirdparty ///
+					logit `outcome' c.sedvol c.sedvol#i.thirdparty c.sedvol2 ///
+					c.sedvol2#i.thirdparty i.thirdparty ///
 					i.year i.region, cluster(ccode) 
 					* Save geographic controls indicator
 					estadd local geocontrols = "No"
 				}
 				else {
-					logit `outcome' c.sedvol##i.thirdparty ///
-					c.sedvol2##i.thirdparty i.year i.region `controls', ///
+					logit `outcome' c.sedvol c.sedvol#i.thirdparty ///
+					c.sedvol2 c.sedvol2#i.thirdparty i.thirdparty i.year i.region `controls', ///
 					cluster(ccode) 
 					* Save geographic controls indicator
 					estadd local geocontrols = "Yes"
@@ -1049,17 +1051,17 @@ foreach thirdparty of varlist $thirdparty_list {
 			forval i_con = 1/2 {
 				local counter = `counter' + 1
 				if (`i_con' == 1) {
-					logit `outcome' c.oil##i.thirdparty   c.oil2##i.thirdparty ///
-					c.gas##i.thirdparty c.gas2##i.thirdparty   ///
-					c.coal##i.thirdparty c.coal2##i.thirdparty ///
+					logit `outcome' c.oil c.oil#i.thirdparty   c.oil2 c.oil2#i.thirdparty i.thirdparty ///
+					c.gas c.gas#i.thirdparty c.gas2 c.gas2#i.thirdparty   ///
+					c.coal c.coal#i.thirdparty c.coal2 c.coal2#i.thirdparty ///
 					i.year i.region, cluster(ccode)
 					* Save geographic controls indicator
 					estadd local geocontrols = "No"
 				}
 				else {
-					logit `outcome' c.oil##i.thirdparty c.oil2##i.thirdparty ///
-					c.gas##i.thirdparty c.gas2##i.thirdparty ///
-					c.coal##i.thirdparty c.coal2##i.thirdparty ///
+					logit `outcome' c.oil c.oil#i.thirdparty c.oil2 c.oil2#i.thirdparty i.thirdparty ///
+					c.gas c.gas#i.thirdparty c.gas2 c.gas2#i.thirdparty ///
+					c.coal c.coal#i.thirdparty c.coal2 c.coal2#i.thirdparty ///
 					i.year i.region `controls', ///
 					cluster(ccode)
 					* Save geographic controls indicator
@@ -1167,14 +1169,15 @@ foreach thirdparty of varlist $thirdparty_list {
 			forval i_con = 1/2 {
 				local counter = `counter' + 1
 				if (`i_con' == 1) {
-					ivreg2 `outcome' c.sedvol##i.thirdparty c.sedvol2##i.thirdparty ///
+					ivreg2 `outcome' c.sedvol c.sedvol#i.thirdparty c.sedvol2 ///
+					c.sedvol2#i.thirdparty i.thirdparty ///
 					i.year i.region, cluster(ccode) partial(i.year i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "No"
 				}
 				else {
-					ivreg2 `outcome' c.sedvol##i.thirdparty ///
-					c.sedvol2##i.thirdparty i.year i.region `controls', ///
+					ivreg2 `outcome' c.sedvol c.sedvol#i.thirdparty ///
+					c.sedvol2 c.sedvol2#i.thirdparty i.thirdparty i.year i.region `controls', ///
 					cluster(ccode) partial(i.year i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "Yes"
@@ -1265,17 +1268,17 @@ foreach thirdparty of varlist $thirdparty_list {
 			forval i_con = 1/2 {
 				local counter = `counter' + 1
 				if (`i_con' == 1) {
-					ivreg2 `outcome' c.oil##i.thirdparty   c.oil2##i.thirdparty ///
-					c.gas##i.thirdparty c.gas2##i.thirdparty   ///
-					c.coal##i.thirdparty c.coal2##i.thirdparty ///
+					ivreg2 `outcome' c.oil c.oil#i.thirdparty   c.oil2 c.oil2#i.thirdparty i.thirdparty ///
+					c.gas c.gas#i.thirdparty c.gas2 c.gas2#i.thirdparty   ///
+					c.coal c.coal#i.thirdparty c.coal2 c.coal2#i.thirdparty ///
 					i.year i.region, cluster(ccode) partial(i.year i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "No"
 				}
 				else {
-					ivreg2 `outcome' c.oil##i.thirdparty c.oil2##i.thirdparty ///
-					c.gas##i.thirdparty c.gas2##i.thirdparty ///
-					c.coal##i.thirdparty c.coal2##i.thirdparty ///
+					ivreg2 `outcome' c.oil c.oil#i.thirdparty c.oil2 c.oil2#i.thirdparty i.thirdparty ///
+					c.gas c.gas#i.thirdparty c.gas2 c.gas2#i.thirdparty ///
+					c.coal c.coal#i.thirdparty c.coal2 c.coal2#i.thirdparty ///
 					i.year i.region `controls', ///
 					cluster(ccode) partial(i.year i.region)
 					* Save geographic controls indicator
@@ -1378,14 +1381,15 @@ foreach thirdparty of varlist $thirdparty_list {
 			forval i_con = 1/2 {
 				local counter = `counter' + 1
 				if (`i_con' == 1) {
-					ivreg2 `outcome' c.sedvol##i.thirdparty c.sedvol2##i.thirdparty ///
+					ivreg2 `outcome' c.sedvol c.sedvol#i.thirdparty c.sedvol2 ///
+					c.sedvol2#i.thirdparty i.thirdparty ///
 					i.year i.region, cluster(ccode) partial(i.year i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "No"
 				}
 				else {
-					ivreg2 `outcome' c.sedvol##i.thirdparty ///
-					c.sedvol2##i.thirdparty i.year i.region `controls', ///
+					ivreg2 `outcome' c.sedvol c.sedvol#i.thirdparty ///
+					c.sedvol2 c.sedvol2#i.thirdparty i.thirdparty i.year i.region `controls', ///
 					cluster(ccode) partial(i.year i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "Yes"
@@ -1477,17 +1481,17 @@ foreach thirdparty of varlist $thirdparty_list {
 			forval i_con = 1/2 {
 				local counter = `counter' + 1
 				if (`i_con' == 1) {
-					ivreg2 `outcome' c.oil##i.thirdparty   c.oil2##i.thirdparty ///
-					c.gas##i.thirdparty c.gas2##i.thirdparty   ///
-					c.coal##i.thirdparty c.coal2##i.thirdparty ///
+					ivreg2 `outcome' c.oil c.oil#i.thirdparty   c.oil2 c.oil2#i.thirdparty i.thirdparty ///
+					c.gas c.gas#i.thirdparty c.gas2 c.gas2#i.thirdparty   ///
+					c.coal c.coal#i.thirdparty c.coal2 c.coal2#i.thirdparty ///
 					i.year i.region, cluster(ccode) partial(i.year i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "No"
 				}
 				else {
-					ivreg2 `outcome' c.oil##i.thirdparty c.oil2##i.thirdparty ///
-					c.gas##i.thirdparty c.gas2##i.thirdparty ///
-					c.coal##i.thirdparty c.coal2##i.thirdparty ///
+					ivreg2 `outcome' c.oil c.oil#i.thirdparty c.oil2 c.oil2#i.thirdparty i.thirdparty ///
+					c.gas c.gas#i.thirdparty c.gas2 c.gas2#i.thirdparty ///
+					c.coal c.coal#i.thirdparty c.coal2 c.coal2#i.thirdparty ///
 					i.year i.region `controls', ///
 					cluster(ccode) partial(i.year i.region)
 					* Save geographic controls indicator
@@ -1589,14 +1593,15 @@ foreach thirdparty of varlist $thirdparty_list {
 			forval i_con = 1/2 {
 				local counter = `counter' + 1
 				if (`i_con' == 1) {
-					ivreg2 `outcome' c.sedvol##i.thirdparty c.sedvol2##i.thirdparty ///
+					ivreg2 `outcome' c.sedvol c.sedvol#i.thirdparty c.sedvol2 ///
+					c.sedvol2#i.thirdparty i.thirdparty ///
 					i.year i.region, cluster(ccode) partial(i.year i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "No"
 				}
 				else {
-					ivreg2 `outcome' c.sedvol##i.thirdparty ///
-					c.sedvol2##i.thirdparty i.year i.region `controls', ///
+					ivreg2 `outcome' c.sedvol c.sedvol#i.thirdparty ///
+					c.sedvol2 c.sedvol2#i.thirdparty i.thirdparty i.year i.region `controls', ///
 					cluster(ccode) partial(i.year i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "Yes"
@@ -1687,17 +1692,17 @@ foreach thirdparty of varlist $thirdparty_list {
 			forval i_con = 1/2 {
 				local counter = `counter' + 1
 				if (`i_con' == 1) {
-					ivreg2 `outcome' c.oil##i.thirdparty   c.oil2##i.thirdparty ///
-					c.gas##i.thirdparty c.gas2##i.thirdparty   ///
-					c.coal##i.thirdparty c.coal2##i.thirdparty ///
+					ivreg2 `outcome' c.oil c.oil#i.thirdparty   c.oil2 c.oil2#i.thirdparty i.thirdparty ///
+					c.gas c.gas#i.thirdparty c.gas2 c.gas2#i.thirdparty   ///
+					c.coal c.coal#i.thirdparty c.coal2 c.coal2#i.thirdparty ///
 					i.year i.region, cluster(ccode) partial(i.year i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "No"
 				}
 				else {
-					ivreg2 `outcome' c.oil##i.thirdparty c.oil2##i.thirdparty ///
-					c.gas##i.thirdparty c.gas2##i.thirdparty ///
-					c.coal##i.thirdparty c.coal2##i.thirdparty ///
+					ivreg2 `outcome' c.oil c.oil#i.thirdparty c.oil2 c.oil2#i.thirdparty i.thirdparty ///
+					c.gas c.gas#i.thirdparty c.gas2 c.gas2#i.thirdparty ///
+					c.coal c.coal#i.thirdparty c.coal2 c.coal2#i.thirdparty ///
 					i.year i.region `controls', ///
 					cluster(ccode) partial(i.year i.region)
 					* Save geographic controls indicator
