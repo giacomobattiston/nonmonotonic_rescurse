@@ -885,7 +885,7 @@ ${main}5_output/tables/prio_oilint_noaus.tex, replace ///
 
 
 local counter 0
-* Table 7: Conflict and all resources
+* Table 8: Conflict and all resources
 forval i_indep = 1/2 {
 	if (`i_indep' == 1) {
 		local independent "c.oil c.oil2 c.gas c.gas2 c.coal c.coal2"
@@ -940,7 +940,7 @@ starlevels(\sym{*} 0.1 \sym{**} 0.05 \sym{***} 0.01) ///
 		
 
 
-* Table 8: Sedimentary bases presence and conflict, with third party presence
+* Table 9: Sedimentary bases presence and conflict, with third party presence
 * Logit
 
 local counter 0
@@ -1039,7 +1039,7 @@ esttab reg1 reg2 reg3 reg4 reg5 reg6 reg7 reg8 using ///
 	postfoot("\hline\hline \end{tabular}}")
 
 	
-* Table 9: WB resources presence and conflict, with third party presence
+* Table 10: WB resources presence and conflict, with third party presence
 * Logit
 
 local counter 0
@@ -1149,16 +1149,10 @@ ${main}5_output/tables/prio_oilint_logit.tex, replace ///
 	postfoot("\hline\hline \end{tabular}}")
 	
 
-	
-	
-
-	
-	
-	
-global thirdparty_list "armstrade0"
-
-* Table 16: Sedimentary bases presence and conflict, with third party presence
+* Table 11: Sedimentary bases presence and conflict, with third party presence
 * armstrade0
+
+global thirdparty_list "armstrade0"
 
 local counter 0
 
@@ -1256,7 +1250,7 @@ esttab reg1 reg2 reg3 reg4 using ///
 	postfoot("\hline\hline \end{tabular}}")
 	
 	
-* Table 17: WB resources presence and conflict, with third party presence
+* Table 12: WB resources presence and conflict, with third party presence
 * armstrade0
 
 local counter 0
@@ -1365,13 +1359,10 @@ ${main}5_output/tables/prio_oilint_arms0.tex, replace ///
 	mtitles("Conf." "Conf." "H. Conf." "H. Conf." "Conf." "Conf." "H. Conf." "H. Conf.") ///
 	postfoot("\hline\hline \end{tabular}}")
 	
-
-
-global thirdparty_list "armstrade0_ukr"
-
-* Table 22: Sedimentary bases presence and conflict, with third party presence
+* Table 13: Sedimentary bases presence and conflict, with third party presence
 * Ukraine's armstrade0
 
+global thirdparty_list "armstrade0_ukr"
 local counter 0
 
 * For loop for regressions: iterates over third party measure, outcome, controls
@@ -1467,9 +1458,7 @@ esttab reg1 reg2 reg3 reg4 using ///
 	mtitles("Conf." "Conf." "H. Conf." "H. Conf." "Conf." "Conf." "H. Conf." "H. Conf.") ///
 	postfoot("\hline\hline \end{tabular}}")
 	
-	
-	
-* Table 23: WB resources presence and conflict, with third party presence
+* Table 14: WB resources presence and conflict, with third party presence
 * Ukraine's armstrade0
 
 local counter 0
@@ -1578,12 +1567,10 @@ ${main}5_output/tables/prio_oilint_arms0_ukr.tex, replace ///
 	mtitles("Conf." "Conf." "H. Conf." "H. Conf." "Conf." "Conf." "H. Conf." "H. Conf.") ///
 	postfoot("\hline\hline \end{tabular}}")
 	
-
-global thirdparty_list "contig_bases1000 armstrade90_ukr"
-
-* Table 24: Sedimentary bases presence and conflict, with third party presence
+* Table 15: Sedimentary bases presence and conflict, with third party presence
 * Ukraine's armstrade90
 
+global thirdparty_list "armstrade90_ukr"
 local counter 0
 
 * For loop for regressions: iterates over third party measure, outcome, controls
@@ -1680,7 +1667,7 @@ esttab reg1 reg2 reg3 reg4 using ///
 	postfoot("\hline\hline \end{tabular}}")
 	
 	
-* Table 25: WB resources presence and conflict, with third party presence
+* Table 16: WB resources presence and conflict, with third party presence
 * Ukraine's armstrade0
 
 local counter 0
@@ -1789,9 +1776,6 @@ ${main}5_output/tables/prio_oilint_arms90_ukr.tex, replace ///
 	mtitles("Conf." "Conf." "H. Conf." "H. Conf." "Conf." "Conf." "H. Conf." "H. Conf.") ///
 	postfoot("\hline\hline \end{tabular}}")
 
-	
-
-stop
 	
 ********* Maps
 *ssc install spmap
