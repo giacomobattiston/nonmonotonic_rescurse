@@ -11,7 +11,7 @@ Replication files for the paper "Third-Party Interest, Resource Value, and the L
 ## Folder structure
 
 ```stata
-git/LEAPproject
+git/technology_conflict
 ├────README.md
 │    
 ├────analysis
@@ -21,16 +21,16 @@ git/LEAPproject
 │    ├──config.do     
 └──config
 
-
-Dropbox/LEAPproject
+Dropbox/technology_conflict
 │    ├──1_data /* raw data */
 │    ├──2_processed /* processed (intermediate) data */
 │    ├──3_temp /* temporary data */
 │    ├──4_documentation
 │    ├──5_output
+|    ├──6_literature
 └──config
 
-Overleaf/LEAPproject
+Overleaf/technology_conflict
 │    ├──5_output
 │    │  ├──tables
 │    │  └──figures
