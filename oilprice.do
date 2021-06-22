@@ -10,8 +10,6 @@ gen year=year(date_aux)
 * Turn into yearly dataset
 collapse (mean) gdpdef, by (year)
 
-la var gdpdef "Deflator, relative to 2012"
-
 save ${main}2_processed\deflator.dta, replace
 
 
@@ -31,9 +29,10 @@ merge 1:1 year using ${main}2_processed\deflator.dta
 
 rename wtisplc oil_price
 replace oil_price = oil_price/gdpdef
+gen oil_price2 = oil_price^2
 
-la var oil_price "Oil price (WTI), in 2012 dollars"
+keep year gdpdef oil_price oil_price2
 
-save ${main}2_processed\oil_price.dta,replace
+save ${main}2_processed\oilprice.dta,replace
 
 

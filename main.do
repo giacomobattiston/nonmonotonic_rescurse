@@ -3,6 +3,9 @@ set more off
 
 do config.do
 
+* Clean data on oil prices
+do oilprice.do
+
 * Clean data on US bases and arms' trade
 do thirdparty.do
 
@@ -285,6 +288,9 @@ gen armstrade0_ukr = armstrade_ukr >  0 if !missing(armstrade_ukr)
 * Generate variable recording total conflict years
 egen conf_years = sum(conflict), by(ccode)
 
+* Merge oil prices
+merge m:1 year using ${main}\2_processed\oilprice.dta
+
 *label controls used in 
 la var lnarea "Area, log Km\(^2\)"
 la var abslat "Absolute latitude"
@@ -309,6 +315,9 @@ la var coal "Coal value pc"
 la var coal2 "Coal value pc squared"
 la var ccode "Country code"
 la var conf_years "Years of conflict in country"
+la var gdpdef "Deflator, relative to 2012"
+la var oil_price "Oil price (WTI), in 2012 dollars"
+la var oil_price2 "Oil price (WTI) squared, in 2012 dollars"
 
 * Sample from 1950 to 1999
 keep if year < 2000
@@ -316,12 +325,14 @@ keep if year < 2000
 keep year region lnarea abslat elevavg elevstd temp prec lnpop14 ///
 	conflict conflict2 sedvol sedvol2 coal coal2 gas gas2 oil oil oil2  ///
 	contig_bases1000 armstrade90 armstrade ccode conf_years ///
-	armstrade0 armstrade90_ukr armstrade0_ukr
+	armstrade0 armstrade90_ukr armstrade0_ukr gdpdef oil_price oil_price2 gdpdef
 
 save ${main}2_processed/data_regressions.dta, replace
 
 
 ******ANALYSIS
+
+
 
 gen thirdparty = .
 
@@ -1775,6 +1786,57 @@ ${main}5_output/tables/prio_oilint_arms90_ukr.tex, replace ///
 	postfoot("\hline\hline \end{tabular}}")
 
 	
+	
+	
+	
+global outcome_list "conflict conflict2"
+local controls "lnarea  abslat elevavg elevstd temp precip lnpop14  "
+			
+* Table 17: Conflict and resources		
+
+* For loop for regressions: iterates over third party measure, outcome, controls
+
+foreach outcome of varlist $outcome_list {
+	forval i_con = 1/2 {
+		local counter = `counter' + 1
+		if (`i_con' == 1) {
+			ivreg2 `outcome' c.sedvol#c.oil_price c.sedvol2#c.oil_price2 i.year i.ccode, cluster(ccode) partial(i.year i.ccode)
+			* Save geographic controls indicator
+			estadd local geocontrols = "No"
+		}
+		else {
+			ivreg2 `outcome' c.sedvol#c.oil_price c.sedvol2#c.oil_price2 `controls' i.year i.ccode, cluster(ccode) partial(i.year i.ccode)
+			* Save geographic controls indicator
+			estadd local geocontrols = "Yes"
+		}
+		
+		* Save time controls indicators
+		estadd local yearfe = "Yes"
+		estadd local countryfe = "Yes"
+		* Save auxiliary indicator for esttab
+		estadd local space = " "
+		
+		est sto reg`counter'
+		
+		estadd scalar peak = -_b[c.sedvol#c.oil_price]/(2*_b[c.sedvol2#c.oil_price2])
+			
+	}
+
+}
+
+esttab reg* using ///
+${main}5_output/tables/prioallprices.tex, replace ///
+coeflabels(c.sedvol#c.oil_price  "Sed. Vol. X Oil Price" c.sedvol2#c.oil_price2  "Sed. Vol.\(^2\) X Oil Price\(^2\)") se ///
+starlevels(\sym{*} 0.1 \sym{**} 0.05 \sym{***} 0.01) ///
+ nobaselevels ///
+ drop(`controls') ///
+ 	stats(yearfe countryfe geocontrols  peak N, fmt(s s s a2 a2) ///
+	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" )  ///
+	labels(`"Year FEs"' `"Country FEs"' `"Geo Controls"' `"Peak"' `"\(N\)"')) ///
+		mtitles("Conf." "Conf." "H. Conf." "H. Conf." "Conf." "Conf." "H. Conf." "H. Conf.") ///
+			postfoot("\hline\hline \end{tabular}}")	
+			
+			
 ********* Histogram Arms Trade
 
 * Notice that the year condition does not influence the year in which trade iso3c
