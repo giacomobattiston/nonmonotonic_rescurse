@@ -57,6 +57,8 @@ replace country = "Congo (Democratic Republic of the)" if country == "DR Congo"
 * armstrade will store overall quantity of armstrade from the US 1950-99
 gen armstrade = 0
 
+
+
 * Sum over arms trade from 1950 to 99 (each v is a year)
 foreach var of varlist v* {
 	destring `var', replace
@@ -329,6 +331,74 @@ replace ccode = 360 if iso_3 == "ROM"
 keep ccode contig_bases1000
 keep if !missing(ccode) &  !missing(contig_bases1000)
 save ${main}2_processed/contig_bases1000.dta, replace
+
+
+****CONTIGUITY BASES 1950
+
+clear
+* Now start constructing the final data. Import distances
+import excel ${main}1_data/geodist/dist_cepii.xls, sheet("dist_cepii") firstrow
+
+* Countries are contiguous to themselves
+replace contig = 1 if iso_o == iso_d
+
+*max km distance traveled in a day by US troops
+*321.869
+
+
+*try with distances
+replace contig = dist < 321.869
+*replace contig = dist < 5000
+
+* Merge with country names
+rename iso_d id_country
+merge m:1 id_country using ${main}2_processed/country_names.dta
+rename _merge _merge1
+
+gen dod1950 = .
+replace dod1950 = 100 if country == "Greenland"
+replace dod1950 = 100 if country == "Peru"
+replace dod1950 = 100 if country == "Brazil"
+replace dod1950 = 100 if country == "Portugal"
+replace dod1950 = 100 if country == "France"
+replace dod1950 = 100 if country == "Libyan Arab Jamahiriya"
+replace dod1950 = 100 if country == "Eritrea"
+replace dod1950 = 100 if country == "Turkey"
+replace dod1950 = 100 if country == "Saudi Arabia"
+replace dod1950 = 100 if country == "Korea"
+replace dod1950 = 1000 if country == "Canada"
+replace dod1950 = 1000 if country == "United Kingdom"
+replace dod1950 = 1000 if country == "Italy"
+replace dod1950 = 10000 if country == "Philippines"
+replace dod1950 = 10000 if country == "Germany"
+replace dod1950 = 100000 if country == "Japan"
+replace dod1950 = 100000 if country == "United States of America"
+
+stop
+* In this long data, keep only couples where destination has arms trade
+keep if dod1950 != .
+keep contig iso_o 
+rename contig contig50bases
+drop if missing(iso_o)
+
+* Take minimum distance from base for each origin
+collapse (max) contig50bases, by(iso_o)
+
+rename iso_o iso_3
+* Use country package to generate COW country codes
+* DRC has old code in geodist. Change to new:
+replace iso_3 = "COD" if iso_3 == "ZAR"
+* ssc install kountry
+kountry iso_3, from(iso3c) to(cown)
+rename _COWN_ ccode
+* Yemen has wrong code
+* Romania
+replace ccode = 360 if iso_3 == "ROM"
+
+keep ccode contig50bases
+keep if !missing(ccode) &  !missing(contig50bases)
+save ${main}2_processed/contig50bases.dta, replace
+
 
 
 
