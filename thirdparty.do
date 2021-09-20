@@ -10,23 +10,17 @@ import delimited ${main}1_data/sipri_tiv/TIV-Export-USA-1950-2019_noheader.csv, 
 * Adjust discrepancies with distances data in country naming, rebel groups
 * international organizations, and past or yet-to-appear countries
 rename v1 country
-* Drop international organizations
-drop if country == "African Union**"
-drop if country == "NATO**"
-drop if country == "United Nations**"
-drop if country == "Regional Security System**"
 * Drop rebels
-drop if country == "Anti-Castro rebels (Cuba)*"
-drop if country == "Armas (Guatemala)*"
-drop if country == "Contras (Nicaragua)*"
-drop if country == "Haiti rebels*"
-drop if country == "Indonesia rebels*"
-drop if country == "Mujahedin (Afghanistan)*"
-drop if country == "Syria rebels*"
-drop if country == "UNITA (Angola)*"
+drop if country == "ANC (South Africa)*"
+drop if country == "Pathet Lao (Laos)*"
+drop if country == "Viet Cong (South Vietnam)*"
+drop if country == "ZAPU (Zimbabwe)*"
 * Drop non-existing countries
-drop if country == "Biafra"
+drop if country == "Western Sahara"
 drop if country == "Yugoslavia"
+drop if country == "Czechoslovakia"
+drop if country == "East Germany (GDR)"
+
 drop if country == "Unknown recipient(s)"
 drop if country == "Libya GNC"
 drop if country == "Libya HoD"
@@ -137,6 +131,102 @@ keep ccode dist_arms armstrade
 keep if !missing(ccode) &  !missing(dist)
 replace armstrade = 0 if missing(armstrade)
 save ${main}2_processed/dist_arms.dta, replace
+
+
+
+clear
+
+****************************ARMS' IMPORTS FROM USSR***************************
+
+* Construct the dataset on arms' imports from Ukraine
+import delimited ${main}1_data/sipri_tiv/TIV-Export-USR-1950-1999_noheader.csv, /// 
+	delimiter(",") encoding(ISO-8859-1) varnames(1)
+stop
+	
+* Adjust discrepancies with distances data in country naming, rebel groups
+* international organizations, and past or yet-to-appear countries
+rename v1 country
+* Drop rebels
+drop if country == "ANC (South Africa)*"
+drop if country == "Pathet Lao (Laos)*"
+drop if country == "Viet Cong (South Vietnam)*"
+drop if country == "ZAPU (Zimbabwe)*"
+* Drop non-existing countries
+drop if country == "Western Sahara"
+drop if country == "Yugoslavia"
+drop if country == "Czechoslovakia"
+drop if country == "East Germany (GDR)"
+drop if country == "Unknown recipient(s)"
+drop if country == "Libya GNC"
+drop if country == "Libya HoD"
+drop if country == "North Yemen"
+* Rename some countries in dataset
+replace country = "Vietnam" if country == "Viet Nam"
+
+* armstrade will store overall quantity of armstrade from the US 1950-99
+gen armstrade_ussr = 0
+
+* Sum over arms trade from 1950 to 99 (each v is a year)
+foreach var of varlist v* {
+	destring `var', replace
+	replace `var' = 0 if `var' == .
+	replace armstrade_ukr = armstrade_ukr + `var'
+}
+drop v*
+
+
+* armstrade dummy
+gen armstrade_dummy_ussr = 1 if armstrade_ussr > 0
+keep if armstrade_dummy_ussr == 1
+
+save ${main}2_processed/arms_trade_UKR.dta, replace
+
+clear
+* Now start constructing the final data. Import distances
+import excel ${main}1_data/geodist/dist_cepii.xls, sheet("dist_cepii") firstrow
+
+* Merge with country names
+rename iso_d id_country
+merge m:1 id_country using ${main}2_processed/country_names.dta
+rename _merge _merge1
+
+* Use country names to merge with arms_trade
+merge m:1 country using ${main}2_processed/arms_trade_UKR.dta
+rename id_country iso_d 
+
+* In this long data, keep only couples where destination has arms trade
+keep if armstrade_dummy == 1
+keep dist iso_o iso_d 
+rename dist dist_arms_ukr
+drop if missing(iso_o)
+
+* Take minimum distance from base for each origin
+collapse (min) dist_arms_ukr, by(iso_o)
+
+* Use the same procedure above to merge with arms trade in millions
+rename iso_o id_country
+merge m:1 id_country using ${main}2_processed/country_names.dta
+rename _merge _merge3
+merge m:1 country using ${main}2_processed/arms_trade_UKR.dta
+rename _merge _merge4
+rename id_country iso_3
+
+* Use country package to generate COW country codes
+* DRC has old code in geodist. Change to new:
+replace iso_3 = "COD" if iso_3 == "ZAR"
+* ssc install kountry
+kountry iso_3, from(iso3c) to(cown)
+rename _COWN_ ccode
+* Yemen has wrong code
+* Romania
+replace ccode = 360 if iso_3 == "ROM"
+
+keep ccode dist_arms_ukr armstrade_ukr
+keep if !missing(ccode) &  !missing(dist)
+replace armstrade_ukr = 0 if missing(armstrade_ukr)
+save ${main}2_processed/dist_arms_UKR.dta, replace
+
+
 
 clear
 
