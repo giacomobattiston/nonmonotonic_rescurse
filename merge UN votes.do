@@ -10,6 +10,7 @@ merge m:1 ccode using ${main}2_processed\US_affinity.dta
 
 * many countries not existent in that period, so no data with respect to US affinity
 *create dummies for proximity to US in terms of UN votes
+
 qui sum avg_affinity55, detail
 gen affinity90 = avg_affinity55 >  `r(p90)' if !missing(avg_affinity55)
 gen affinity50 = avg_affinity55 >  `r(p50)' if !missing(avg_affinity55)
@@ -19,12 +20,12 @@ la var affinity90 "voting affinity with US above the 90th percentile"
 la var affinity_avg "voting affinity with US above the average"
 
 qui sum avg_affinity59, detail
-gen affinity90_60 = avg_affinity59 >  `r(p90)' if !missing(avg_affinity59)
-gen affinity50_60 = avg_affinity59 >  `r(p50)' if !missing(avg_affinity59)
-gen affinity_avg_60 = avg_affinity59 >  `r(mean)' if !missing(avg_affinity59)
-la var affinity50_60 "voting affinity with US above median"
-la var affinity90_60 "voting affinity with US above the 90th percentile"
-la var affinity_avg_60 "voting affinity with US above the average"
+gen affinity90_59 = avg_affinity59 >  `r(p90)' if !missing(avg_affinity59)
+gen affinity50_59 = avg_affinity59 >  `r(p50)' if !missing(avg_affinity59)
+gen affinity_avg_59 = avg_affinity59 >  `r(mean)' if !missing(avg_affinity59)
+la var affinity50_59 "voting affinity with US above median"
+la var affinity90_59 "voting affinity with US above the 90th percentile"
+la var affinity_avg_59 "voting affinity with US above the average"
 
 qui sum avg_affinity65, detail
 
@@ -46,6 +47,42 @@ la var affinity50_99 "voting affinity with US above median, until 1999"
 la var affinity90_99 "voting affinity with US above the 90th percentile, until 1999"
 la var affinity_avg_99 "voting affinity with US above the average, until 1999"
 
+qui sum avg_affinity55_3, detail
+gen affinity90_3 = avg_affinity55_3 >  `r(p90)' if !missing(avg_affinity55_3)
+gen affinity50_3 = avg_affinity55_3 >  `r(p50)' if !missing(avg_affinity55_3)
+gen affinity_avg_3 = avg_affinity55_3 >  `r(mean)' if !missing(avg_affinity55_3)
+la var affinity50_3 "voting affinity with US above median, 3 possibilites"
+la var affinity90_3 "voting affinity with US above the 90th percentile, 3 possibilites"
+la var affinity_avg_3 "voting affinity with US above the average, 3 possibilites"
+
+qui sum avg_affinity59_3, detail
+gen affinity90_59_3 = avg_affinity59_3 >  `r(p90)' if !missing(avg_affinity59_3)
+gen affinity50_59_3 = avg_affinity59_3 >  `r(p50)' if !missing(avg_affinity59_3)
+gen affinity_avg_59_3 = avg_affinity59 >  `r(mean)' if !missing(avg_affinity59_3)
+la var affinity50_59_3 "voting affinity with US above median, 3 possibilites"
+la var affinity90_59_3 "voting affinity with US above the 90th percentile, 3 possibilites"
+la var affinity_avg_59_3 "voting affinity with US above the average, 3 possibilites"
+
+qui sum avg_affinity65_3, detail
+
+*same using votes until 1965
+gen affinity90_65_3 = avg_affinity65_3 >  `r(p90)' if !missing(avg_affinity65_3)
+gen affinity50_65_3 = avg_affinity65_3 >  `r(p50)' if !missing(avg_affinity65_3)
+gen affinity_avg_65_3 = avg_affinity65_3 >  `r(mean)' if !missing(avg_affinity65_3)
+la var affinity50_65_3 "voting affinity with US above median, until 1965, 3 possibilites"
+la var affinity90_65_3 "voting affinity with US above the 90th percentile, until 1965, 3 possibilites"
+la var affinity_avg_65_3 "voting affinity with US above the average, until 1965, 3 possibilites"
+
+qui sum avg_affinity99_3, detail
+
+*same using votes until 1999
+gen affinity90_99_3 = avg_affinity99_3 >  `r(p90)' if !missing(avg_affinity99_3)
+gen affinity50_99_3 = avg_affinity99_3 >  `r(p50)' if !missing(avg_affinity99_3)
+gen affinity_avg_99_3 = avg_affinity99_3 >  `r(mean)' if !missing(avg_affinity99_3)
+la var affinity50_99_3 "voting affinity with US above median, until 1999, 3 possibilites"
+la var affinity90_99_3 "voting affinity with US above the 90th percentile, until 1999, 3 possibilites"
+la var affinity_avg_99_3 "voting affinity with US above the average, until 1999, 3 possibilites"
+
 
 gen thirdparty=.
 *replace 0 if missing
@@ -61,20 +98,31 @@ replace affinity50_99=0 if affinity50_99==.
 replace affinity90_99=0 if affinity90_99==.
 replace affinity_avg_99=0 if affinity_avg_99==.
 
-replace affinity50_60=0 if affinity50_60==.
-replace affinity90_60=0 if affinity90_60==.
-replace affinity_avg_60=0 if affinity_avg_60==.
+replace affinity50_59=0 if affinity50_59==.
+replace affinity90_59=0 if affinity90_59==.
+replace affinity_avg_59=0 if affinity_avg_59==.
 
+replace affinity50_3=0 if affinity50_3==.
+replace affinity90_3=0 if affinity90_3==.
+replace affinity_avg_3=0 if affinity_avg_3==.
+
+replace affinity50_65_3=0 if affinity50_65_3==.
+replace affinity90_65_3=0 if affinity90_65_3==.
+replace affinity_avg_65_3=0 if affinity_avg_65_3==.
+
+replace affinity50_99_3=0 if affinity50_99_3==.
+replace affinity90_99_3=0 if affinity90_99_3==.
+replace affinity_avg_99_3=0 if affinity_avg_99_3==.
+
+replace affinity50_59_3=0 if affinity50_59_3==.
+replace affinity90_59_3=0 if affinity90_59_3==.
+replace affinity_avg_59_3=0 if affinity_avg_59_3==.
 
 * Sedimentary bases presence and conflict, with third party presence
 * affinity50
 
-global thirdparty_list "affinity50 affinity90 affinity50_65 affinity90_65 affinity50_99"
 
-global thirdparty_list "affinity_avg affinity_avg_65 affinity_avg_99"
-
-
-global thirdparty_list " affinity50_60 affinity90_60 affinity_avg_60"
+global thirdparty_list " affinity50_59_3 affinity90_59_3 affinity_avg_59_3"
 
 global outcome_list "conflict conflict2"
 local controls "lnarea  abslat elevavg elevstd temp precip lnpop14  "
@@ -157,7 +205,7 @@ foreach thirdparty of varlist $thirdparty_list {
 }
 
 esttab reg1 reg2 reg3 reg4 using ///
-	${main}5_output/tables/prio_sedint_affinity_50_60.tex, replace ///
+	${main}5_output/tables/prio_sedint_affinity_50_59.tex, replace ///
 	drop(`controls') coeflabels(1.thirdparty "Third Party Presence" ///
 	c.sedvol#1.thirdparty "Sed. Vol. X Third Party" 1.thirdparty#c.sedvol ///
 	"Sed. Vol. X Third Party" 1.thirdparty#c.sedvol2 ///
@@ -177,7 +225,7 @@ esttab reg1 reg2 reg3 reg4 using ///
 	
 	
 		esttab reg5 reg6 reg7 reg8 using ///
-	${main}5_output/tables/prio_sedint_affinity_90_60.tex, replace ///
+	${main}5_output/tables/prio_sedint_affinity_90_59.tex, replace ///
 	drop(`controls') coeflabels(1.thirdparty "Third Party Presence" ///
 	c.sedvol#1.thirdparty "Sed. Vol. X Third Party" 1.thirdparty#c.sedvol ///
 	"Sed. Vol. X Third Party" 1.thirdparty#c.sedvol2 ///
@@ -197,7 +245,7 @@ esttab reg1 reg2 reg3 reg4 using ///
 	
 	
 		esttab reg9 reg10 reg11 reg12 using ///
-	${main}5_output/tables/prio_sedint_affinity_avg_60.tex, replace ///
+	${main}5_output/tables/prio_sedint_affinity_avg_59.tex, replace ///
 	drop(`controls') coeflabels(1.thirdparty "Third Party Presence" ///
 	c.sedvol#1.thirdparty "Sed. Vol. X Third Party" 1.thirdparty#c.sedvol ///
 	"Sed. Vol. X Third Party" 1.thirdparty#c.sedvol2 ///
@@ -341,7 +389,7 @@ esttab reg1 reg2 reg3 reg4 using ///
 local counter 0
 global thirdparty_list "affinity50 affinity50_65 affinity50_99"
 
-global thirdparty_list "affinity_avg_60 affinity50_60 affinity90_60"
+global thirdparty_list "affinity_avg_99_3 affinity50_99_3 "
 
 
 * For loop for regressions: iterates over third party measure, outcome, controls
@@ -425,7 +473,7 @@ foreach thirdparty of varlist $thirdparty_list {
 }
 
 esttab reg1 reg2 reg3 reg4 using ///
- ${main}5_output/tables/prio_oilint_affinity_avg_60.tex, replace ///
+ ${main}5_output/tables/prio_oilint_affinity_avg_99_3.tex, replace ///
   drop(`controls' 1.thirdparty#c.gas 1.thirdparty#c.gas2 ///
 	gas gas2 1.thirdparty#c.coal ///
 	1.thirdparty#c.coal2 coal coal2) /// 
@@ -450,7 +498,7 @@ esttab reg1 reg2 reg3 reg4 using ///
 	
 	
 	esttab reg5 reg6 reg7 reg8 using ///
- ${main}5_output/tables/prio_oilint_affinity50_60.tex, replace ///
+ ${main}5_output/tables/prio_oilint_affinity50_99_3.tex, replace ///
   drop(`controls' 1.thirdparty#c.gas 1.thirdparty#c.gas2 ///
 	gas gas2 1.thirdparty#c.coal ///
 	1.thirdparty#c.coal2 coal coal2) /// 
@@ -474,7 +522,7 @@ esttab reg1 reg2 reg3 reg4 using ///
 	
 	
 	esttab reg9 reg10 reg11 reg12 using ///
- ${main}5_output/tables/prio_oilint_affinity90_60.tex, replace ///
+ ${main}5_output/tables/prio_oilint_affinity90_59.tex, replace ///
   drop(`controls' 1.thirdparty#c.gas 1.thirdparty#c.gas2 ///
 	gas gas2 1.thirdparty#c.coal ///
 	1.thirdparty#c.coal2 coal coal2) /// 
