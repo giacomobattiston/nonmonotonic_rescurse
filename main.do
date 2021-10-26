@@ -1,13 +1,654 @@
 clear all
 set more off
 
-do config.do
+if "`c(username)'" == "giacomobattiston" { 
+        cd "/Users/giacomobattiston/"
+        global main "Dropbox/ricerca_dropbox/bbf/technology_conflict/"
+		global git "Documents/GitHub/technology_conflict/"
+}
+else {
+	cd "C:\Users\Franceschin\Documents\GitHub\technology_conflict"
+	global main "C:\Users\Franceschin\Dropbox\bbf\technology_conflict\"
+}
+
+do ${git}config.do
 
 * Clean data on oil prices
-do oilprice.do
+do ${git}oilprice.do
 
 * Clean data on US bases and arms' trade
-do thirdparty.do
+*<<<<<<< Updated upstream
+do ${git}thirdparty.do
+*=======
+clear 
+
+****************************ARMS' IMPORTS FROM THE US***************************
+
+* Construct the dataset on arms' imports from the US
+import delimited ${main}1_data/sipri_tiv/TIV-Export-USA-1950-2019_noheader.csv, /// 
+	delimiter(";") encoding(ISO-8859-1) varnames(1)
+
+* Adjust discrepancies with distances data in country naming, rebel groups
+* international organizations, and past or yet-to-appear countries
+rename v1 country
+* Drop international organizations
+drop if country == "African Union**"
+drop if country == "NATO**"
+drop if country == "United Nations**"
+drop if country == "Regional Security System**"
+* Drop rebels
+drop if country == "Anti-Castro rebels (Cuba)*"
+drop if country == "Armas (Guatemala)*"
+drop if country == "Contras (Nicaragua)*"
+drop if country == "Haiti rebels*"
+drop if country == "Indonesia rebels*"
+drop if country == "Mujahedin (Afghanistan)*"
+drop if country == "Syria rebels*"
+drop if country == "UNITA (Angola)*"
+* Drop non-existing countries
+drop if country == "Biafra"
+drop if country == "Yugoslavia"
+drop if country == "Unknown recipient(s)"
+drop if country == "Libya GNC"
+drop if country == "Libya HoD"
+drop if country == "North Yemen"
+drop if country == "South Vietnam"
+* Rename some countries in dataset
+replace country = "Brunei Darussalam" if country == "Brunei"
+replace country = "Belgium and Luxembourg" if country == "Belgium"
+replace country = "Bosnia and Herzegovina" if country == "Bosnia-Herzegovina"
+replace country = "Côte d'Ivoire" if country == "Cote d'Ivoire"
+replace country = "Czech Republic" if country == "Czechia"
+replace country = "Kazakstan" if country == "Kazakhstan"
+replace country = "Lao People's Democratic Republic" if country == "Laos"
+replace country = "Libyan Arab Jamahiriya" if country == "Libya"
+replace country = "Macedonia (the former Yugoslav Rep. of)" if country == "Macedonia"
+replace country = "Micronesia (Federated States of)" if country == "Micronesia"
+replace country = "Serbia and Montenegro" if country == "Serbia"
+replace country = "Burma" if country == "Myanmar"
+replace country = "Korea, Dem. People's Rep. of" if country == "North Korea"
+replace country = "Korea" if country == "South Korea"
+replace country = "Syrian Arab Republic" if country == "Syria"
+replace country = "Tanzania, United Rep. of " if country == "Tanzania"
+replace country = "Saint Vincent and the Grenadines" if country == "Saint Vincent"
+replace country = "United Arab Emirates" if country == "UAE"
+replace country = "Congo (Democratic Republic of the)" if country == "DR Congo"
+
+
+* armstrade will store overall quantity of armstrade from the US 1950-99
+gen armstrade = 0
+
+* Sum over arms trade from 1950 to 99 (each v is a year)
+foreach var of varlist v* {
+	destring `var', replace
+	replace `var' = 0 if `var' == .
+	replace armstrade = armstrade + `var'
+}
+
+* Sum over arms trade from 1950 to 99 (each v is a year)
+gen armstrade1950 = 0
+foreach var of varlist v2-v11 {
+	di "`var'"
+	replace armstrade1950 = armstrade1950 + `var'
+}
+
+*rename v2 armstrade1950
+drop v*
+
+* Luxemburg and Belgium are put together in distances dataset: sum arms trade
+qui sum armstrade if country == "Luxembourg"
+replace armstrade = armstrade + `r(mean)' if country == "Belgium and Luxembourg"
+
+* So are Serbia and Montenengro: sum arms trade
+qui sum armstrade if country == "Montenegro"
+replace armstrade = armstrade + `r(mean)' if country == "Serbia and Montenegro"
+
+* Luxemburg and Belgium are put together in distances dataset: sum arms trade
+qui sum armstrade1950 if country == "Luxembourg"
+replace armstrade1950 = armstrade1950 + `r(mean)' if country == "Belgium and Luxembourg"
+drop if country == "Luxembourg"
+
+* So are Serbia and Montenengro: sum arms trade
+qui sum armstrade1950 if country == "Montenegro"
+replace armstrade1950 = armstrade1950 + `r(mean)' if country == "Serbia and Montenegro"
+drop if country == "Montenegro"
+
+* armstrade dummy
+gen armstrade_dummy = 1 if armstrade > 0
+keep if armstrade_dummy == 1
+
+save ${main}2_processed/arms_trade.dta, replace
+
+
+clear
+* Use geodist data to collect country names: they will be used in matching
+import excel ${main}1_data/geodist/geo_cepii.xls, sheet("geo_cepii") firstrow
+keep iso3 country
+rename iso3 id_country
+duplicates drop id_country, force
+save ${main}2_processed/country_names.dta, replace
+
+clear
+* Now start constructing the final data. Import distances
+import excel ${main}1_data/geodist/dist_cepii.xls, sheet("dist_cepii") firstrow
+
+* Merge with country names
+rename iso_d id_country
+merge m:1 id_country using ${main}2_processed/country_names.dta
+rename _merge _merge1
+
+* Use country names to merge with arms_trade
+merge m:1 country using ${main}2_processed/arms_trade.dta
+rename id_country iso_d 
+
+* In this long data, keep only couples where destination has arms trade
+keep if armstrade_dummy == 1
+keep dist iso_o iso_d 
+rename dist dist_arms
+drop if missing(iso_o)
+
+* Take minimum distance from base for each origin
+collapse (min) dist_arms, by(iso_o)
+
+* Use the same procedure above to merge with arms trade in millions
+rename iso_o id_country
+merge m:1 id_country using ${main}2_processed/country_names.dta
+rename _merge _merge3
+merge m:1 country using ${main}2_processed/arms_trade.dta
+rename _merge _merge4
+rename id_country iso_3
+
+* Use country package to generate COW country codes
+* DRC has old code in geodist. Change to new:
+replace iso_3 = "COD" if iso_3 == "ZAR"
+
+* ssc install kountry
+kountry iso_3, from(iso3c) to(cown)
+rename _COWN_ ccode
+* Yemen has wrong code
+* Romania
+replace ccode = 360 if iso_3 == "ROM"
+
+keep ccode dist_arms armstrade armstrade1950
+keep if !missing(ccode) &  !missing(dist)
+replace armstrade = 0 if missing(armstrade)
+replace armstrade1950 = 0 if missing(armstrade1950)
+save ${main}2_processed/dist_arms.dta, replace
+
+
+clear
+****************************ARMS' IMPORTS FROM USSR***************************
+
+* Construct the dataset on arms' imports from Ukraine
+import delimited ${main}1_data/sipri_tiv/TIV-Export-USR-1950-1999_noheader.csv, /// 
+	delimiter(",") encoding(ISO-8859-1) varnames(1)
+
+	
+* Adjust discrepancies with distances data in country naming, rebel groups
+* international organizations, and past or yet-to-appear countries
+rename v1 country
+* Drop rebels
+drop if country == "ANC (South Africa)*"
+drop if country == "PLO (Israel)*"
+drop if country == "Viet Cong (South Vietnam)*"
+drop if country == "ZAPU (Zimbabwe)*"
+drop if country == "ZAPU (Zimbabwe)*"
+* Drop non-existing countries
+drop if country == "Western Sahara"
+drop if country == "Yugoslavia"
+drop if country == "Czechoslovakia"
+drop if country == "East Germany (GDR)"
+drop if country == "Unknown recipient(s)"
+drop if country == "Libya GNC"
+drop if country == "Libya HoD"
+drop if country == "North Yemen"
+* Rename some countries in dataset
+replace country = "Cape Verde" if country == "Cabo Verde"
+replace country = "Lao People's Democratic Republic" if country == "Laos"
+replace country = "Libyan Arab Jamahiriya" if country == "Libya"
+replace country = "Burma" if country == "Myanmar"
+replace country = "Korea, Dem. People's Rep. of" if country == "North Korea"
+replace country = "Syrian Arab Republic" if country == "Syria"
+replace country = "Tanzania, United Rep. of " if country == "Tanzania"
+replace country = "United Arab Emirates" if country == "UAE"
+replace country = "Cape Verde" if country == "Cabo Verde"
+
+drop if country == " "
+drop if country == "Total"
+
+* armstrade will store overall quantity of armstrade from the US 1950-99
+gen armstrade_ussr = 0
+
+* Sum over arms trade from 1950 to 99 (each v is a year)
+foreach var of varlist v* {
+	destring `var', replace
+	replace `var' = 0 if `var' == .
+	replace armstrade_ussr = armstrade_ussr + `var'
+}
+
+
+* Sum over arms trade from 1950 to 59 (each v is a year)
+gen armstrade_ussr1950 = 0
+foreach var of varlist v2-v11 {
+	di "`var'"
+	replace armstrade_ussr1950 = armstrade_ussr1950 + `var'
+}
+
+drop v*
+
+qui sum armstrade_ussr1950 if country == "South Yemen"
+replace armstrade_ussr1950 = armstrade_ussr1950 + `r(mean)' if country == "Yemen"
+drop if country == "South Yemen"
+
+qui sum armstrade_ussr1950 if country == "Yemen Arab Republic"
+replace armstrade_ussr1950 = armstrade_ussr1950 + `r(mean)' if country == "Yemen"
+drop if country == "Yemen Arab Republic"
+
+* armstrade dummy
+gen armstrade_dummy_ussr = 1 if armstrade_ussr > 0
+keep if armstrade_dummy_ussr == 1
+
+save ${main}2_processed/arms_trade_USSR.dta, replace
+
+
+clear
+* Now start constructing the final data. Import distances
+import excel ${main}1_data/geodist/dist_cepii.xls, sheet("dist_cepii") firstrow
+
+* Merge with country names
+rename iso_d id_country
+merge m:1 id_country using ${main}2_processed/country_names.dta
+rename _merge _merge1
+
+
+* Use country names to merge with arms_trade
+merge m:1 country using ${main}2_processed/arms_trade_USSR.dta
+rename id_country iso_d 
+
+* In this long data, keep only couples where destination has arms trade
+keep if armstrade_dummy_ussr == 1
+keep dist iso_o iso_d 
+rename dist dist_arms_ussr
+drop if missing(iso_o)
+
+* Take minimum distance from base for each origin
+collapse (min) dist_arms_ussr, by(iso_o)
+
+* Use the same procedure above to merge with arms trade in millions
+rename iso_o id_country
+merge m:1 id_country using ${main}2_processed/country_names.dta
+rename _merge _merge3
+merge m:1 country using ${main}2_processed/arms_trade_USSR.dta
+rename _merge _merge4
+rename id_country iso_3
+
+* Use country package to generate COW country codes
+* DRC has old code in geodist. Change to new:
+replace iso_3 = "COD" if iso_3 == "ZAR"
+* ssc install kountry
+kountry iso_3, from(iso3c) to(cown)
+rename _COWN_ ccode
+* Yemen has wrong code
+* Romania
+replace ccode = 360 if iso_3 == "ROM"
+
+keep ccode dist_arms_ussr armstrade_ussr1950
+keep if !missing(ccode) &  !missing(dist)
+replace armstrade_ussr = 0 if missing(armstrade_ussr)
+save ${main}2_processed/dist_arms_USSR.dta, replace
+
+clear
+
+****************************ARMS' IMPORTS FROM UKRAINE***************************
+
+* Construct the dataset on arms' imports from Ukraine
+import delimited ${main}1_data/sipri_tiv/TIV-Export-UKR-1950-2019_noheader.csv, /// 
+	delimiter(";") encoding(ISO-8859-1) varnames(1)
+
+* Adjust discrepancies with distances data in country naming, rebel groups
+* international organizations, and past or yet-to-appear countries
+rename v1 country
+* Drop international organizations
+drop if country == "African Union**"
+drop if country == "NATO**"
+drop if country == "United Nations**"
+drop if country == "Regional Security System**"
+* Drop rebels
+drop if country == "Anti-Castro rebels (Cuba)*"
+drop if country == "Armas (Guatemala)*"
+drop if country == "Contras (Nicaragua)*"
+drop if country == "Haiti rebels*"
+drop if country == "Indonesia rebels*"
+drop if country == "Mujahedin (Afghanistan)*"
+drop if country == "Syria rebels*"
+drop if country == "UNITA (Angola)*"
+* Drop non-existing countries
+drop if country == "Biafra"
+drop if country == "Yugoslavia"
+drop if country == "Unknown recipient(s)"
+drop if country == "Libya GNC"
+drop if country == "Libya HoD"
+drop if country == "North Yemen"
+drop if country == "South Vietnam"
+* Rename some countries in dataset
+replace country = "Brunei Darussalam" if country == "Brunei"
+replace country = "Belgium and Luxembourg" if country == "Belgium"
+replace country = "Bosnia and Herzegovina" if country == "Bosnia-Herzegovina"
+replace country = "Côte d'Ivoire" if country == "Cote d'Ivoire"
+replace country = "Czech Republic" if country == "Czechia"
+replace country = "Kazakstan" if country == "Kazakhstan"
+replace country = "Lao People's Democratic Republic" if country == "Laos"
+replace country = "Libyan Arab Jamahiriya" if country == "Libya"
+replace country = "Macedonia (the former Yugoslav Rep. of)" if country == "Macedonia"
+replace country = "Micronesia (Federated States of)" if country == "Micronesia"
+replace country = "Serbia and Montenegro" if country == "Serbia"
+replace country = "Burma" if country == "Myanmar"
+replace country = "Korea, Dem. People's Rep. of" if country == "North Korea"
+replace country = "Korea" if country == "South Korea"
+replace country = "Syrian Arab Republic" if country == "Syria"
+replace country = "Tanzania, United Rep. of " if country == "Tanzania"
+replace country = "Saint Vincent and the Grenadines" if country == "Saint Vincent"
+replace country = "United Arab Emirates" if country == "UAE"
+replace country = "Congo (Democratic Republic of the)" if country == "DR Congo"
+replace country = "Russian Federation" if country == "Russia"
+replace country = "Macedonia (the former Yugoslav Rep. of)" if country == "North Macedonia"
+replace country = "United States of America" if country == "United States"
+
+* armstrade will store overall quantity of armstrade from the US 1950-99
+gen armstrade_ukr = 0
+
+* Sum over arms trade from 1950 to 99 (each v is a year)
+foreach var of varlist v* {
+	destring `var', replace
+	replace `var' = 0 if `var' == .
+	replace armstrade_ukr = armstrade_ukr + `var'
+}
+drop v*
+
+* Merge Sudan
+qui sum armstrade if country == "South Sudan"
+replace armstrade = armstrade + `r(mean)' if country == "Sudan"
+drop if country == "South Sudan"
+
+* armstrade dummy
+gen armstrade_dummy_ukr = 1 if armstrade_ukr > 0
+keep if armstrade_dummy_ukr == 1
+
+save ${main}2_processed/arms_trade_UKR.dta, replace
+
+clear
+* Now start constructing the final data. Import distances
+import excel ${main}1_data/geodist/dist_cepii.xls, sheet("dist_cepii") firstrow
+
+* Merge with country names
+rename iso_d id_country
+merge m:1 id_country using ${main}2_processed/country_names.dta
+rename _merge _merge1
+
+* Use country names to merge with arms_trade
+merge m:1 country using ${main}2_processed/arms_trade_UKR.dta
+rename id_country iso_d 
+
+* In this long data, keep only couples where destination has arms trade
+keep if armstrade_dummy == 1
+keep dist iso_o iso_d 
+rename dist dist_arms_ukr
+drop if missing(iso_o)
+
+* Take minimum distance from base for each origin
+collapse (min) dist_arms_ukr, by(iso_o)
+
+* Use the same procedure above to merge with arms trade in millions
+rename iso_o id_country
+merge m:1 id_country using ${main}2_processed/country_names.dta
+rename _merge _merge3
+merge m:1 country using ${main}2_processed/arms_trade_UKR.dta
+rename _merge _merge4
+rename id_country iso_3
+
+* Use country package to generate COW country codes
+* DRC has old code in geodist. Change to new:
+replace iso_3 = "COD" if iso_3 == "ZAR"
+* ssc install kountry
+kountry iso_3, from(iso3c) to(cown)
+rename _COWN_ ccode
+* Yemen has wrong code
+* Romania
+replace ccode = 360 if iso_3 == "ROM"
+
+keep ccode dist_arms_ukr armstrade_ukr
+keep if !missing(ccode) &  !missing(dist)
+replace armstrade_ukr = 0 if missing(armstrade_ukr)
+save ${main}2_processed/dist_arms_UKR.dta, replace
+
+**********************Department of Defence Personnel***************************
+* all personell
+clear
+* Import data on DoD personnel by country
+import excel ${main}1_data/dmdc/dmdc_2014.xlsx,  firstrow
+
+* Drop Unkownn or US territories
+drop if country == "Unknown"
+drop if country == "Virgin Islands, U.S."
+drop if country == "American Samoa"
+drop if country == "British Indian Ocean Territory"
+drop if country == "Guam"
+
+* Rename countries to adjust inconsistencies with geodist
+replace country = "Korea" if country == "Korea, South"
+replace country = "Belgium and Luxemburg" if country == "Belgium"
+replace country = "Serbia and Montenegro" if country == "Kosovo"
+
+* Generate a dummy for there being personnel at all
+drop if personnel == .
+gen base_dummy = 1
+
+save ${main}2_processed/dmdc_2014.dta, replace
+
+drop if personnel < 1000
+save ${main}2_processed/dmdc_2014_1000.dta, replace
+
+
+****CONTIGUITY BASES
+
+clear
+* Now start constructing the final data. Import distances
+import excel ${main}1_data/geodist/dist_cepii.xls, sheet("dist_cepii") firstrow
+
+* Countries are contiguous to themselves
+replace contig = 1 if iso_o == iso_d
+
+* Merge with country names
+rename iso_d id_country
+merge m:1 id_country using ${main}2_processed/country_names.dta
+rename _merge _merge1
+
+* Use country names to merge with arms_trade
+merge m:1 country using ${main}2_processed/dmdc_2014_1000.dta
+rename id_country iso_d 
+
+* In this long data, keep only couples where destination has arms trade
+keep if base_dummy == 1
+keep contig iso_o iso_d 
+rename contig contig_bases1000
+drop if missing(iso_o)
+
+* Take minimum distance from base for each origin
+collapse (max) contig_bases1000, by(iso_o)
+
+rename iso_o iso_3
+* Use country package to generate COW country codes
+* DRC has old code in geodist. Change to new:
+replace iso_3 = "COD" if iso_3 == "ZAR"
+* ssc install kountry
+kountry iso_3, from(iso3c) to(cown)
+rename _COWN_ ccode
+* Yemen has wrong code
+* Romania
+replace ccode = 360 if iso_3 == "ROM"
+
+keep ccode contig_bases1000
+keep if !missing(ccode) &  !missing(contig_bases1000)
+save ${main}2_processed/contig_bases1000.dta, replace
+
+
+****CONTIGUITY BASES 1950
+
+clear
+* Now start constructing the final data. Import distances
+import excel ${main}1_data/geodist/dist_cepii.xls, sheet("dist_cepii") firstrow
+
+
+*max km distance traveled in a day by US troops
+*321.869
+
+destring distw, replace
+
+*try with distances
+replace contig = dist < 1000
+
+* Countries are contiguous to themselves
+replace contig = 1 if iso_o == iso_d
+
+*replace contig = distw < 321.869*7 questo va OK
+*replace contig = dist < 5000
+
+* Merge with country names
+rename iso_d id_country
+merge m:1 id_country using ${main}2_processed/country_names.dta
+rename _merge _merge1
+
+gen dod1950 = .
+replace dod1950 = 100 if country == "Greenland"
+replace dod1950 = 100 if country == "Peru"
+replace dod1950 = 100 if country == "Brazil"
+replace dod1950 = 100 if country == "Portugal"
+replace dod1950 = 100 if country == "France"
+replace dod1950 = 100 if country == "Libyan Arab Jamahiriya"
+replace dod1950 = 100 if country == "Eritrea"
+replace dod1950 = 100 if country == "Turkey"
+replace dod1950 = 100 if country == "Saudi Arabia"
+replace dod1950 = 100 if country == "Korea"
+replace dod1950 = 1000 if country == "Canada"
+replace dod1950 = 1000 if country == "United Kingdom"
+replace dod1950 = 1000 if country == "Italy"
+replace dod1950 = 10000 if country == "Philippines"
+replace dod1950 = 10000 if country == "Germany"
+replace dod1950 = 100000 if country == "Japan"
+replace dod1950 = 100000 if country == "United States of America"
+
+
+gen dod1970 = .
+replace dod1970 = 100 if country == "Australia"
+replace dod1970 = 100 if country == "Iran"
+replace dod1970 = 100 if country == "Libyan Arab Jamahiriya"
+replace dod1970 = 100 if country == "Saudi Arabia"
+replace dod1970 = 100 if country == "Greenland"
+replace dod1970 = 100 if country == "Norway"
+replace dod1970 = 100 if country == "Chile"
+replace dod1970 = 1000 if country == "Canada"
+replace dod1970 = 1000 if country == "United Kingdom"
+replace dod1970 = 1000 if country == "Italy"
+replace dod1970 = 1000 if country == "Spain"
+replace dod1970 = 1000 if country == "Portugal"
+replace dod1970 = 1000 if country == "Turkey"
+replace dod1970 = 1000 if country == "Albania"
+replace dod1970 = 1000 if country == "Belgium and Luxembourg"
+replace dod1970 = 1000 if country == "Iceland"
+replace dod1970 = 1000 if country == "Netherlands"
+replace dod1970 = 1000 if country == "Ethiopia"
+replace dod1970 = 10000 if country == "Thailand"
+replace dod1970 = 10000 if country == "Japan"
+replace dod1970 = 10000 if country == "Korea"
+replace dod1970 = 10000 if country == "Philippines"
+replace dod1970 = 100000 if country == "Germany"
+replace dod1970 = 100000 if country == "Viet Nam"
+
+gen dod1990 = .
+replace dod1990 = 100 if country == "Greenland"
+replace dod1990 = 100 if country == "Canada"
+replace dod1990 = 100 if country == "Colombia"
+replace dod1990 = 100 if country == "Norway"
+replace dod1990 = 100 if country == "Thailand"
+replace dod1990 = 100 if country == "Australia"
+replace dod1990 = 1000 if country == "Belgium and Luxembourg"
+replace dod1990 = 1000 if country == "Iceland"
+replace dod1990 = 1000 if country == "Netherlands"
+replace dod1990 = 1000 if country == "Albania"
+replace dod1990 = 1000 if country == "Italy"
+replace dod1990 = 1000 if country == "Spain"
+replace dod1990 = 1000 if country == "Portugal"
+replace dod1990 = 1000 if country == "Turkey"
+replace dod1990 = 1000 if country == "Egypt"
+replace dod1990 = 1000 if country == "United Kingdom"
+replace dod1990 = 10000 if country == "Philippines"
+replace dod1990 = 10000 if country == "Japan"
+replace dod1990 = 10000 if country == "Korea"
+replace dod1990 = 100000 if country == "Saudi Arabia"
+
+/*
+replace dod1950 = . if dod1950 < 1000
+replace dod1970 = . if dod1970 < 1000
+replace dod1990 = . if dod1990 < 1000
+*/
+
+* In this long data, keep only couples where destination has arms trade
+keep if dod1950 != .
+*keep if (dod1950 != .)|(dod1970 != .)|(dod1990 != .)
+keep contig iso_o 
+rename contig contig50bases
+drop if missing(iso_o)
+
+* Take minimum distance from base for each origin
+collapse (max) contig50bases, by(iso_o)
+
+rename iso_o iso_3
+* Use country package to generate COW country codes
+* DRC has old code in geodist. Change to new:
+replace iso_3 = "COD" if iso_3 == "ZAR"
+* ssc install kountry
+kountry iso_3, from(iso3c) to(cown)
+rename _COWN_ ccode
+* Yemen has wrong code
+* Romania
+replace ccode = 360 if iso_3 == "ROM"
+
+keep ccode contig50bases
+keep if !missing(ccode) &  !missing(contig50bases)
+save ${main}2_processed/contig50bases.dta, replace
+
+
+
+****US DISTANCE
+
+clear
+* Now start constructing the final data. Import distances
+import excel ${main}1_data/geodist/dist_cepii.xls, sheet("dist_cepii") firstrow
+
+destring distw, replace
+
+keep if iso_d == "USA"
+sum dist, de
+gen close_us = dist < `r(p75)'
+
+rename iso_o iso_3
+* Use country package to generate COW country codes
+* DRC has old code in geodist. Change to new:
+replace iso_3 = "COD" if iso_3 == "ZAR"
+* ssc install kountry
+kountry iso_3, from(iso3c) to(cown)
+rename _COWN_ ccode
+* Yemen has wrong code
+* Romania
+replace ccode = 360 if iso_3 == "ROM"
+
+keep ccode close_us
+keep if !missing(ccode) &  !missing(close_us)
+save ${main}2_processed/usdistance.dta, replace
+
+
+
+*>>>>>>> Stashed changes
 
 * Import data from Hunzicker&al and creating dta file
 import delimited ${main}1_data/hunziker_replication/data/country_cs.csv, clear 
@@ -19,7 +660,7 @@ save ${main}2_processed/hunzicker_data.dta,replace
 use ${main}1_data/galor_replication/country.dta,clear
 * Assign the Gleditsch-Ward numbers to the country with do-file in local
 gen ccode=.
-do gwno.do
+do ${git}gwno.do
 * Drop small countries that are not present in the GW list
 drop if missing(ccode)
 save ${main}2_processed/country_galor.dta,replace
@@ -60,7 +701,7 @@ rename countrycode code
 gen ccode=.
 
 * Set the Gleditsch-Ward numbers for the country
-do gwno.do
+do ${git}gwno.do
 
 * Drop non-country World Bank aggregate data (continents or other international groups)
 drop if ccode==.
@@ -259,10 +900,25 @@ rename _merge mergeARMS
 merge m:1 ccode using ${main}2_processed/contig_bases1000.dta
 rename _merge mergeBASES
 
+* Merge with data about US bases
+merge m:1 ccode using ${main}2_processed/contig50bases.dta
+rename _merge mergeBASES50
+
 * Merge with data about arms trade
 merge m:1 ccode using ${main}2_processed/dist_arms_UKR.dta
 rename _merge mergeARMS_UKR
 
+*<<<<<<< Updated upstream
+*=======
+* Merge with data about arms trade
+merge m:1 ccode using ${main}2_processed/dist_arms_USSR.dta
+rename _merge mergeARMS_USSR
+
+* Merge with data about us distances
+merge m:1 ccode using ${main}2_processed/usdistance.dta
+rename _merge mergeARMS_USDIST
+
+*>>>>>>> Stashed changes
 
 * Drop Germany, GFR
 drop if ccode == 260
@@ -274,6 +930,7 @@ drop if ccode == 710
 * Define US arms trade dummy taking value 1 for values above 90th percentile
 qui sum armstrade, detail
 gen armstrade90 = armstrade >  `r(p90)' if !missing(armstrade)
+gen armstrade50 = armstrade1950 >  `r(p50)' if !missing(armstrade)
 
 * Define US arms trade dummy taking value 1 for larger than 0
 gen armstrade0 = armstrade >  0 if !missing(armstrade)
@@ -289,7 +946,7 @@ gen armstrade0_ukr = armstrade_ukr >  0 if !missing(armstrade_ukr)
 egen conf_years = sum(conflict), by(ccode)
 
 * Merge oil prices
-merge m:1 year using ${main}\2_processed\oilprice.dta
+merge m:1 year using ${main}2_processed/oilprice.dta
 
 *label controls used in 
 la var lnarea "Area, log Km\(^2\)"
@@ -325,10 +982,11 @@ keep if year < 2000
 keep year region lnarea abslat elevavg elevstd temp prec lnpop14 ///
 	conflict conflict2 sedvol sedvol2 coal coal2 gas gas2 oil oil oil2  ///
 	contig_bases1000 armstrade90 armstrade ccode conf_years ///
-	armstrade0 armstrade90_ukr armstrade0_ukr gdpdef oil_price oil_price2 gdpdef
+	armstrade0 armstrade90_ukr armstrade0_ukr gdpdef oil_price oil_price2 gdpdef ///
+	legor_uk legor_fr legor_so legor_ge legor_sc pmuslim pcatholic pprotest ///
+	contig50bases armstrade1950 armstrade_ussr1950 armstrade50 close_us
 
 save ${main}2_processed/data_regressions.dta, replace
-
 
 ******ANALYSIS
 
@@ -409,6 +1067,9 @@ starlevels(\sym{*} 0.1 \sym{**} 0.05 \sym{***} 0.01) ///
 
 * Globals for regression loops
 global thirdparty_list "contig_bases1000 armstrade90"
+*global thirdparty_list "contig_bases1000 armstrade90"
+*global thirdparty_list "contig50bases close_us"
+global thirdparty_list "contig50bases armstrade50"
 
 * Table 3: Sedimentary bases presence and conflict, with third party presence
 
@@ -434,7 +1095,7 @@ foreach thirdparty of varlist $thirdparty_list {
 					* Save geographic controls indicator
 					estadd local geocontrols = "Yes"
 				}
-				
+	 			
 				* Save time controls indicators
 				estadd local yearfe = "Yes"
 				estadd local continentfe = "Yes"
@@ -676,7 +1337,7 @@ starlevels(\sym{*} 0.1 \sym{**} 0.05 \sym{***} 0.01) ///
 		mtitles("Conf." "Conf." "H. Conf." "H. Conf." "Conf." "Conf." "H. Conf." "H. Conf.") ///
 			postfoot("\hline\hline \end{tabular}}")	
 		
-
+stop
 
 * Table 6: Sedimentary bases presence and conflict, with third party presence
 * No Australia
@@ -1788,6 +2449,7 @@ ${main}5_output/tables/prio_oilint_arms90_ukr.tex, replace ///
 	
 	
 	
+<<<<<<< Updated upstream
 	
 global outcome_list "conflict conflict2"
 local controls "lnarea  abslat elevavg elevstd temp precip lnpop14  "
@@ -1837,6 +2499,8 @@ starlevels(\sym{*} 0.1 \sym{**} 0.05 \sym{***} 0.01) ///
 			postfoot("\hline\hline \end{tabular}}")	
 			
 			
+=======
+>>>>>>> Stashed changes
 ********* Histogram Arms Trade
 
 * Notice that the year condition does not influence the year in which trade iso3c
@@ -1852,16 +2516,16 @@ kountry ccode, from(cown) to(iso3c)
 rename _ISO3C_ ISO_A3
 merge m:m ISO_A3 using  ${main}1_data/maps_utilities/worlddata_cleaned.dta
 duplicates drop ISO_A3, force
-spmap armstrade90 using ${main}1_data/maps_utilities/worldcoor.dta, id(id) fcolor(Greens2)
-graph export ${main}5_output/figures/armstrade90.png, replace
+spmap armstrade1950 using ${main}1_data/maps_utilities/worldcoor.dta, id(id) fcolor(Greens2)
+graph export ${main}5_output/figures/armstrade1950.png, replace
 
 use ${main}2_processed/data_regressions.dta, clear
 kountry ccode, from(cown) to(iso3c)
 rename _ISO3C_ ISO_A3
 merge m:m ISO_A3 using  ${main}1_data/maps_utilities/worlddata_cleaned.dta
 duplicates drop ISO_A3, force
-spmap contig_bases1000 using ${main}1_data/maps_utilities/worldcoor.dta, id(id) fcolor(Greens2)
-graph export ${main}5_output/figures/bases1000.png, replace
+spmap contig50bases using ${main}1_data/maps_utilities/worldcoor.dta, id(id) fcolor(Greens2)
+graph export ${main}5_output/figures/contig50bases.png, replace
 
 use ${main}2_processed/data_regressions.dta, clear
 kountry ccode, from(cown) to(iso3c)
