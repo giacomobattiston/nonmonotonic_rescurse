@@ -440,75 +440,6 @@ save ${main}2_processed/dist_arms_USSR.dta, replace
 
 
 **********************Department of Defence Personnel***************************
-* all personell
-clear
-* Import data on DoD personnel by country
-import excel ${main}1_data/dmdc/dmdc_2014.xlsx,  firstrow
-
-* Drop Unkownn or US territories
-drop if country == "Unknown"
-drop if country == "Virgin Islands, U.S."
-drop if country == "American Samoa"
-drop if country == "British Indian Ocean Territory"
-drop if country == "Guam"
-
-* Rename countries to adjust inconsistencies with geodist
-replace country = "Korea" if country == "Korea, South"
-replace country = "Belgium and Luxemburg" if country == "Belgium"
-replace country = "Serbia and Montenegro" if country == "Kosovo"
-
-* Generate a dummy for there being personnel at all
-drop if personnel == .
-gen base_dummy = 1
-
-save ${main}2_processed/dmdc_2014.dta, replace
-
-drop if personnel < 1000
-save ${main}2_processed/dmdc_2014_1000.dta, replace
-
-
-****CONTIGUITY BASES
-
-clear
-* Now start constructing the final data. Import distances
-import excel ${main}1_data/geodist/dist_cepii.xls, sheet("dist_cepii") firstrow
-
-* Countries are contiguous to themselves
-replace contig = 1 if iso_o == iso_d
-
-* Merge with country names
-rename iso_d id_country
-merge m:1 id_country using ${main}2_processed/country_names.dta
-rename _merge _merge1
-
-* Use country names to merge with arms_trade
-merge m:1 country using ${main}2_processed/dmdc_2014_1000.dta
-rename id_country iso_d 
-
-* In this long data, keep only couples where destination has arms trade
-keep if base_dummy == 1
-keep contig iso_o iso_d 
-rename contig contig_bases1000
-drop if missing(iso_o)
-
-* Take minimum distance from base for each origin
-collapse (max) contig_bases1000, by(iso_o)
-
-rename iso_o iso_3
-* Use country package to generate COW country codes
-* DRC has old code in geodist. Change to new:
-replace iso_3 = "COD" if iso_3 == "ZAR"
-* ssc install kountry
-kountry iso_3, from(iso3c) to(cown)
-rename _COWN_ ccode
-* Yemen has wrong code
-* Romania
-replace ccode = 360 if iso_3 == "ROM"
-
-keep ccode contig_bases1000
-keep if !missing(ccode) &  !missing(contig_bases1000)
-save ${main}2_processed/contig_bases1000.dta, replace
-
 
 ****CONTIGUITY BASES 1950
 
@@ -576,76 +507,6 @@ replace ccode = 360 if iso_3 == "ROM"
 keep ccode contig50bases
 keep if !missing(ccode) &  !missing(contig50bases)
 save ${main}2_processed/contig50bases.dta, replace
-
-
-****CONTIGUITY BASES 1950 (dist 1250)
-
-clear
-* Now start constructing the final data. Import distances
-import excel ${main}1_data/geodist/dist_cepii.xls, sheet("dist_cepii") firstrow
-
-
-*max km distance traveled in a day by US troops
-*321.869
-
-destring distw, replace
-
-*try with distances
-replace contig = dist < 1250
-
-* Countries are contiguous to themselves
-replace contig = 1 if iso_o == iso_d
-
-* Merge with country names
-rename iso_d id_country
-merge m:1 id_country using ${main}2_processed/country_names.dta
-rename _merge _merge1
-
-* bases data from https://www.rand.org/pubs/research_reports/RR1906.html
-gen dod1950 = .
-replace dod1950 = 100 if country == "Greenland"
-replace dod1950 = 100 if country == "Peru"
-replace dod1950 = 100 if country == "Brazil"
-replace dod1950 = 100 if country == "Portugal"
-replace dod1950 = 100 if country == "France"
-replace dod1950 = 100 if country == "Libyan Arab Jamahiriya"
-replace dod1950 = 100 if country == "Eritrea"
-replace dod1950 = 100 if country == "Turkey"
-replace dod1950 = 100 if country == "Saudi Arabia"
-replace dod1950 = 100 if country == "Korea"
-replace dod1950 = 1000 if country == "Canada"
-replace dod1950 = 1000 if country == "United Kingdom"
-replace dod1950 = 1000 if country == "Italy"
-replace dod1950 = 10000 if country == "Philippines"
-replace dod1950 = 10000 if country == "Germany"
-replace dod1950 = 100000 if country == "Japan"
-replace dod1950 = 100000 if country == "United States of America"
-
-* In this long data, keep only couples where destination has arms trade
-keep if dod1950 != .
-keep contig iso_o 
-rename contig contig50bases1250
-drop if missing(iso_o)
-
-* Take minimum distance from base for each origin
-collapse (max) contig50bases1250, by(iso_o)
-
-rename iso_o iso_3
-* Use country package to generate COW country codes
-* DRC has old code in geodist. Change to new:
-replace iso_3 = "COD" if iso_3 == "ZAR"
-* ssc install kountry
-kountry iso_3, from(iso3c) to(cown)
-rename _COWN_ ccode
-* Yemen has wrong code
-* Romania
-replace ccode = 360 if iso_3 == "ROM"
-
-keep ccode contig50bases1250
-keep if !missing(ccode) &  !missing(contig50bases)
-save ${main}2_processed/contig50bases1250.dta, replace
-
-
 
 
 *************************** DISTANCE FROM THE US *******************************
@@ -927,19 +788,9 @@ gen lnpop14 = ln(pop14)
 merge m:1 ccode using ${main}2_processed/dist_arms.dta
 rename _merge mergeARMS
 
-
-* Merge with data about US bases
-merge m:1 ccode using ${main}2_processed/contig_bases1000.dta
-rename _merge mergeBASES
-
 * Merge with data about US bases
 merge m:1 ccode using ${main}2_processed/contig50bases.dta
 rename _merge mergeBASES50
-
-* Merge with data about US bases
-merge m:1 ccode using ${main}2_processed/contig50bases1250.dta
-rename _merge mergeBASES50_1250
-
 
 * Merge with data about arms trade
 merge m:1 ccode using ${main}2_processed/dist_arms_USSR.dta
@@ -948,10 +799,6 @@ rename _merge mergeARMS_USSR
 * Merge with UN data
 merge m:1 ccode using ${main}2_processed/US_affinity.dta
 rename _merge mergeUN
-
-* Merge with UN data
-merge m:1 ccode using ${main}2_processed/USSR_affinity.dta
-rename _merge mergeUSSR
 
 * Merge with UN data
 merge m:1 ccode using ${main}2_processed/distus.dta
@@ -1008,7 +855,6 @@ la var lnpop14 "Population, logs"
 la var armstrade90 "US arms imports above the 90th percentile"
 la var armstrade0 "US arms imports above 0"
 la var armstrade "US arms imports above"
-la var contig_bases1000 "Country with or contig. to US base (1000p)"
 la var sedvol "Sedimentary basins volume"
 la var sedvol2 "Sedimentary basins volume squared"
 la var oil "Oil value pc"
@@ -1036,17 +882,16 @@ keep if year < 2000
 
 keep year region lnarea abslat elevavg elevstd temp prec lnpop14 ///
 	conflict conflict2 sedvol sedvol2 coal coal2 gas gas2 oil oil oil2  ///
-	contig_bases1000 armstrade90 armstrade ccode conf_years ///
+	armstrade90 armstrade ccode conf_years ///
 	armstrade0 gdpdef oil_price oil_price2 gdpdef ///
 	legor_uk legor_fr legor_so legor_ge legor_sc pmuslim pcatholic pprotest ///
-	contig50bases armstrade1950 armstrade_ussr1950 affinity* distus* ///
-	contig50bases1250
+	contig50bases armstrade1950 armstrade_ussr1950 affinity* distus* 
 
 save ${main}2_processed/data_regressions.dta, replace
 
 
 
-******ANALYSIS
+**********************************ANALYSIS**************************************
 
 gen thirdparty = .
 
@@ -1856,9 +1701,9 @@ ${main}5_output/tables/prio_int_armstrade.tex, replace ///
 
 			
 * Table A2: Determinants of third party presence
-ivreg2 contig_bases1000    `controls' if year == 1950
+ivreg2 contig50bases    `controls' if year == 1950
 est sto reg1
-ivreg2 armstrade90     `controls' if year == 1950
+ivreg2 armstrade1950     `controls' if year == 1950
 est sto reg2
 
 esttab reg1 reg2 using ///
