@@ -1359,7 +1359,7 @@ gen thirdparty = .
 global outcome_list "conflict conflict2"
 local controls "lnarea  abslat elevavg elevstd temp precip lnpop14"
 	
-		
+
 * Table 1: Conflict and resources		
 
 * For loop for regressions: iterates over third party measure, outcome, controls
@@ -1459,7 +1459,6 @@ starlevels(\sym{*} 0.1 \sym{**} 0.05 \sym{***} 0.01) ///
 
 			
 * Globals for regression loops
-*global thirdparty_list "contig_bases1000 armstrade90"
 global thirdparty_list "contig50bases armstrade1950"
 
 * Table 3: Sedimentary bases presence and conflict, with third party presence
@@ -2909,352 +2908,6 @@ ${main}5_output/tables/prio_int_arms_ussr.tex, replace ///
 	postfoot("\hline\hline \end{tabular}}")
 
 
-
-* Table 14: Sedimentary bases presence and conflict, with US third party presence measured by UN 0 59
-
-	
-global thirdparty_list "affinity0_59 affinity0_59_3" 
-
-
-local counter 0
-
-* For loop for regressions: iterates over third party measure, outcome, controls
-foreach thirdparty of varlist $thirdparty_list {
-	replace thirdparty = `thirdparty'
-		foreach outcome of varlist $outcome_list {
-			forval i_con = 1/2 {
-				local counter = `counter' + 1
-				
-				
-				* Test for inverse-U shaped relation with interaction
-				if (`i_con' == 1) {
-					ivreg2 `outcome' c.sedvol c.sedvol#0.thirdparty c.sedvol2 ///
-					c.sedvol2#0.thirdparty 0.thirdparty ///
-					i.year i.region, cluster(ccode) partial(i.year i.region)
-					* Save geographic controls indicator
-					estadd local geocontrols = "No"
-				}
-				else {
-					ivreg2 `outcome' c.sedvol c.sedvol#0.thirdparty ///
-					c.sedvol2 c.sedvol2#0.thirdparty 0.thirdparty i.year i.region `controls', ///
-					cluster(ccode) partial(i.year i.region)
-					* Save geographic controls indicator
-					estadd local geocontrols = "Yes"
-				}
-				
-				utest sedvol sedvol2, quadratic
-				
-				if `r(p)' != . & _b[c.sedvol2] < 0 {
-				local putestint_aux : di %6.3f scalar(`r(p)')
-				if (`r(p)' <= 1) {
-					local putestint =  "`putestint_aux'"
-					if (`r(p)' < 0.1) {
-						local putestint =  "`putestint_aux'" + "\sym{*}"
-						if (`r(p)' < 0.05) {
-							local putestint =  "`putestint_aux'" + "\sym{**}"
-							if (`r(p)' < 0.01) {
-								local putestint =  "`putestint_aux'" + "\sym{***}"
-							}
-						}
-					}
-				}
-				}
-				else {
-					local putestint ="."
-				}
-								
-				if (`i_con' == 1) {
-					ivreg2 `outcome' c.sedvol c.sedvol#i.thirdparty c.sedvol2 ///
-					c.sedvol2#i.thirdparty i.thirdparty ///
-					i.year i.region, cluster(ccode) partial(i.year i.region)
-					* Save geographic controls indicator
-					estadd local geocontrols = "No"
-				}
-				else {
-					ivreg2 `outcome' c.sedvol c.sedvol#i.thirdparty ///
-					c.sedvol2 c.sedvol2#i.thirdparty i.thirdparty i.year i.region `controls', ///
-					cluster(ccode) partial(i.year i.region)
-					* Save geographic controls indicator
-					estadd local geocontrols = "Yes"
-				}
-				
-				* Save time controls indicators
-				estadd local yearfe = "Yes"
-				estadd local continentfe = "Yes"
-				* Save auxiliary indicator for esttab
-				estadd local space = " "
-
-				* Save coefficients and p-values for linear combinations of linear term
-				local  b1 = _b[c.sedvol] + _b[c.sedvol#1.thirdparty]
-				qui lincom c.sedvol + c.sedvol#1.thirdparty
-				local p1_aux : di %6.3g scalar(`r(p)')
-				estadd scalar p1 = `p1_aux'
-				local b1s_aux : di %6.4f scalar(`b1')
-				if (`r(p)' <= 1) {
-					local b1s =  "`b1s_aux'"
-					if (`r(p)' < 0.1) {
-						local b1s =  "`b1s_aux'" + "\sym{*}"
-						if (`r(p)' < 0.05) {
-							local b1s =  "`b1s_aux'" + "\sym{**}"
-							if (`r(p)' < 0.01) {
-								local b1s =  "`b1s_aux'" + "\sym{***}"
-							}
-						}
-					}
-				}
-				estadd local b1s = "`b1s'"
-				local se1 = `r(se)'
-
-				* Save coefficients and p-values for linear combinations of quadratic term
-				local  b2 = _b[c.sedvol2] + _b[c.sedvol2#1.thirdparty]
-				qui lincom c.sedvol2 + c.sedvol2#1.thirdparty
-				local p2_aux : di %6.3g scalar(`r(p)')
-				estadd scalar p2 = `p2_aux'
-				local b2s_aux : di %6.4f scalar(`b2')
-				if (`r(p)' <= 1) {
-					local b2s =  "`b2s_aux'"
-					if (`r(p)' < 0.1) {
-						local b2s =  "`b2s_aux'" + "\sym{*}"
-						if (`r(p)' < 0.05) {
-							local b2s =  "`b2s_aux'" + "\sym{**}"
-							if (`r(p)' < 0.01) {
-								local b2s =  "`b2s_aux'" + "\sym{***}"
-							}
-						}
-					}
-				}
-				estadd local b2s = "`b2s'"
-			
-					
-				* Test for inverse-U shaped relation with no interaction
-				utest sedvol sedvol2, quadratic
-				
-				if `r(p)' != .  & _b[c.sedvol2] < 0 {
-				local putest_aux : di %6.3f scalar(`r(p)')
-				if (`r(p)' <= 1) {
-					local putest =  "`putest_aux'"
-					if (`r(p)' < 0.1) {
-						local putest =  "`putest_aux'" + "\sym{*}"
-						if (`r(p)' < 0.05) {
-							local putest =  "`putest_aux'" + "\sym{**}"
-							if (`r(p)' < 0.01) {
-								local putest =  "`putest_aux'" + "\sym{***}"
-							}
-						}
-					}
-				}
-				}
-				else {
-					local putest = "."
-				}
-				
-				estadd local putest = "`putest'"
-				estadd local putestint = "`putestint'"
-				
-				estadd local space = " "
-				estadd local thirdpartyfe = "Yes"
-				est sto reg`counter'
-				
-		
-			}
-			
-
-}
-}
-
-
-esttab reg1 reg2 reg3 reg4 reg5 reg6 reg7 reg8 using ///
-	${main}5_output/tables/prio_sedintunus059.tex, replace ///
-	drop(`controls' 1.thirdparty 1.thirdparty#c.sedvol 1.thirdparty#c.sedvol2) coeflabels(1.thirdparty "Third Party Presence" ///
-	c.sedvol#1.thirdparty "Sed. Vol. \(\times\) Third Party" 1.thirdparty#c.sedvol ///
-	"Sed. Vol. \(\times\) Third Party" 1.thirdparty#c.sedvol2 ///
-	"Sed. Vol.\(^2\) \(\times\) Third Party" c.sedvol2#1.thirdparty ///
-	"Sed. Vol.\(^2\) \(\times\) Third Party" sedvol "Sed. Vol." sedvol2 "Sed. Vol.\(^2\)") se ///
-	starlevels(\sym{*} 0.1 \sym{**} 0.05 \sym{***} 0.01) ///
-	nobaselevels nonumbers ///
-	mgroups("Third Party:  UN Affinity w/ US" "Third Party: UN Affinity w/ US (3 votes)" , ///
-	pattern(1 0 0 0 1 0 0 0) prefix(\multicolumn{@span}{c}{) suffix(}) span) ///
- 	stats(space space b1s p1 b2s p2 space space putest putestint space  yearfe continentfe geocontrols thirdpartyfe N, ///
-	fmt(s s s  %6.3f s %6.3f s s s s s s s s a2)  ///
-	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" )  ///
-	labels(`"\emph{Linear Combination:}"' `"\qquad \emph{Base + Inter. Coeff.}"'  `"\qquad Sed. Vol."' 	`"\qquad p-value"' `"\qquad Sed. Vol.\(^2\)"'`"\qquad p-value"'  `" "' `"\emph{H0: No inv.-U shape}"' `"\qquad \emph{Base Coeff. p-value}"' `"\qquad \emph{Base + Inter. Coeff. p-value}"' `" "' `"Year FEs"' ///
-	`"Continent FEs"' `"Geo Controls"' `"Third Party"'  `"\(N\)"')) ///
-	mtitles("Conf." "Conf." "H. Conf." "H. Conf." "Conf." "Conf." "H. Conf." "H. Conf.") ///
-	postfoot("\hline\hline \end{tabular}}")
-	
-	
-		
-	
-* Table 15: WB resources presence and conflict, with US third party presence measured by UN 0 59
-
-local counter 0
-
-* For loop for regressions: iterates over third party measure, outcome, controls
-foreach thirdparty of varlist $thirdparty_list {
-	replace thirdparty = `thirdparty'
-		foreach outcome of varlist $outcome_list {
-			forval i_con = 1/2 {
-				local counter = `counter' + 1
-				
-				* Test for inverse-U shaped relation with interaction
-				if (`i_con' == 1) {
-					ivreg2 `outcome' c.oil c.oil#0.thirdparty   c.oil2 c.oil2#0.thirdparty 0.thirdparty ///
-					c.gas c.gas2 c.coal c.coal2  ///
-					i.year i.region, cluster(ccode) partial(i.year i.region)
-					* Save geographic controls indicator
-					estadd local geocontrols = "No"
-				}
-				else {
-					ivreg2 `outcome' c.oil c.oil#0.thirdparty c.oil2 c.oil2#0.thirdparty 0.thirdparty ///
-					c.gas c.gas2 c.coal c.coal2  ///
-					i.year i.region `controls', ///
-					cluster(ccode) partial(i.year i.region)
-					* Save geographic controls indicator
-					estadd local geocontrols = "Yes"
-				}
-				
-				utest oil oil2, quadratic
-				
-				if `r(p)' != . & _b[c.oil2] < 0 {
-				local putestint_aux : di %6.3f scalar(`r(p)')
-				if (`r(p)' <= 1) {
-					local putestint =  "`putestint_aux'"
-					if (`r(p)' < 0.1) {
-						local putestint =  "`putestint_aux'" + "\sym{*}"
-						if (`r(p)' < 0.05) {
-							local putestint =  "`putestint_aux'" + "\sym{**}"
-							if (`r(p)' < 0.01) {
-								local putestint =  "`putestint_aux'" + "\sym{***}"
-							}
-						}
-					}
-				}
-				}
-				else {
-					local putestint ="."
-				}
-				
-				if (`i_con' == 1) {
-					ivreg2 `outcome' c.oil c.oil#i.thirdparty   c.oil2 c.oil2#i.thirdparty i.thirdparty ///
-					c.gas c.gas2 c.coal c.coal2  ///
-					i.year i.region, cluster(ccode) partial(i.year i.region)
-					* Save geographic controls indicator
-					estadd local geocontrols = "No"
-				}
-				else {
-					ivreg2 `outcome' c.oil c.oil#i.thirdparty c.oil2 c.oil2#i.thirdparty i.thirdparty ///
-					c.gas c.gas2 c.coal c.coal2  ///
-					i.year i.region `controls', ///
-					cluster(ccode) partial(i.year i.region)
-					* Save geographic controls indicator
-					estadd local geocontrols = "Yes"
-				}
-				
-				* Save time controls indicators
-				estadd local yearfe = "Yes"
-				estadd local continentfe = "Yes"
-				* Save resource controls indicators
-				estadd local gascoal = "Yes"
-				estadd local gascoalsq = "Yes"
-				* Save auxiliary indicator for esttab
-				estadd local space = " "
-
-				* Save coefficients and p-values for linear combinations of linear term
-				local  b1 = _b[c.oil] + _b[c.oil#1.thirdparty]
-				qui lincom c.oil + c.oil#1.thirdparty
-				local p1_aux : di %6.3g scalar(`r(p)')
-				estadd scalar p1 = `p1_aux'
-				local b1s_aux : di %6.4f scalar(`b1')
-				if (`r(p)' <= 1) {
-					local b1s =  "`b1s_aux'"
-					if (`r(p)' < 0.1) {
-						local b1s =  "`b1s_aux'" + "\sym{*}"
-						if (`r(p)' < 0.05) {
-							local b1s =  "`b1s_aux'" + "\sym{**}"
-							if (`r(p)' < 0.01) {
-								local b1s =  "`b1s_aux'" + "\sym{***}"
-							}
-						}
-					}
-				}
-				estadd local b1s = "`b1s'"
-				local se1 = `r(se)'
-
-				* Save coefficients and p-values for linear combinations of quadratic term
-				local  b2 = _b[c.oil2] + _b[c.oil2#1.thirdparty]
-				qui lincom c.oil2 + c.oil2#1.thirdparty
-				local p2_aux : di %6.3g scalar(`r(p)')
-				estadd scalar p2 = `p2_aux'
-				local b2s_aux : di %6.4f scalar(`b2')
-				if (`r(p)' <= 1) {
-					local b2s =  "`b2s_aux'"
-					if (`r(p)' < 0.1) {
-						local b2s =  "`b2s_aux'" + "\sym{*}"
-						if (`r(p)' < 0.05) {
-							local b2s =  "`b2s_aux'" + "\sym{**}"
-							if (`r(p)' < 0.01) {
-								local b2s =  "`b2s_aux'" + "\sym{***}"
-							}
-						}
-					}
-				}
-				estadd local b2s = "`b2s'"
-				
-				* Test for inverse-U shaped relation with no interaction
-				utest oil oil2, quadratic
-				
-				if `r(p)' != . & _b[c.oil2] < 0 {
-				local putest_aux : di %6.3f scalar(`r(p)')
-				if (`r(p)' <= 1) {
-					local putest =  "`putest_aux'"
-					if (`r(p)' < 0.1) {
-						local putest =  "`putest_aux'" + "\sym{*}"
-						if (`r(p)' < 0.05) {
-							local putest =  "`putest_aux'" + "\sym{**}"
-							if (`r(p)' < 0.01) {
-								local putest =  "`putest_aux'" + "\sym{***}"
-							}
-						}
-					}
-				}
-				}
-				else {
-					local putest = "."
-				}
-				
-				estadd local putest = "`putest'"
-				estadd local putestint = "`putestint'"
-				estadd local thirdpartyfe = "Yes"
-				
-				est sto reg`counter'
-			}
-
-}
-}
-
-
-esttab reg1 reg2 reg3 reg4 reg5 reg6 reg7 reg8 using ///
-${main}5_output/tables/prio_oilintunus059.tex, replace ///
- drop(`controls' 1.thirdparty 1.thirdparty#c.oil 1.thirdparty#c.oil2 coal coal2 gas gas2) /// 
-	coeflabels(1.thirdparty "Third Party Presence" c.oil#1.thirdparty ///
-	"Oil \(\times\) Third Party" 1.thirdparty#c.oil "Oil \(\times\) Third Party" ///
-	1.thirdparty#c.oil2 "Oil\(^2\) \(\times\) Third Party" c.oil2#1.thirdparty ///
-	"Oil\(^2\) \(\times\) Third Party" oil "Oil" oil2 "Oil\(^2\)") se ///
-	starlevels(\sym{*} 0.1 \sym{**} 0.05 \sym{***} 0.01) ///
-	nobaselevels nonumbers ///
-	mgroups("Third Party:  UN Affinity w/ US" "Third Party: UN Affinity w/ US (3 votes)" , ///
-	pattern(1 0 0 0 1 0 0 0) prefix(\multicolumn{@span}{c}{) suffix(}) span) ///
- 	stats(space space b1s p1 b2s p2 space space putest putestint space gascoal gascoalsq yearfe continentfe geocontrols thirdpartyfe N, ///
-	fmt(s s s  %6.3f s %6.3f s s s s s  s s s s s   a2)  ///
-	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" )  ///
-	labels(`"\emph{Linear Combination:}"' `"\qquad \emph{Base + Inter. Coeff.}"' ///
-	`"\qquad Oil"' 	`"\qquad p-value"' `"\qquad Oil\(^2\)"'`"\qquad p-value"' `" "' ///
-	`"\emph{H0: No inv.-U shape}"' `"\qquad \emph{Base Coeff. p-value}"' `"\qquad \emph{Base + Inter. Coeff. p-value}"' `" "' ///
-	`"Gas, Gas\(^2\)"' `"Coal, Coal\(^2\)"' `"Year FEs"' ///
-	`"Continent FEs"' `"Geo Controls"' `"Third Party"'  `"\(N\)"')) ///
-	mtitles("Conf." "Conf." "H. Conf." "H. Conf." "Conf." "Conf." "H. Conf." "H. Conf.") ///
-	postfoot("\hline\hline \end{tabular}}")
-			
 			
 * Table 16: Conflict and resources, disaggregated resources
 
@@ -4015,15 +3668,14 @@ ${main}5_output/tables/prio_int_bases.tex, replace ///
 	mtitles("Conf." "Conf." "H. Conf." "H. Conf." "Conf." "Conf." "H. Conf." "H. Conf.") ///
 	postfoot("\hline\hline \end{tabular}}")
 
-	
+
+
 	
 			
 * Table 19: WB resources and sedimentary basins, by  armstrade
 
 global thirdparty_list "armstrade1950"
 local counter 0
-
-
 
 gen x = sedvol
 gen x2 = sedvol2
@@ -4167,9 +3819,9 @@ foreach thirdparty of varlist $thirdparty_list {
 				
 				est sto reg`counter'
 			}
+		}
+}
 
-}
-}
 
 drop x x2
 
@@ -4347,6 +3999,7 @@ ${main}5_output/tables/prio_int_armstrade.tex, replace ///
 	mtitles("Conf." "Conf." "H. Conf." "H. Conf." "Conf." "Conf." "H. Conf." "H. Conf.") ///
 	postfoot("\hline\hline \end{tabular}}")
 
+	stop
 	
 	
 			
@@ -4504,7 +4157,6 @@ foreach thirdparty of varlist $thirdparty_list {
 }
 
 drop x x2
-
 
 
 gen x = oil
