@@ -283,7 +283,7 @@ save ${main}2_processed/dist_arms.dta, replace
 clear
 ****************************ARMS' IMPORTS FROM USSR***************************
 
-* Construct the dataset on arms' imports from Ukraine
+* Construct the dataset on arms' imports from USSR
 import delimited ${main}1_data/sipri_tiv/TIV-Export-USR-1950-1999_noheader.csv, /// 
 	delimiter(",") encoding(ISO-8859-1) varnames(1)
 
@@ -401,129 +401,6 @@ keep if !missing(ccode) &  !missing(dist)
 replace armstrade_ussr = 0 if missing(armstrade_ussr)
 save ${main}2_processed/dist_arms_USSR.dta, replace
 
-clear
-
-****************************ARMS' IMPORTS FROM UKRAINE***************************
-
-* Construct the dataset on arms' imports from Ukraine
-import delimited ${main}1_data/sipri_tiv/TIV-Export-UKR-1950-2019_noheader.csv, /// 
-	delimiter(";") encoding(ISO-8859-1) varnames(1)
-
-* Adjust discrepancies with distances data in country naming, rebel groups
-* international organizations, and past or yet-to-appear countries
-rename v1 country
-* Drop international organizations
-drop if country == "African Union**"
-drop if country == "NATO**"
-drop if country == "United Nations**"
-drop if country == "Regional Security System**"
-* Drop rebels
-drop if country == "Anti-Castro rebels (Cuba)*"
-drop if country == "Armas (Guatemala)*"
-drop if country == "Contras (Nicaragua)*"
-drop if country == "Haiti rebels*"
-drop if country == "Indonesia rebels*"
-drop if country == "Mujahedin (Afghanistan)*"
-drop if country == "Syria rebels*"
-drop if country == "UNITA (Angola)*"
-* Drop non-existing countries
-drop if country == "Biafra"
-drop if country == "Yugoslavia"
-drop if country == "Unknown recipient(s)"
-drop if country == "Libya GNC"
-drop if country == "Libya HoD"
-drop if country == "North Yemen"
-drop if country == "South Vietnam"
-* Rename some countries in dataset
-replace country = "Brunei Darussalam" if country == "Brunei"
-replace country = "Belgium and Luxembourg" if country == "Belgium"
-replace country = "Bosnia and Herzegovina" if country == "Bosnia-Herzegovina"
-replace country = "Côte d'Ivoire" if country == "Cote d'Ivoire"
-replace country = "Czech Republic" if country == "Czechia"
-replace country = "Kazakstan" if country == "Kazakhstan"
-replace country = "Lao People's Democratic Republic" if country == "Laos"
-replace country = "Libyan Arab Jamahiriya" if country == "Libya"
-replace country = "Macedonia (the former Yugoslav Rep. of)" if country == "Macedonia"
-replace country = "Micronesia (Federated States of)" if country == "Micronesia"
-replace country = "Serbia and Montenegro" if country == "Serbia"
-replace country = "Burma" if country == "Myanmar"
-replace country = "Korea, Dem. People's Rep. of" if country == "North Korea"
-replace country = "Korea" if country == "South Korea"
-replace country = "Syrian Arab Republic" if country == "Syria"
-replace country = "Tanzania, United Rep. of " if country == "Tanzania"
-replace country = "Saint Vincent and the Grenadines" if country == "Saint Vincent"
-replace country = "United Arab Emirates" if country == "UAE"
-replace country = "Congo (Democratic Republic of the)" if country == "DR Congo"
-replace country = "Russian Federation" if country == "Russia"
-replace country = "Macedonia (the former Yugoslav Rep. of)" if country == "North Macedonia"
-replace country = "United States of America" if country == "United States"
-
-* armstrade will store overall quantity of armstrade from the US 1950-99
-gen armstrade_ukr = 0
-
-* Sum over arms trade from 1950 to 99 (each v is a year)
-foreach var of varlist v* {
-	destring `var', replace
-	replace `var' = 0 if `var' == .
-	replace armstrade_ukr = armstrade_ukr + `var'
-}
-drop v*
-
-* Merge Sudan
-qui sum armstrade if country == "South Sudan"
-replace armstrade = armstrade + `r(mean)' if country == "Sudan"
-drop if country == "South Sudan"
-
-* armstrade dummy
-gen armstrade_dummy_ukr = 1 if armstrade_ukr > 0
-keep if armstrade_dummy_ukr == 1
-
-save ${main}2_processed/arms_trade_UKR.dta, replace
-
-clear
-* Now start constructing the final data. Import distances
-import excel ${main}1_data/geodist/dist_cepii.xls, sheet("dist_cepii") firstrow
-
-* Merge with country names
-rename iso_d id_country
-merge m:1 id_country using ${main}2_processed/country_names.dta
-rename _merge _merge1
-
-* Use country names to merge with arms_trade
-merge m:1 country using ${main}2_processed/arms_trade_UKR.dta
-rename id_country iso_d 
-
-* In this long data, keep only couples where destination has arms trade
-keep if armstrade_dummy == 1
-keep dist iso_o iso_d 
-rename dist dist_arms_ukr
-drop if missing(iso_o)
-
-* Take minimum distance from base for each origin
-collapse (min) dist_arms_ukr, by(iso_o)
-
-* Use the same procedure above to merge with arms trade in millions
-rename iso_o id_country
-merge m:1 id_country using ${main}2_processed/country_names.dta
-rename _merge _merge3
-merge m:1 country using ${main}2_processed/arms_trade_UKR.dta
-rename _merge _merge4
-rename id_country iso_3
-
-* Use country package to generate COW country codes
-* DRC has old code in geodist. Change to new:
-replace iso_3 = "COD" if iso_3 == "ZAR"
-* ssc install kountry
-kountry iso_3, from(iso3c) to(cown)
-rename _COWN_ ccode
-* Yemen has wrong code
-* Romania
-replace ccode = 360 if iso_3 == "ROM"
-
-keep ccode dist_arms_ukr armstrade_ukr
-keep if !missing(ccode) &  !missing(dist)
-replace armstrade_ukr = 0 if missing(armstrade_ukr)
-save ${main}2_processed/dist_arms_UKR.dta, replace
 
 **********************Department of Defence Personnel***************************
 * all personell
@@ -614,14 +491,12 @@ replace contig = dist < 1000
 * Countries are contiguous to themselves
 replace contig = 1 if iso_o == iso_d
 
-*replace contig = distw < 321.869*7 questo va OK
-*replace contig = dist < 5000
-
 * Merge with country names
 rename iso_d id_country
 merge m:1 id_country using ${main}2_processed/country_names.dta
 rename _merge _merge1
 
+* bases data from https://www.rand.org/pubs/research_reports/RR1906.html
 gen dod1950 = .
 replace dod1950 = 100 if country == "Greenland"
 replace dod1950 = 100 if country == "Peru"
@@ -687,14 +562,12 @@ replace contig = dist < 750
 * Countries are contiguous to themselves
 replace contig = 1 if iso_o == iso_d
 
-*replace contig = distw < 321.869*7 questo va OK
-*replace contig = dist < 5000
-
 * Merge with country names
 rename iso_d id_country
 merge m:1 id_country using ${main}2_processed/country_names.dta
 rename _merge _merge1
 
+* bases data from https://www.rand.org/pubs/research_reports/RR1906.html
 gen dod1950 = .
 replace dod1950 = 100 if country == "Greenland"
 replace dod1950 = 100 if country == "Peru"
@@ -738,10 +611,6 @@ keep ccode contig50bases750
 keep if !missing(ccode) &  !missing(contig50bases)
 save ${main}2_processed/contig50bases750.dta, replace
 
-
-
-
-
 ****CONTIGUITY BASES 1950 (dist 1250)
 
 clear
@@ -760,14 +629,12 @@ replace contig = dist < 1250
 * Countries are contiguous to themselves
 replace contig = 1 if iso_o == iso_d
 
-*replace contig = distw < 321.869*7 questo va OK
-*replace contig = dist < 5000
-
 * Merge with country names
 rename iso_d id_country
 merge m:1 id_country using ${main}2_processed/country_names.dta
 rename _merge _merge1
 
+* bases data from https://www.rand.org/pubs/research_reports/RR1906.html
 gen dod1950 = .
 replace dod1950 = 100 if country == "Greenland"
 replace dod1950 = 100 if country == "Peru"
@@ -1105,9 +972,6 @@ rename _merge mergeBASES50_750
 merge m:1 ccode using ${main}2_processed/contig50bases1250.dta
 rename _merge mergeBASES50_1250
 
-* Merge with data about arms trade
-merge m:1 ccode using ${main}2_processed/dist_arms_UKR.dta
-rename _merge mergeARMS_UKR
 
 * Merge with data about arms trade
 merge m:1 ccode using ${main}2_processed/dist_arms_USSR.dta
@@ -1147,153 +1011,17 @@ replace armstrade1950 = armstrade1950 >  0 if !missing(armstrade1950)
 qui sum armstrade_ussr1950, detail
 replace armstrade_ussr1950 = armstrade_ussr1950 >  0 if !missing(armstrade_ussr1950)
 
-* Define Ukraine's arms trade dummy taking value 1 for values above 90th percentile
-qui sum armstrade_ukr, detail
-gen armstrade90_ukr = armstrade >  `r(p90)' if !missing(armstrade)
 
-* Define Ukraine's arms trade dummy taking value 1 for larger than 0
-gen armstrade0_ukr = armstrade_ukr >  0 if !missing(armstrade_ukr)
-
-* Define Ukraine's arms trade dummy taking value 1 for larger than 0
+* Define US distance dummy 
 sum distus, de
-gen distusless25 = distus <  `r(p25)' if !missing(distus)
-gen distusless50 = distus <  `r(p50)' if !missing(distus)
 gen distusless75 = distus <  `r(p75)' if !missing(distus)
 
 * Define affinity dummies
-qui sum avg_affinity59, detail
-gen affinity90_59 = avg_affinity59 >  `r(p90)' if !missing(avg_affinity59)
-gen affinity50_59 = avg_affinity59 >  `r(p50)' if !missing(avg_affinity59)
-gen affinity_avg_59 = avg_affinity59 >  `r(mean)' if !missing(avg_affinity59)
-gen affinity0_59 = avg_affinity59 >  0 if !missing(avg_affinity59)
-la var affinity50_59 "voting affinity with US above median"
-la var affinity90_59 "voting affinity with US above the 90th percentile"
-la var affinity_avg_59 "voting affinity with US above the average"
-
 qui sum avg_affinity65, detail
-gen affinity90_65 = avg_affinity65 >  `r(p90)' if !missing(avg_affinity65)
-gen affinity50_65 = avg_affinity65 >  `r(p50)' if !missing(avg_affinity65)
-gen affinity_avg_65 = avg_affinity65 >  `r(mean)' if !missing(avg_affinity65)
 gen affinity0_65 = avg_affinity65 >  0 if !missing(avg_affinity65)
-la var affinity50_65 "voting affinity with US above median"
-la var affinity90_65 "voting affinity with US above the 90th percentile"
-la var affinity_avg_65 "voting affinity with US above the average"
-
-qui sum avg_affinity59_3, detail
-gen affinity90_59_3 = avg_affinity59_3 >  `r(p90)' if !missing(avg_affinity59_3)
-gen affinity50_59_3 = avg_affinity59_3 >  `r(p50)' if !missing(avg_affinity59_3)
-gen affinity_avg_59_3 = avg_affinity59_3 >  `r(mean)' if !missing(avg_affinity59_3)
-gen affinity0_59_3 = avg_affinity59_3 >  0 if !missing(avg_affinity59_3)
-la var affinity50_59_3 "voting affinity with US above median, 3 possibilites"
-la var affinity90_59_3 "voting affinity with US above the 90th percentile, 3 possibilites"
-la var affinity_avg_59_3 "voting affinity with US above the average, 3 possibilites"
 
 qui sum avg_affinity65_3, detail
-gen affinity90_65_3 = avg_affinity65_3 >  `r(p90)' if !missing(avg_affinity65_3)
-gen affinity50_65_3 = avg_affinity65_3 >  `r(p50)' if !missing(avg_affinity65_3)
-gen affinity_avg_65_3 = avg_affinity65_3 >  `r(mean)' if !missing(avg_affinity65_3)
 gen affinity0_65_3 = avg_affinity65_3 >  0 if !missing(avg_affinity65_3)
-la var affinity50_65_3 "voting affinity with US above median, 3 possibilites"
-la var affinity90_65_3 "voting affinity with US above the 90th percentile, 3 possibilites"
-la var affinity_avg_65_3 "voting affinity with US above the average, 3 possibilites"
-
-qui sum avg_affinity69_3, detail
-gen affinity90_69_3 = avg_affinity69_3 >  `r(p90)' if !missing(avg_affinity69_3)
-gen affinity50_69_3 = avg_affinity69_3 >  `r(p50)' if !missing(avg_affinity69_3)
-gen affinity_avg_69_3 = avg_affinity69_3 >  `r(mean)' if !missing(avg_affinity69_3)
-gen affinity0_69_3 = avg_affinity69_3 >  0 if !missing(avg_affinity69_3)
-la var affinity50_69_3 "voting affinity with US above median, 3 possibilites"
-la var affinity90_69_3 "voting affinity with US above the 90th percentile, 3 possibilites"
-la var affinity_avg_69_3 "voting affinity with US above the average, 3 possibilites"
-
-
-* Define affinity dummies
-qui sum avg_affinity99, detail
-gen affinity90_99 = avg_affinity99 >  `r(p90)' if !missing(avg_affinity99)
-gen affinity50_99 = avg_affinity99 >  `r(p50)' if !missing(avg_affinity99)
-gen affinity_avg_99 = avg_affinity99 >  `r(mean)' if !missing(avg_affinity99)
-gen affinity0_99 = avg_affinity99 >  0 if !missing(avg_affinity99)
-la var affinity50_99 "voting affinity with US above median"
-la var affinity90_99 "voting affinity with US above the 90th percentile"
-la var affinity_avg_99 "voting affinity with US above the average"
-
-qui sum avg_affinity99_3, detail
-gen affinity90_99_3 = avg_affinity99_3 >  `r(p90)' if !missing(avg_affinity99_3)
-gen affinity50_99_3 = avg_affinity99_3 >  `r(p50)' if !missing(avg_affinity99_3)
-gen affinity_avg_99_3 = avg_affinity99_3 >  `r(mean)' if !missing(avg_affinity99_3)
-gen affinity0_99_3 = avg_affinity99_3 >  0 if !missing(avg_affinity99_3)
-la var affinity50_99_3 "voting affinity with US above median, 3 possibilites"
-la var affinity90_99_3 "voting affinity with US above the 90th percentile, 3 possibilites"
-la var affinity_avg_99_3 "voting affinity with US above the average, 3 possibilites"
-
-
-
-* Define affinity dummies
-qui sum avg_ussraffinity59, detail
-gen ussraffinity90_59 = avg_ussraffinity59 >  `r(p90)' if !missing(avg_ussraffinity59)
-gen ussraffinity50_59 = avg_ussraffinity59 >  `r(p50)' if !missing(avg_ussraffinity59)
-gen ussraffinity_avg_59 = avg_ussraffinity59 >  `r(mean)' if !missing(avg_ussraffinity59)
-gen ussraffinity0_59 = avg_ussraffinity59 >  0 if !missing(avg_ussraffinity59)
-la var ussraffinity50_59 "voting affinity with US above median"
-la var ussraffinity90_59 "voting affinity with US above the 90th percentile"
-la var ussraffinity_avg_59 "voting affinity with US above the average"
-
-qui sum avg_ussraffinity65, detail
-gen ussraffinity90_65 = avg_ussraffinity65 >  `r(p90)' if !missing(avg_ussraffinity65)
-gen ussraffinity50_65 = avg_ussraffinity65 >  `r(p50)' if !missing(avg_ussraffinity65)
-gen ussraffinity_avg_65 = avg_ussraffinity65 >  `r(mean)' if !missing(avg_ussraffinity65)
-gen ussraffinity0_65 = avg_ussraffinity65 >  0 if !missing(avg_ussraffinity65)
-la var ussraffinity50_65 "voting affinity with US above median"
-la var ussraffinity90_65 "voting affinity with US above the 90th percentile"
-la var ussraffinity_avg_65 "voting affinity with US above the average"
-
-qui sum avg_ussraffinity59_3, detail
-gen ussraffinity90_59_3 = avg_ussraffinity59_3 >  `r(p90)' if !missing(avg_ussraffinity59_3)
-gen ussraffinity50_59_3 = avg_ussraffinity59_3 >  `r(p50)' if !missing(avg_ussraffinity59_3)
-gen ussraffinity_avg_59_3 = avg_ussraffinity59_3 >  `r(mean)' if !missing(avg_ussraffinity59_3)
-gen ussraffinity0_59_3 = avg_ussraffinity59_3 >  0 if !missing(avg_ussraffinity59_3)
-la var ussraffinity50_59_3 "voting affinity with US above median, 3 possibilites"
-la var ussraffinity90_59_3 "voting affinity with US above the 90th percentile, 3 possibilites"
-la var ussraffinity_avg_59_3 "voting affinity with US above the average, 3 possibilites"
-
-qui sum avg_ussraffinity65_3, detail
-gen ussraffinity90_65_3 = avg_ussraffinity65_3 >  `r(p90)' if !missing(avg_ussraffinity65_3)
-gen ussraffinity50_65_3 = avg_ussraffinity65_3 >  `r(p50)' if !missing(avg_ussraffinity65_3)
-gen ussraffinity_avg_65_3 = avg_ussraffinity65_3 >  `r(mean)' if !missing(avg_ussraffinity65_3)
-gen ussraffinity0_65_3 = avg_ussraffinity65_3 >  0 if !missing(avg_ussraffinity65_3)
-la var ussraffinity50_65_3 "voting affinity with US above median, 3 possibilites"
-la var ussraffinity90_65_3 "voting affinity with US above the 90th percentile, 3 possibilites"
-la var ussraffinity_avg_65_3 "voting affinity with US above the average, 3 possibilites"
-
-qui sum avg_ussraffinity69_3, detail
-gen ussraffinity90_69_3 = avg_ussraffinity69_3 >  `r(p90)' if !missing(avg_ussraffinity69_3)
-gen ussraffinity50_69_3 = avg_ussraffinity69_3 >  `r(p50)' if !missing(avg_ussraffinity69_3)
-gen ussraffinity_avg_69_3 = avg_ussraffinity69_3 >  `r(mean)' if !missing(avg_ussraffinity69_3)
-gen ussraffinity0_69_3 = avg_ussraffinity69_3 >  0 if !missing(avg_ussraffinity69_3)
-la var ussraffinity50_69_3 "voting affinity with US above median, 3 possibilites"
-la var ussraffinity90_69_3 "voting affinity with US above the 90th percentile, 3 possibilites"
-la var ussraffinity_avg_69_3 "voting affinity with US above the average, 3 possibilites"
-
-* Define affinity dummies
-qui sum avg_ussraffinity99, detail
-gen ussraffinity90_99 = avg_ussraffinity99 >  `r(p90)' if !missing(avg_ussraffinity99)
-gen ussraffinity50_99 = avg_ussraffinity99 >  `r(p50)' if !missing(avg_ussraffinity99)
-gen ussraffinity_avg_99 = avg_ussraffinity99 >  `r(mean)' if !missing(avg_ussraffinity99)
-gen ussraffinity0_99 = avg_ussraffinity99 >  0 if !missing(avg_ussraffinity99)
-la var ussraffinity50_99 "voting affinity with US above median"
-la var ussraffinity90_99 "voting affinity with US above the 90th percentile"
-la var ussraffinity_avg_99 "voting affinity with US above the average"
-
-qui sum avg_ussraffinity99_3, detail
-gen ussraffinity90_99_3 = avg_ussraffinity99_3 >  `r(p90)' if !missing(avg_ussraffinity99_3)
-gen ussraffinity50_99_3 = avg_ussraffinity99_3 >  `r(p50)' if !missing(avg_ussraffinity99_3)
-gen ussraffinity_avg_99_3 = avg_ussraffinity99_3 >  `r(mean)' if !missing(avg_ussraffinity99_3)
-gen ussraffinity0_99_3 = avg_ussraffinity99_3 >  0 if !missing(avg_ussraffinity99_3)
-la var ussraffinity50_99_3 "voting affinity with US above median, 3 possibilites"
-la var ussraffinity90_99_3 "voting affinity with US above the 90th percentile, 3 possibilites"
-la var ussraffinity_avg_99_3 "voting affinity with US above the average, 3 possibilites"
-
-
 
 * Generate variable recording total conflict years
 egen conf_years = sum(conflict), by(ccode)
@@ -1312,8 +1040,6 @@ la var lnpop14 "Population, logs"
 la var armstrade90 "US arms imports above the 90th percentile"
 la var armstrade0 "US arms imports above 0"
 la var armstrade "US arms imports above"
-la var armstrade90_ukr "Ukraine's arms imports above the 90th percentile"
-la var armstrade0_ukr "Ukraine's arms imports above 0"
 la var contig_bases1000 "Country with or contig. to US base (1000p)"
 la var sedvol "Sedimentary basins volume"
 la var sedvol2 "Sedimentary basins volume squared"
@@ -1343,9 +1069,9 @@ keep if year < 2000
 keep year region lnarea abslat elevavg elevstd temp prec lnpop14 ///
 	conflict conflict2 sedvol sedvol2 coal coal2 gas gas2 oil oil oil2  ///
 	contig_bases1000 armstrade90 armstrade ccode conf_years ///
-	armstrade0 armstrade90_ukr armstrade0_ukr gdpdef oil_price oil_price2 gdpdef ///
+	armstrade0 gdpdef oil_price oil_price2 gdpdef ///
 	legor_uk legor_fr legor_so legor_ge legor_sc pmuslim pcatholic pprotest ///
-	contig50bases armstrade1950 armstrade_ussr1950 affinity* ussraffinity* distus* ///
+	contig50bases armstrade1950 armstrade_ussr1950 affinity* distus* ///
 	contig50bases750 contig50bases1250
 
 save ${main}2_processed/data_regressions.dta, replace
