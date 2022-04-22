@@ -905,6 +905,39 @@ collapse region lnarea abslat elevavg elevstd temp prec lnpop14 ///
 	legor_uk legor_fr legor_so legor_ge legor_sc pmuslim pcatholic pprotest ///
 	contig50bases armstrade1950 armstrade_ussr1950 affinity* distus* (min) year, by(ccode)
 
+
+*label controls used in 
+la var lnarea "Area, (log Km\(^2\))"
+la var abslat "Absolute latitude"
+la var elevavg "Average altitude (Km)"
+la var elevstd "Dispersion in altitude"
+la var temp "Average temperature (C)"
+la var prec "Average precipitation (mm)"
+la var lnpop14 "Population, logs"
+la var armstrade90 "US arms imports above the 90th percentile"
+la var armstrade0 "US arms imports above 0"
+la var armstrade "US arms imports above"
+la var sedvol "Sedimentary basins volume"
+la var sedvol2 "Sedimentary basins volume squared"
+la var oil "Oil value pc"
+la var oil2 "Oil value pc squared"
+la var gas "Gas value pc"
+la var gas2 "Gas value pc squared"
+la var coal "Coal value pc"
+la var coal2 "Coal value pc squared"
+la var ccode "Country code"
+la var conf_years "Years of conflict in country"
+la var gdpdef "Deflator, relative to 2012"
+la var oil_price "Oil price (WTI), in 2012 dollars"
+la var oil_price2 "Oil price (WTI) squared, in 2012 dollars"
+la var conflict "Conflict, at l. 25 deaths"
+la var conflict2 "Conflict, at l. 1000\ deaths"
+la var contig50bases "Close to US base"
+la var armstrade1950 "Traded arms with US"
+la var affinity0_65 "UNGA voting affinity"
+la var affinity0_65_3 "UNGA voting affinity (3 votes)"
+la var distus "Distance from the US (Km)"
+
 save ${main}2_processed/data_regressions_crossc.dta, replace
 	
 **********************************ANALYSIS**************************************
@@ -1726,6 +1759,7 @@ starlevels(\sym{*} 0.1 \sym{**} 0.05 \sym{***} 0.01) ///
 			postfoot("\hline\hline \end{tabular}}")
 
 
+est clear
 			
 * Table A3: Conflict and resources		
 
