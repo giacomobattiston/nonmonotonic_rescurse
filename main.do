@@ -880,6 +880,12 @@ la var distus "Distance from the US (Km)"
 * Sample from 1950 to 1999
 keep if year < 2000
 
+
+* Conflict onset
+xtset ccode year
+
+
+
 keep year region lnarea abslat elevavg elevstd temp prec lnpop14 ///
 	conflict conflict2 sedvol sedvol2 coal coal2 gas gas2 oil oil oil2  ///
 	armstrade90 armstrade ccode conf_years ///
@@ -889,8 +895,17 @@ keep year region lnarea abslat elevavg elevstd temp prec lnpop14 ///
 
 save ${main}2_processed/data_regressions.dta, replace
 
+* prova con fraction conflict
+collapse region lnarea abslat elevavg elevstd temp prec lnpop14 ///
+	conflict conflict2 sedvol sedvol2 coal coal2 gas gas2 oil oil2  ///
+	armstrade90 armstrade conf_years ///
+	armstrade0 gdpdef oil_price oil_price2 ///
+	legor_uk legor_fr legor_so legor_ge legor_sc pmuslim pcatholic pprotest ///
+	contig50bases armstrade1950 armstrade_ussr1950 affinity* distus* (min) year, by(ccode)
 
-
+replace year = 1950
+*fino a qui sopra	
+	
 **********************************ANALYSIS**************************************
 
 gen thirdparty = .
