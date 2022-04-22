@@ -880,11 +880,13 @@ la var distus "Distance from the US (Km)"
 * Sample from 1950 to 1999
 keep if year < 2000
 
+global outcome_list "conflict conflict2"
+local controls "lnarea  abslat elevavg elevstd temp precip lnpop14"
 
-* Conflict onset
-xtset ccode year
-
-
+* Make sample the same regardless of controls
+foreach var in `controls' {
+	drop if `var' == .
+}
 
 keep year region lnarea abslat elevavg elevstd temp prec lnpop14 ///
 	conflict conflict2 sedvol sedvol2 coal coal2 gas gas2 oil oil oil2  ///
@@ -893,7 +895,7 @@ keep year region lnarea abslat elevavg elevstd temp prec lnpop14 ///
 	legor_uk legor_fr legor_so legor_ge legor_sc pmuslim pcatholic pprotest ///
 	contig50bases armstrade1950 armstrade_ussr1950 affinity* distus* 
 
-save ${main}2_processed/data_regressions.dta, replace
+save ${main}2_processed/data_regressions_panel.dta, replace
 
 * prova con fraction conflict
 collapse region lnarea abslat elevavg elevstd temp prec lnpop14 ///
@@ -903,17 +905,11 @@ collapse region lnarea abslat elevavg elevstd temp prec lnpop14 ///
 	legor_uk legor_fr legor_so legor_ge legor_sc pmuslim pcatholic pprotest ///
 	contig50bases armstrade1950 armstrade_ussr1950 affinity* distus* (min) year, by(ccode)
 
-replace year = 1950
-*fino a qui sopra	
+save ${main}2_processed/data_regressions_crossc.dta, replace
 	
 **********************************ANALYSIS**************************************
 
 gen thirdparty = .
-
-global outcome_list "conflict conflict2"
-local controls "lnarea  abslat elevavg elevstd temp precip lnpop14"
-	
-	
 			
 * Table 1: Conflict and resources, disaggregated resources
 
@@ -935,18 +931,18 @@ forval i_indep = 1/2 {
 		forval i_con = 1/2 {
 			local counter = `counter' + 1
 			if (`i_con' == 1) {
-				ivreg2 `outcome' `independent' i.year i.region, cluster(ccode) partial(i.year i.region)
+				ivreg2 `outcome' `independent' i.region, cluster(ccode) partial(i.region)
 				* Save geographic controls indicator
 				estadd local geocontrols = "No"
 			}
 			else {
-				ivreg2 `outcome' `independent' `controls' i.year i.region, cluster(ccode) partial(i.year i.region)
+				ivreg2 `outcome' `independent' `controls' i.region, cluster(ccode) partial(i.region)
 				* Save geographic controls indicator
 				estadd local geocontrols = "Yes"
 			}
 			
 			* Save time controls indicators
-			estadd local yearfe = "Yes"
+			
 			estadd local continentfe = "Yes"
 			* Save auxiliary indicator for esttab
 			estadd local space = " "
@@ -1008,9 +1004,9 @@ starlevels(\sym{*} 0.1 \sym{**} 0.05 \sym{***} 0.01) ///
  mgroups("Resource Value: Oil pc" "Resource Value: Sedimentary basins" , ///
 	pattern(1 0 0 0 1 0 0 0) prefix(\multicolumn{@span}{c}{) suffix(}) span) ///
  drop(`controls' gas* coal*) ///
- 	stats(space putest space gas coal yearfe continentfe geocontrols   peak N, fmt(s s s s s s a2 a2) ///
+ 	stats(space putest space gas coal continentfe geocontrols   peak N, fmt(s s s s s s a2 a2) ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}"  "\multicolumn{1}{c}{@}"  "\multicolumn{1}{c}{@}" )  ///
-	labels(`"\emph{H0: No inv.-U shape}"' `"\qquad \emph{p-value}"' `" "' `"Gas, Gas\(^2\)"' `"Coal, Coal\(^2\)"' `"Year FEs"' `"Continent FEs"'  `"Geo Controls"' `"Peak"' `"\(N\)"')) ///
+	labels(`"\emph{H0: No inv.-U shape}"' `"\qquad \emph{p-value}"' `" "' `"Gas, Gas\(^2\)"' `"Coal, Coal\(^2\)"' `"Continent FEs"'  `"Geo Controls"' `"Peak"' `"\(N\)"')) ///
 		mtitles("Conf." "Conf." "H. Conf." "H. Conf." "Conf." "Conf." "H. Conf." "H. Conf.") ///
 			postfoot("\hline\hline \end{tabular}}")	
 			
@@ -1033,14 +1029,14 @@ foreach thirdparty of varlist $thirdparty_list {
 				* Test for inverse-U shaped relation with interaction
 				if (`i_con' == 1) {
 					ivreg2 `outcome' c.x c.x#0.thirdparty   c.x2 c.x2#0.thirdparty 0.thirdparty ///
-					i.year i.region, cluster(ccode) partial(i.year i.region)
+					i.region, cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "No"
 				}
 				else {
 					ivreg2 `outcome' c.x c.x#0.thirdparty c.x2 c.x2#0.thirdparty 0.thirdparty ///
-					i.year i.region `controls', ///
-					cluster(ccode) partial(i.year i.region)
+					i.region `controls', ///
+					cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "Yes"
 				}
@@ -1070,20 +1066,20 @@ foreach thirdparty of varlist $thirdparty_list {
 				if (`i_con' == 1) {
 					ivreg2 `outcome' c.x c.x#i.thirdparty c.x2 ///
 					c.x2#i.thirdparty i.thirdparty ///
-					i.year i.region, cluster(ccode) partial(i.year i.region)
+					i.region, cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "No"
 				}
 				else {
 					ivreg2 `outcome' c.x c.x#i.thirdparty ///
-					c.x2 c.x2#i.thirdparty i.thirdparty i.year i.region `controls', ///
-					cluster(ccode) partial(i.year i.region)
+					c.x2 c.x2#i.thirdparty i.thirdparty i.region `controls', ///
+					cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "Yes"
 				}
 				
 				* Save time controls indicators
-				estadd local yearfe = "Yes"
+				
 				estadd local continentfe = "Yes"
 				* Save auxiliary indicator for esttab
 				estadd local space = " "
@@ -1184,15 +1180,15 @@ foreach thirdparty of varlist $thirdparty_list {
 				if (`i_con' == 1) {
 					ivreg2 `outcome' c.x c.x#0.thirdparty   c.x2 c.x2#0.thirdparty 0.thirdparty ///
 					c.gas c.gas2 c.coal c.coal2 ///
-					i.year i.region, cluster(ccode) partial(i.year i.region)
+					i.region, cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "No"
 				}
 				else {
 					ivreg2 `outcome' c.x c.x#0.thirdparty c.x2 c.x2#0.thirdparty 0.thirdparty ///
 					c.gas c.gas2 c.coal c.coal2 ///
-					i.year i.region `controls', ///
-					cluster(ccode) partial(i.year i.region)
+					i.region `controls', ///
+					cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "Yes"
 				}
@@ -1221,21 +1217,21 @@ foreach thirdparty of varlist $thirdparty_list {
 				if (`i_con' == 1) {
 					ivreg2 `outcome' c.x c.x#i.thirdparty   c.x2 c.x2#i.thirdparty i.thirdparty ///
 					c.gas c.gas2 c.coal c.coal2 ///
-					i.year i.region, cluster(ccode) partial(i.year i.region)
+					i.region, cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "No"
 				}
 				else {
 					ivreg2 `outcome' c.x c.x#i.thirdparty c.x2 c.x2#i.thirdparty i.thirdparty ///
 					c.gas c.gas2 c.coal c.coal2 ///
-					i.year i.region `controls', ///
-					cluster(ccode) partial(i.year i.region)
+					i.region `controls', ///
+					cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "Yes"
 				}
 				
 				* Save time controls indicators
-				estadd local yearfe = "Yes"
+				
 				estadd local continentfe = "Yes"
 				* Save resource controls indicators
 				estadd local gascoal = "Yes"
@@ -1332,13 +1328,13 @@ ${main}5_output/tables/prio_int_bases.tex, replace ///
 	nobaselevels nonumbers ///
 	mgroups("Resource Value: Oil pc" "Resource Value: Sedimentary basins" , ///
 	pattern(1 0 0 0 1 0 0 0) prefix(\multicolumn{@span}{c}{) suffix(}) span) ///
- 	stats(space space b1s p1 b2s p2 space space putest putestint space gascoal gascoalsq yearfe continentfe geocontrols thirdpartyfe N, ///
+ 	stats(space space b1s p1 b2s p2 space space putest putestint space gascoal gascoalsq continentfe geocontrols thirdpartyfe N, ///
 	fmt(s s s  %6.3f s %6.3f s s s s s  s s s s s   a2)  ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" )  ///
 	labels(`"\emph{Linear Combination:}"' `"\qquad \emph{Base + Inter. Coeff.}"' ///
 	`"\qquad Oil"' 	`"\qquad p-value"' `"\qquad Oil\(^2\)"'`"\qquad p-value"' `" "' ///
 	`"\emph{H0: No inv.-U shape}"' `"\qquad \emph{Base Coeff. p-value}"' `"\qquad \emph{Base + Inter. Coeff. p-value}"' `" "' ///
-	`"Gas, Gas\(^2\)"' `"Coal, Coal\(^2\)"' `"Year FEs"' ///
+	`"Gas, Gas\(^2\)"' `"Coal, Coal\(^2\)"' ///
 	`"Continent FEs"' `"Geo Controls"' `"Third Party"' `"\(N\)"')) ///
 	mtitles("Conf." "Conf." "H. Conf." "H. Conf." "Conf." "Conf." "H. Conf." "H. Conf.") ///
 	postfoot("\hline\hline \end{tabular}}")
@@ -1364,14 +1360,14 @@ foreach thirdparty of varlist $thirdparty_list {
 				* Test for inverse-U shaped relation with interaction
 				if (`i_con' == 1) {
 					ivreg2 `outcome' c.x c.x#0.thirdparty   c.x2 c.x2#0.thirdparty 0.thirdparty ///
-					i.year i.region, cluster(ccode) partial(i.year i.region)
+					i.region, cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "No"
 				}
 				else {
 					ivreg2 `outcome' c.x c.x#0.thirdparty c.x2 c.x2#0.thirdparty 0.thirdparty ///
-					i.year i.region `controls', ///
-					cluster(ccode) partial(i.year i.region)
+					i.region `controls', ///
+					cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "Yes"
 				}
@@ -1401,20 +1397,20 @@ foreach thirdparty of varlist $thirdparty_list {
 				if (`i_con' == 1) {
 					ivreg2 `outcome' c.x c.x#i.thirdparty c.x2 ///
 					c.x2#i.thirdparty i.thirdparty ///
-					i.year i.region, cluster(ccode) partial(i.year i.region)
+					i.region, cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "No"
 				}
 				else {
 					ivreg2 `outcome' c.x c.x#i.thirdparty ///
-					c.x2 c.x2#i.thirdparty i.thirdparty i.year i.region `controls', ///
-					cluster(ccode) partial(i.year i.region)
+					c.x2 c.x2#i.thirdparty i.thirdparty i.region `controls', ///
+					cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "Yes"
 				}
 				
 				* Save time controls indicators
-				estadd local yearfe = "Yes"
+				
 				estadd local continentfe = "Yes"
 				* Save auxiliary indicator for esttab
 				estadd local space = " "
@@ -1515,15 +1511,15 @@ foreach thirdparty of varlist $thirdparty_list {
 				if (`i_con' == 1) {
 					ivreg2 `outcome' c.x c.x#0.thirdparty   c.x2 c.x2#0.thirdparty 0.thirdparty ///
 					c.gas c.gas2 c.coal c.coal2 ///
-					i.year i.region, cluster(ccode) partial(i.year i.region)
+					i.region, cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "No"
 				}
 				else {
 					ivreg2 `outcome' c.x c.x#0.thirdparty c.x2 c.x2#0.thirdparty 0.thirdparty ///
 					c.gas c.gas2 c.coal c.coal2 ///
-					i.year i.region `controls', ///
-					cluster(ccode) partial(i.year i.region)
+					i.region `controls', ///
+					cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "Yes"
 				}
@@ -1552,21 +1548,21 @@ foreach thirdparty of varlist $thirdparty_list {
 				if (`i_con' == 1) {
 					ivreg2 `outcome' c.x c.x#i.thirdparty   c.x2 c.x2#i.thirdparty i.thirdparty ///
 					c.gas c.gas2 c.coal c.coal2 ///
-					i.year i.region, cluster(ccode) partial(i.year i.region)
+					i.region, cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "No"
 				}
 				else {
 					ivreg2 `outcome' c.x c.x#i.thirdparty c.x2 c.x2#i.thirdparty i.thirdparty ///
 					c.gas c.gas2 c.coal c.coal2 ///
-					i.year i.region `controls', ///
-					cluster(ccode) partial(i.year i.region)
+					i.region `controls', ///
+					cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "Yes"
 				}
 				
 				* Save time controls indicators
-				estadd local yearfe = "Yes"
+				
 				estadd local continentfe = "Yes"
 				* Save resource controls indicators
 				estadd local gascoal = "Yes"
@@ -1663,13 +1659,13 @@ ${main}5_output/tables/prio_int_armstrade.tex, replace ///
 	nobaselevels nonumbers ///
 	mgroups("Resource Value: Oil pc" "Resource Value: Sedimentary basins" , ///
 	pattern(1 0 0 0 1 0 0 0) prefix(\multicolumn{@span}{c}{) suffix(}) span) ///
- 	stats(space space b1s p1 b2s p2 space space putest putestint space gascoal gascoalsq yearfe continentfe geocontrols thirdpartyfe N, ///
-	fmt(s s s  %6.3f s %6.3f s s s s s  s s s s s   a2)  ///
+ 	stats(space space b1s p1 b2s p2 space space putest putestint space gascoal gascoalsq continentfe geocontrols thirdpartyfe N, ///
+	fmt(s s s  %6.3f s %6.3f s s s s s  s s s s   a2)  ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" )  ///
 	labels(`"\emph{Linear Combination:}"' `"\qquad \emph{Base + Inter. Coeff.}"' ///
 	`"\qquad Oil"' 	`"\qquad p-value"' `"\qquad Oil\(^2\)"'`"\qquad p-value"' `" "' ///
 	`"\emph{H0: No inv.-U shape}"' `"\qquad \emph{Base Coeff. p-value}"' `"\qquad \emph{Base + Inter. Coeff. p-value}"' `" "' ///
-	`"Gas, Gas\(^2\)"' `"Coal, Coal\(^2\)"' `"Year FEs"' ///
+	`"Gas, Gas\(^2\)"' `"Coal, Coal\(^2\)"' ///
 	`"Continent FEs"' `"Geo Controls"' `"Third Party"' `"\(N\)"')) ///
 	mtitles("Conf." "Conf." "H. Conf." "H. Conf." "Conf." "Conf." "H. Conf." "H. Conf.") ///
 	postfoot("\hline\hline \end{tabular}}")
@@ -1716,9 +1712,9 @@ ${main}5_output/tables/prio_int_armstrade.tex, replace ///
 
 			
 * Table A2: Determinants of third party presence
-ivreg2 contig50bases    `controls' if year == 1950
+ivreg2 contig50bases    `controls'
 est sto reg1
-ivreg2 armstrade1950     `controls' if year == 1950
+ivreg2 armstrade1950     `controls'
 est sto reg2
 
 esttab reg1 reg2 using ///
@@ -1745,18 +1741,18 @@ forval i_indep = 1/2 {
 		forval i_con = 1/2 {
 			local counter = `counter' + 1
 			if (`i_con' == 1) {
-				ivreg2 `outcome' `independent' i.year i.region, cluster(ccode) partial(i.year i.region)
+				ivreg2 `outcome' `independent' i.region, cluster(ccode) partial(i.region)
 				* Save geographic controls indicator
 				estadd local geocontrols = "No"
 			}
 			else {
-				ivreg2 `outcome' `independent' `controls' i.year i.region, cluster(ccode) partial(i.year i.region)
+				ivreg2 `outcome' `independent' `controls' i.region, cluster(ccode) partial(i.region)
 				* Save geographic controls indicator
 				estadd local geocontrols = "Yes"
 			}
 			
 			* Save time controls indicators
-			estadd local yearfe = "Yes"
+			
 			estadd local continentfe = "Yes"
 			* Save auxiliary indicator for esttab
 			estadd local space = " "
@@ -1807,9 +1803,9 @@ coeflabels(sedvol "Sed. Vol." sedvol2 "Sed. Vol.\(^2\)" oil "Oil" oil2 "Oil\(^2\
 starlevels(\sym{*} 0.1 \sym{**} 0.05 \sym{***} 0.01) ///
  nobaselevels ///
  drop(`controls') ///
- 	stats(space putest space yearfe continentfe geocontrols  peak N, fmt(s s s s s s a2 a2) ///
+ 	stats(space putest space continentfe geocontrols  peak N, fmt(s s s s s a2 a2) ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}"  "\multicolumn{1}{c}{@}"  "\multicolumn{1}{c}{@}" )  ///
-	labels(`"\emph{H0: No inv.-U shape}"' `"\qquad \emph{p-value}"' `" "' `"Year FEs"' `"Continent FEs"' `"Geo Controls"' `"Peak"' `"\(N\)"')) ///
+	labels(`"\emph{H0: No inv.-U shape}"' `"\qquad \emph{p-value}"' `" "' `"Continent FEs"' `"Geo Controls"' `"Peak"' `"\(N\)"')) ///
 		mtitles("Conf." "Conf." "H. Conf." "H. Conf." "Conf." "Conf." "H. Conf." "H. Conf.") ///
 			postfoot("\hline\hline \end{tabular}}")	
 
@@ -1834,14 +1830,14 @@ foreach thirdparty of varlist $thirdparty_list {
 				* Test for inverse-U shaped relation with interaction
 				if (`i_con' == 1) {
 					ivreg2 `outcome' c.x c.x#0.thirdparty   c.x2 c.x2#0.thirdparty 0.thirdparty ///
-					i.year i.region, cluster(ccode) partial(i.year i.region)
+					i.region, cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "No"
 				}
 				else {
 					ivreg2 `outcome' c.x c.x#0.thirdparty c.x2 c.x2#0.thirdparty 0.thirdparty ///
-					i.year i.region `controls', ///
-					cluster(ccode) partial(i.year i.region)
+					i.region `controls', ///
+					cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "Yes"
 				}
@@ -1871,20 +1867,20 @@ foreach thirdparty of varlist $thirdparty_list {
 				if (`i_con' == 1) {
 					ivreg2 `outcome' c.x c.x#i.thirdparty c.x2 ///
 					c.x2#i.thirdparty i.thirdparty ///
-					i.year i.region, cluster(ccode) partial(i.year i.region)
+					i.region, cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "No"
 				}
 				else {
 					ivreg2 `outcome' c.x c.x#i.thirdparty ///
-					c.x2 c.x2#i.thirdparty i.thirdparty i.year i.region `controls', ///
-					cluster(ccode) partial(i.year i.region)
+					c.x2 c.x2#i.thirdparty i.thirdparty i.region `controls', ///
+					cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "Yes"
 				}
 				
 				* Save time controls indicators
-				estadd local yearfe = "Yes"
+				
 				estadd local continentfe = "Yes"
 				* Save auxiliary indicator for esttab
 				estadd local space = " "
@@ -1984,15 +1980,15 @@ foreach thirdparty of varlist $thirdparty_list {
 				if (`i_con' == 1) {
 					ivreg2 `outcome' c.x c.x#0.thirdparty   c.x2 c.x2#0.thirdparty 0.thirdparty ///
 					c.gas c.gas2 c.coal c.coal2 ///
-					i.year i.region, cluster(ccode) partial(i.year i.region)
+					i.region, cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "No"
 				}
 				else {
 					ivreg2 `outcome' c.x c.x#0.thirdparty c.x2 c.x2#0.thirdparty 0.thirdparty ///
 					c.gas c.gas2 c.coal c.coal2 ///
-					i.year i.region `controls', ///
-					cluster(ccode) partial(i.year i.region)
+					i.region `controls', ///
+					cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "Yes"
 				}
@@ -2021,21 +2017,21 @@ foreach thirdparty of varlist $thirdparty_list {
 				if (`i_con' == 1) {
 					ivreg2 `outcome' c.x c.x#i.thirdparty   c.x2 c.x2#i.thirdparty i.thirdparty ///
 					c.gas c.gas2 c.coal c.coal2 ///
-					i.year i.region, cluster(ccode) partial(i.year i.region)
+					i.region, cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "No"
 				}
 				else {
 					ivreg2 `outcome' c.x c.x#i.thirdparty c.x2 c.x2#i.thirdparty i.thirdparty ///
 					c.gas c.gas2 c.coal c.coal2 ///
-					i.year i.region `controls', ///
-					cluster(ccode) partial(i.year i.region)
+					i.region `controls', ///
+					cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "Yes"
 				}
 				
 				* Save time controls indicators
-				estadd local yearfe = "Yes"
+				
 				estadd local continentfe = "Yes"
 				* Save resource controls indicators
 				estadd local gascoal = "Yes"
@@ -2132,13 +2128,13 @@ ${main}5_output/tables/prio_int_unus065.tex, replace ///
 	nobaselevels nonumbers ///
 	mgroups("Resource Value: Oil pc" "Resource Value: Sedimentary basins" , ///
 	pattern(1 0 0 0 1 0 0 0) prefix(\multicolumn{@span}{c}{) suffix(}) span) ///
- 	stats(space space b1s p1 b2s p2 space space putest putestint space gascoal gascoalsq yearfe continentfe geocontrols thirdpartyfe N, ///
-	fmt(s s s  %6.3f s %6.3f s s s s s  s s s s s   a2)  ///
+ 	stats(space space b1s p1 b2s p2 space space putest putestint space gascoal gascoalsq continentfe geocontrols thirdpartyfe N, ///
+	fmt(s s s  %6.3f s %6.3f s s s s  s s s s s   a2)  ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" )  ///
 	labels(`"\emph{Linear Combination:}"' `"\qquad \emph{Base + Inter. Coeff.}"' ///
 	`"\qquad Oil"' 	`"\qquad p-value"' `"\qquad Oil\(^2\)"'`"\qquad p-value"' `" "' ///
 	`"\emph{H0: No inv.-U shape}"' `"\qquad \emph{Base Coeff. p-value}"' `"\qquad \emph{Base + Inter. Coeff. p-value}"' `" "' ///
-	`"Gas, Gas\(^2\)"' `"Coal, Coal\(^2\)"' `"Year FEs"' ///
+	`"Gas, Gas\(^2\)"' `"Coal, Coal\(^2\)"' ///
 	`"Continent FEs"' `"Geo Controls"' `"Third Party"' `"\(N\)"')) ///
 	mtitles("Conf." "Conf." "H. Conf." "H. Conf." "Conf." "Conf." "H. Conf." "H. Conf.") ///
 	postfoot("\hline\hline \end{tabular}}")
@@ -2165,14 +2161,14 @@ foreach thirdparty of varlist $thirdparty_list {
 				* Test for inverse-U shaped relation with interaction
 				if (`i_con' == 1) {
 					ivreg2 `outcome' c.x c.x#0.thirdparty   c.x2 c.x2#0.thirdparty 0.thirdparty ///
-					i.year i.region, cluster(ccode) partial(i.year i.region)
+					i.region, cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "No"
 				}
 				else {
 					ivreg2 `outcome' c.x c.x#0.thirdparty c.x2 c.x2#0.thirdparty 0.thirdparty ///
-					i.year i.region `controls', ///
-					cluster(ccode) partial(i.year i.region)
+					i.region `controls', ///
+					cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "Yes"
 				}
@@ -2202,20 +2198,20 @@ foreach thirdparty of varlist $thirdparty_list {
 				if (`i_con' == 1) {
 					ivreg2 `outcome' c.x c.x#i.thirdparty c.x2 ///
 					c.x2#i.thirdparty i.thirdparty ///
-					i.year i.region, cluster(ccode) partial(i.year i.region)
+					i.region, cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "No"
 				}
 				else {
 					ivreg2 `outcome' c.x c.x#i.thirdparty ///
-					c.x2 c.x2#i.thirdparty i.thirdparty i.year i.region `controls', ///
-					cluster(ccode) partial(i.year i.region)
+					c.x2 c.x2#i.thirdparty i.thirdparty i.region `controls', ///
+					cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "Yes"
 				}
 				
 				* Save time controls indicators
-				estadd local yearfe = "Yes"
+				
 				estadd local continentfe = "Yes"
 				* Save auxiliary indicator for esttab
 				estadd local space = " "
@@ -2316,15 +2312,15 @@ foreach thirdparty of varlist $thirdparty_list {
 				if (`i_con' == 1) {
 					ivreg2 `outcome' c.x c.x#0.thirdparty   c.x2 c.x2#0.thirdparty 0.thirdparty ///
 					c.gas c.gas2 c.coal c.coal2 ///
-					i.year i.region, cluster(ccode) partial(i.year i.region)
+					i.region, cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "No"
 				}
 				else {
 					ivreg2 `outcome' c.x c.x#0.thirdparty c.x2 c.x2#0.thirdparty 0.thirdparty ///
 					c.gas c.gas2 c.coal c.coal2 ///
-					i.year i.region `controls', ///
-					cluster(ccode) partial(i.year i.region)
+					i.region `controls', ///
+					cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "Yes"
 				}
@@ -2353,21 +2349,21 @@ foreach thirdparty of varlist $thirdparty_list {
 				if (`i_con' == 1) {
 					ivreg2 `outcome' c.x c.x#i.thirdparty   c.x2 c.x2#i.thirdparty i.thirdparty ///
 					c.gas c.gas2 c.coal c.coal2 ///
-					i.year i.region, cluster(ccode) partial(i.year i.region)
+					i.region, cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "No"
 				}
 				else {
 					ivreg2 `outcome' c.x c.x#i.thirdparty c.x2 c.x2#i.thirdparty i.thirdparty ///
 					c.gas c.gas2 c.coal c.coal2 ///
-					i.year i.region `controls', ///
-					cluster(ccode) partial(i.year i.region)
+					i.region `controls', ///
+					cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "Yes"
 				}
 				
 				* Save time controls indicators
-				estadd local yearfe = "Yes"
+				
 				estadd local continentfe = "Yes"
 				* Save resource controls indicators
 				estadd local gascoal = "Yes"
@@ -2464,13 +2460,13 @@ ${main}5_output/tables/prio_int_arms_closeus.tex, replace ///
 	nobaselevels nonumbers ///
 	mgroups("Resource Value: Oil pc" "Resource Value: Sedimentary basins" , ///
 	pattern(1 0 0 0 1 0 0 0) prefix(\multicolumn{@span}{c}{) suffix(}) span) ///
- 	stats(space space b1s p1 b2s p2 space space putest putestint space gascoal gascoalsq yearfe continentfe geocontrols thirdpartyfe N, ///
-	fmt(s s s  %6.3f s %6.3f s s s s s  s s s s s   a2)  ///
+ 	stats(space space b1s p1 b2s p2 space space putest putestint space gascoal gascoalsq continentfe geocontrols thirdpartyfe N, ///
+	fmt(s s s  %6.3f s %6.3f s s s s s  s s s s   a2)  ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" )  ///
 	labels(`"\emph{Linear Combination:}"' `"\qquad \emph{Base + Inter. Coeff.}"' ///
 	`"\qquad Oil"' 	`"\qquad p-value"' `"\qquad Oil\(^2\)"'`"\qquad p-value"' `" "' ///
 	`"\emph{H0: No inv.-U shape}"' `"\qquad \emph{Base Coeff. p-value}"' `"\qquad \emph{Base + Inter. Coeff. p-value}"' `" "' ///
-	`"Gas, Gas\(^2\)"' `"Coal, Coal\(^2\)"' `"Year FEs"' ///
+	`"Gas, Gas\(^2\)"' `"Coal, Coal\(^2\)"' ///
 	`"Continent FEs"' `"Geo Controls"' `"Third Party"' `"\(N\)"')) ///
 	mtitles("Conf." "Conf." "H. Conf." "H. Conf." "Conf." "Conf." "H. Conf." "H. Conf.") ///
 	postfoot("\hline\hline \end{tabular}}")
@@ -2494,14 +2490,14 @@ foreach thirdparty of varlist $thirdparty_list {
 				* Test for inverse-U shaped relation with interaction
 				if (`i_con' == 1) {
 					ivreg2 `outcome' c.x c.x#0.thirdparty   c.x2 c.x2#0.thirdparty 0.thirdparty ///
-					i.year i.region, cluster(ccode) partial(i.year i.region)
+					i.region, cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "No"
 				}
 				else {
 					ivreg2 `outcome' c.x c.x#0.thirdparty c.x2 c.x2#0.thirdparty 0.thirdparty ///
-					i.year i.region `controls', ///
-					cluster(ccode) partial(i.year i.region)
+					i.region `controls', ///
+					cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "Yes"
 				}
@@ -2531,20 +2527,20 @@ foreach thirdparty of varlist $thirdparty_list {
 				if (`i_con' == 1) {
 					ivreg2 `outcome' c.x c.x#i.thirdparty c.x2 ///
 					c.x2#i.thirdparty i.thirdparty ///
-					i.year i.region, cluster(ccode) partial(i.year i.region)
+					i.region, cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "No"
 				}
 				else {
 					ivreg2 `outcome' c.x c.x#i.thirdparty ///
-					c.x2 c.x2#i.thirdparty i.thirdparty i.year i.region `controls', ///
-					cluster(ccode) partial(i.year i.region)
+					c.x2 c.x2#i.thirdparty i.thirdparty i.region `controls', ///
+					cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "Yes"
 				}
 				
 				* Save time controls indicators
-				estadd local yearfe = "Yes"
+				
 				estadd local continentfe = "Yes"
 				* Save auxiliary indicator for esttab
 				estadd local space = " "
@@ -2643,15 +2639,15 @@ foreach thirdparty of varlist $thirdparty_list {
 				if (`i_con' == 1) {
 					ivreg2 `outcome' c.x c.x#0.thirdparty   c.x2 c.x2#0.thirdparty 0.thirdparty ///
 					c.gas c.gas2 c.coal c.coal2 ///
-					i.year i.region, cluster(ccode) partial(i.year i.region)
+					i.region, cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "No"
 				}
 				else {
 					ivreg2 `outcome' c.x c.x#0.thirdparty c.x2 c.x2#0.thirdparty 0.thirdparty ///
 					c.gas c.gas2 c.coal c.coal2 ///
-					i.year i.region `controls', ///
-					cluster(ccode) partial(i.year i.region)
+					i.region `controls', ///
+					cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "Yes"
 				}
@@ -2680,21 +2676,21 @@ foreach thirdparty of varlist $thirdparty_list {
 				if (`i_con' == 1) {
 					ivreg2 `outcome' c.x c.x#i.thirdparty   c.x2 c.x2#i.thirdparty i.thirdparty ///
 					c.gas c.gas2 c.coal c.coal2 ///
-					i.year i.region, cluster(ccode) partial(i.year i.region)
+					i.region, cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "No"
 				}
 				else {
 					ivreg2 `outcome' c.x c.x#i.thirdparty c.x2 c.x2#i.thirdparty i.thirdparty ///
 					c.gas c.gas2 c.coal c.coal2 ///
-					i.year i.region `controls', ///
-					cluster(ccode) partial(i.year i.region)
+					i.region `controls', ///
+					cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "Yes"
 				}
 				
 				* Save time controls indicators
-				estadd local yearfe = "Yes"
+				
 				estadd local continentfe = "Yes"
 				* Save resource controls indicators
 				estadd local gascoal = "Yes"
@@ -2791,13 +2787,13 @@ ${main}5_output/tables/prio_int_arms_ussr.tex, replace ///
 	nobaselevels nonumbers ///
 	mgroups("Resource Value: Oil pc" "Resource Value: Sedimentary basins" , ///
 	pattern(1 0 0 0 1 0 0 0) prefix(\multicolumn{@span}{c}{) suffix(}) span) ///
- 	stats(space space b1s p1 b2s p2 space space putest putestint space gascoal gascoalsq yearfe continentfe geocontrols thirdpartyfe N, ///
-	fmt(s s s  %6.3f s %6.3f s s s s s  s s s s s   a2)  ///
+ 	stats(space space b1s p1 b2s p2 space space putest putestint space gascoal gascoalsq continentfe geocontrols thirdpartyfe N, ///
+	fmt(s s s  %6.3f s %6.3f s s s s s s s s s   a2)  ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" )  ///
 	labels(`"\emph{Linear Combination:}"' `"\qquad \emph{Base + Inter. Coeff.}"' ///
 	`"\qquad Oil"' 	`"\qquad p-value"' `"\qquad Oil\(^2\)"'`"\qquad p-value"' `" "' ///
 	`"\emph{H0: No inv.-U shape}"' `"\qquad \emph{Base Coeff. p-value}"' `"\qquad \emph{Base + Inter. Coeff. p-value}"' `" "' ///
-	`"Gas, Gas\(^2\)"' `"Coal, Coal\(^2\)"' `"Year FEs"' ///
+	`"Gas, Gas\(^2\)"' `"Coal, Coal\(^2\)"' ///
 	`"Continent FEs"' `"Geo Controls"' `"Third Party"' `"\(N\)"')) ///
 	mtitles("Conf." "Conf." "H. Conf." "H. Conf." "Conf." "Conf." "H. Conf." "H. Conf.") ///
 	postfoot("\hline\hline \end{tabular}}")
@@ -2823,18 +2819,18 @@ forval i_indep = 1/2 {
 		forval i_con = 1/2 {
 			local counter = `counter' + 1
 			if (`i_con' == 1) {
-				ivreg2 `outcome' `independent' i.year i.region if ccode != 900, cluster(ccode) partial(i.year i.region)
+				ivreg2 `outcome' `independent' i.region if ccode != 900, cluster(ccode) partial(i.region)
 				* Save geographic controls indicator
 				estadd local geocontrols = "No"
 			}
 			else {
-				ivreg2 `outcome' `independent' `controls' i.year i.region if ccode != 900, cluster(ccode) partial(i.year i.region)
+				ivreg2 `outcome' `independent' `controls' i.region if ccode != 900, cluster(ccode) partial(i.region)
 				* Save geographic controls indicator
 				estadd local geocontrols = "Yes"
 			}
 			
 			* Save time controls indicators
-			estadd local yearfe = "Yes"
+			
 			estadd local continentfe = "Yes"
 			* Save auxiliary indicator for esttab
 			estadd local space = " "
@@ -2896,9 +2892,9 @@ starlevels(\sym{*} 0.1 \sym{**} 0.05 \sym{***} 0.01) ///
  mgroups("Resource Value: Oil pc" "Resource Value: Sedimentary basins" , ///
 	pattern(1 0 0 0 1 0 0 0) prefix(\multicolumn{@span}{c}{) suffix(}) span) ///
  drop(`controls' gas* coal*) ///
- 	stats(space putest space gas coal yearfe continentfe geocontrols peak N, fmt(s s s s s s a2 a2) ///
+ 	stats(space putest space gas coal continentfe geocontrols peak N, fmt(s s s s s a2 a2) ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}"  "\multicolumn{1}{c}{@}"  "\multicolumn{1}{c}{@}" )  ///
-	labels(`"\emph{H0: No inv.-U shape}"' `"\qquad \emph{p-value}"' `" "' `"Gas, Gas\(^2\)"' `"Coal, Coal\(^2\)"' `"Year FEs"' `"Continent FEs"' `"Geo Controls"' `"Peak"' `"\(N\)"')) ///
+	labels(`"\emph{H0: No inv.-U shape}"' `"\qquad \emph{p-value}"' `" "' `"Gas, Gas\(^2\)"' `"Coal, Coal\(^2\)"' `"Continent FEs"' `"Geo Controls"' `"Peak"' `"\(N\)"')) ///
 		mtitles("Conf." "Conf." "H. Conf." "H. Conf." "Conf." "Conf." "H. Conf." "H. Conf.") ///
 			postfoot("\hline\hline \end{tabular}}")	
 
@@ -2924,14 +2920,14 @@ foreach thirdparty of varlist $thirdparty_list {
 				* Test for inverse-U shaped relation with interaction
 				if (`i_con' == 1) {
 					ivreg2 `outcome' c.x c.x#0.thirdparty   c.x2 c.x2#0.thirdparty 0.thirdparty ///
-					i.year i.region if ccode != 900, cluster(ccode) partial(i.year i.region)
+					i.region if ccode != 900, cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "No"
 				}
 				else {
 					ivreg2 `outcome' c.x c.x#0.thirdparty c.x2 c.x2#0.thirdparty 0.thirdparty ///
-					i.year i.region `controls' if ccode != 900, ///
-					cluster(ccode) partial(i.year i.region)
+					i.region `controls' if ccode != 900, ///
+					cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "Yes"
 				}
@@ -2961,20 +2957,20 @@ foreach thirdparty of varlist $thirdparty_list {
 				if (`i_con' == 1) {
 					ivreg2 `outcome' c.x c.x#i.thirdparty c.x2 ///
 					c.x2#i.thirdparty i.thirdparty ///
-					i.year i.region if ccode != 900, cluster(ccode) partial(i.year i.region)
+					i.region if ccode != 900, cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "No"
 				}
 				else {
 					ivreg2 `outcome' c.x c.x#i.thirdparty ///
-					c.x2 c.x2#i.thirdparty i.thirdparty i.year i.region `controls' if ccode != 900, ///
-					cluster(ccode) partial(i.year i.region)
+					c.x2 c.x2#i.thirdparty i.thirdparty i.region `controls' if ccode != 900, ///
+					cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "Yes"
 				}
 				
 				* Save time controls indicators
-				estadd local yearfe = "Yes"
+				
 				estadd local continentfe = "Yes"
 				* Save auxiliary indicator for esttab
 				estadd local space = " "
@@ -3075,15 +3071,15 @@ foreach thirdparty of varlist $thirdparty_list {
 				if (`i_con' == 1) {
 					ivreg2 `outcome' c.x c.x#0.thirdparty   c.x2 c.x2#0.thirdparty 0.thirdparty ///
 					c.gas c.gas2 c.coal c.coal2 ///
-					i.year i.region if ccode != 900, cluster(ccode) partial(i.year i.region)
+					i.region if ccode != 900, cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "No"
 				}
 				else {
 					ivreg2 `outcome' c.x c.x#0.thirdparty c.x2 c.x2#0.thirdparty 0.thirdparty ///
 					c.gas c.gas2 c.coal c.coal2 ///
-					i.year i.region `controls' if ccode != 900, ///
-					cluster(ccode) partial(i.year i.region)
+					i.region `controls' if ccode != 900, ///
+					cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "Yes"
 				}
@@ -3112,21 +3108,21 @@ foreach thirdparty of varlist $thirdparty_list {
 				if (`i_con' == 1) {
 					ivreg2 `outcome' c.x c.x#i.thirdparty   c.x2 c.x2#i.thirdparty i.thirdparty ///
 					c.gas c.gas2 c.coal c.coal2 ///
-					i.year i.region if ccode != 900, cluster(ccode) partial(i.year i.region)
+					i.region if ccode != 900, cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "No"
 				}
 				else {
 					ivreg2 `outcome' c.x c.x#i.thirdparty c.x2 c.x2#i.thirdparty i.thirdparty ///
 					c.gas c.gas2 c.coal c.coal2 ///
-					i.year i.region `controls' if ccode != 900, ///
-					cluster(ccode) partial(i.year i.region)
+					i.region `controls' if ccode != 900, ///
+					cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "Yes"
 				}
 				
 				* Save time controls indicators
-				estadd local yearfe = "Yes"
+				
 				estadd local continentfe = "Yes"
 				* Save resource controls indicators
 				estadd local gascoal = "Yes"
@@ -3223,13 +3219,13 @@ ${main}5_output/tables/prio_int_bases_noaus.tex, replace ///
 	nobaselevels nonumbers ///
 	mgroups("Resource Value: Oil pc" "Resource Value: Sedimentary basins" , ///
 	pattern(1 0 0 0 1 0 0 0) prefix(\multicolumn{@span}{c}{) suffix(}) span) ///
- 	stats(space space b1s p1 b2s p2 space space putest putestint space gascoal gascoalsq yearfe continentfe geocontrols thirdpartyfe N, ///
-	fmt(s s s  %6.3f s %6.3f s s s s s  s s s s s   a2)  ///
+ 	stats(space space b1s p1 b2s p2 space space putest putestint space gascoal gascoalsq continentfe geocontrols thirdpartyfe N, ///
+	fmt(s s s  %6.3f s %6.3f s s s s s  s s s s   a2)  ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" )  ///
 	labels(`"\emph{Linear Combination:}"' `"\qquad \emph{Base + Inter. Coeff.}"' ///
 	`"\qquad Oil"' 	`"\qquad p-value"' `"\qquad Oil\(^2\)"'`"\qquad p-value"' `" "' ///
 	`"\emph{H0: No inv.-U shape}"' `"\qquad \emph{Base Coeff. p-value}"' `"\qquad \emph{Base + Inter. Coeff. p-value}"' `" "' ///
-	`"Gas, Gas\(^2\)"' `"Coal, Coal\(^2\)"' `"Year FEs"' ///
+	`"Gas, Gas\(^2\)"' `"Coal, Coal\(^2\)"' ///
 	`"Continent FEs"' `"Geo Controls"' `"Third Party"' `"\(N\)"')) ///
 	mtitles("Conf." "Conf." "H. Conf." "H. Conf." "Conf." "Conf." "H. Conf." "H. Conf.") ///
 	postfoot("\hline\hline \end{tabular}}")
@@ -3255,14 +3251,14 @@ foreach thirdparty of varlist $thirdparty_list {
 				* Test for inverse-U shaped relation with interaction
 				if (`i_con' == 1) {
 					ivreg2 `outcome' c.x c.x#0.thirdparty   c.x2 c.x2#0.thirdparty 0.thirdparty ///
-					i.year i.region if ccode != 900, cluster(ccode) partial(i.year i.region)
+					i.region if ccode != 900, cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "No"
 				}
 				else {
 					ivreg2 `outcome' c.x c.x#0.thirdparty c.x2 c.x2#0.thirdparty 0.thirdparty ///
-					i.year i.region `controls' if ccode != 900, ///
-					cluster(ccode) partial(i.year i.region)
+					i.region `controls' if ccode != 900, ///
+					cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "Yes"
 				}
@@ -3292,20 +3288,20 @@ foreach thirdparty of varlist $thirdparty_list {
 				if (`i_con' == 1) {
 					ivreg2 `outcome' c.x c.x#i.thirdparty c.x2 ///
 					c.x2#i.thirdparty i.thirdparty ///
-					i.year i.region if ccode != 900, cluster(ccode) partial(i.year i.region)
+					i.region if ccode != 900, cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "No"
 				}
 				else {
 					ivreg2 `outcome' c.x c.x#i.thirdparty ///
-					c.x2 c.x2#i.thirdparty i.thirdparty i.year i.region `controls' if ccode != 900, ///
-					cluster(ccode) partial(i.year i.region)
+					c.x2 c.x2#i.thirdparty i.thirdparty i.region `controls' if ccode != 900, ///
+					cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "Yes"
 				}
 				
 				* Save time controls indicators
-				estadd local yearfe = "Yes"
+				
 				estadd local continentfe = "Yes"
 				* Save auxiliary indicator for esttab
 				estadd local space = " "
@@ -3406,15 +3402,15 @@ foreach thirdparty of varlist $thirdparty_list {
 				if (`i_con' == 1) {
 					ivreg2 `outcome' c.x c.x#0.thirdparty   c.x2 c.x2#0.thirdparty 0.thirdparty ///
 					c.gas c.gas2 c.coal c.coal2 ///
-					i.year i.region if ccode != 900, cluster(ccode) partial(i.year i.region)
+					i.region if ccode != 900, cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "No"
 				}
 				else {
 					ivreg2 `outcome' c.x c.x#0.thirdparty c.x2 c.x2#0.thirdparty 0.thirdparty ///
 					c.gas c.gas2 c.coal c.coal2 ///
-					i.year i.region `controls' if ccode != 900, ///
-					cluster(ccode) partial(i.year i.region)
+					i.region `controls' if ccode != 900, ///
+					cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "Yes"
 				}
@@ -3443,21 +3439,21 @@ foreach thirdparty of varlist $thirdparty_list {
 				if (`i_con' == 1) {
 					ivreg2 `outcome' c.x c.x#i.thirdparty   c.x2 c.x2#i.thirdparty i.thirdparty ///
 					c.gas c.gas2 c.coal c.coal2 ///
-					i.year i.region if ccode != 900, cluster(ccode) partial(i.year i.region)
+					i.region if ccode != 900, cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "No"
 				}
 				else {
 					ivreg2 `outcome' c.x c.x#i.thirdparty c.x2 c.x2#i.thirdparty i.thirdparty ///
 					c.gas c.gas2 c.coal c.coal2 ///
-					i.year i.region `controls' if ccode != 900, ///
-					cluster(ccode) partial(i.year i.region)
+					i.region `controls' if ccode != 900, ///
+					cluster(ccode) partial(i.region)
 					* Save geographic controls indicator
 					estadd local geocontrols = "Yes"
 				}
 				
 				* Save time controls indicators
-				estadd local yearfe = "Yes"
+				
 				estadd local continentfe = "Yes"
 				* Save resource controls indicators
 				estadd local gascoal = "Yes"
@@ -3554,13 +3550,13 @@ ${main}5_output/tables/prio_int_armstrade_noaus.tex, replace ///
 	nobaselevels nonumbers ///
 	mgroups("Resource Value: Oil pc" "Resource Value: Sedimentary basins" , ///
 	pattern(1 0 0 0 1 0 0 0) prefix(\multicolumn{@span}{c}{) suffix(}) span) ///
- 	stats(space space b1s p1 b2s p2 space space putest putestint space gascoal gascoalsq yearfe continentfe geocontrols thirdpartyfe N, ///
-	fmt(s s s  %6.3f s %6.3f s s s s s  s s s s s   a2)  ///
+ 	stats(space space b1s p1 b2s p2 space space putest putestint space gascoal gascoalsq continentfe geocontrols thirdpartyfe N, ///
+	fmt(s s s  %6.3f s %6.3f s s s s s  s s s s   a2)  ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" )  ///
 	labels(`"\emph{Linear Combination:}"' `"\qquad \emph{Base + Inter. Coeff.}"' ///
 	`"\qquad Oil"' 	`"\qquad p-value"' `"\qquad Oil\(^2\)"'`"\qquad p-value"' `" "' ///
 	`"\emph{H0: No inv.-U shape}"' `"\qquad \emph{Base Coeff. p-value}"' `"\qquad \emph{Base + Inter. Coeff. p-value}"' `" "' ///
-	`"Gas, Gas\(^2\)"' `"Coal, Coal\(^2\)"' `"Year FEs"' ///
+	`"Gas, Gas\(^2\)"' `"Coal, Coal\(^2\)"' ///
 	`"Continent FEs"' `"Geo Controls"' `"Third Party"' `"\(N\)"')) ///
 	mtitles("Conf." "Conf." "H. Conf." "H. Conf." "Conf." "Conf." "H. Conf." "H. Conf.") ///
 	postfoot("\hline\hline \end{tabular}}")
@@ -3585,18 +3581,18 @@ forval i_indep = 1/2 {
 		forval i_con = 1/2 {
 			local counter = `counter' + 1
 			if (`i_con' == 1) {
-				logit `outcome' `independent' i.year i.region, cluster(ccode)
+				logit `outcome' `independent' i.region, cluster(ccode)
 				* Save geographic controls indicator
 				estadd local geocontrols = "No"
 			}
 			else {
-				logit `outcome' `independent' `controls' i.year i.region, cluster(ccode)
+				logit `outcome' `independent' `controls' i.region, cluster(ccode)
 				* Save geographic controls indicator
 				estadd local geocontrols = "Yes"
 			}
 			
 			* Save time controls indicators
-			estadd local yearfe = "Yes"
+			
 			estadd local continentfe = "Yes"
 			* Save auxiliary indicator for esttab
 			estadd local space = " "
@@ -3620,9 +3616,9 @@ keep(oil oil2 gas gas2 coal coal2 sedvol sedvol2) ///
 coeflabels(sedvol "Sed. Vol." sedvol2 "Sed. Vol.\(^2\)" oil "Oil" oil2 "Oil\(^2\)" gas "Gas" gas2 "Gas\(^2\)" coal "Coal" coal2 "Coal\(^2\)") se ///
 starlevels(\sym{*} 0.1 \sym{**} 0.05 \sym{***} 0.01) ///
  nobaselevels ///
- 	stats(yearfe continentfe geocontrols  peak N, fmt(s s s a2 a2) ///
+ 	stats(continentfe geocontrols  peak N, fmt(s s a2 a2) ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" )  ///
-	labels(`"Year FEs"' `"Continent FEs"' `"Geo Controls"' `"Peak"' `"\(N\)"')) ///
+	labels(`"Continent FEs"' `"Geo Controls"' `"Peak"' `"\(N\)"')) ///
 		mtitles("Conf." "Conf." "H. Conf." "H. Conf." "Conf." "Conf." "H. Conf." "H. Conf.") ///
 			postfoot("\hline\hline \end{tabular}}")	
 		
@@ -3630,6 +3626,8 @@ starlevels(\sym{*} 0.1 \sym{**} 0.05 \sym{***} 0.01) ///
 	
 	
 est clear
+
+use ${main}2_processed/data_regressions_panel.dta, replace
 	
 global outcome_list "conflict conflict2"
 local controls "lnarea  abslat elevavg elevstd temp precip lnpop14  "
