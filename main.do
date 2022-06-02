@@ -1040,7 +1040,7 @@ starlevels(\sym{*} 0.1 \sym{**} 0.05 \sym{***} 0.01) ///
  	stats(space putest space gas coal continentfe geocontrols   peak N, fmt(s s s s s s a2 a2) ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}"  "\multicolumn{1}{c}{@}"  "\multicolumn{1}{c}{@}" )  ///
 	labels(`"\emph{H0: No inv.-U shape}"' `"\qquad \emph{p-value}"' `" "' `"Gas, Gas\(^2\)"' `"Coal, Coal\(^2\)"' `"Continent FEs"'  `"Geo Controls"' `"Peak"' `"\(N\)"')) ///
-		mtitles("Conf." "Conf." "H. Conf." "H. Conf." "Conf." "Conf." "H. Conf." "H. Conf.") ///
+		mtitles("Conf." "Conf." "War" "War" "Conf." "Conf." "War" "War") ///
 			postfoot("\hline\hline \end{tabular}}")	
 			
 		
@@ -1369,7 +1369,7 @@ ${main}5_output/tables/prio_int_bases.tex, replace ///
 	`"\emph{H0: No inv.-U shape}"' `"\qquad \emph{Base Coeff. p-value}"' `"\qquad \emph{Base + Inter. Coeff. p-value}"' `" "' ///
 	`"Gas, Gas\(^2\)"' `"Coal, Coal\(^2\)"' ///
 	`"Continent FEs"' `"Geo Controls"' `"Third Party"' `"\(N\)"')) ///
-	mtitles("Conf." "Conf." "H. Conf." "H. Conf." "Conf." "Conf." "H. Conf." "H. Conf.") ///
+	mtitles("Conf." "Conf." "War" "War" "Conf." "Conf." "War" "War") ///
 	postfoot("\hline\hline \end{tabular}}")
 
 
@@ -1700,7 +1700,7 @@ ${main}5_output/tables/prio_int_armstrade.tex, replace ///
 	`"\emph{H0: No inv.-U shape}"' `"\qquad \emph{Base Coeff. p-value}"' `"\qquad \emph{Base + Inter. Coeff. p-value}"' `" "' ///
 	`"Gas, Gas\(^2\)"' `"Coal, Coal\(^2\)"' ///
 	`"Continent FEs"' `"Geo Controls"' `"Third Party"' `"\(N\)"')) ///
-	mtitles("Conf." "Conf." "H. Conf." "H. Conf." "Conf." "Conf." "H. Conf." "H. Conf.") ///
+	mtitles("Conf." "Conf." "War" "War" "Conf." "Conf." "War" "War") ///
 	postfoot("\hline\hline \end{tabular}}")
 
 	
@@ -1840,7 +1840,7 @@ starlevels(\sym{*} 0.1 \sym{**} 0.05 \sym{***} 0.01) ///
  	stats(space putest space continentfe geocontrols  peak N, fmt(s s s s s a2 a2) ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}"  "\multicolumn{1}{c}{@}"  "\multicolumn{1}{c}{@}" )  ///
 	labels(`"\emph{H0: No inv.-U shape}"' `"\qquad \emph{p-value}"' `" "' `"Continent FEs"' `"Geo Controls"' `"Peak"' `"\(N\)"')) ///
-		mtitles("Conf." "Conf." "H. Conf." "H. Conf." "Conf." "Conf." "H. Conf." "H. Conf.") ///
+		mtitles("Conf." "Conf." "War" "War" "Conf." "Conf." "War" "War") ///
 			postfoot("\hline\hline \end{tabular}}")	
 
 
@@ -2170,7 +2170,7 @@ ${main}5_output/tables/prio_int_unus065.tex, replace ///
 	`"\emph{H0: No inv.-U shape}"' `"\qquad \emph{Base Coeff. p-value}"' `"\qquad \emph{Base + Inter. Coeff. p-value}"' `" "' ///
 	`"Gas, Gas\(^2\)"' `"Coal, Coal\(^2\)"' ///
 	`"Continent FEs"' `"Geo Controls"' `"Third Party"' `"\(N\)"')) ///
-	mtitles("Conf." "Conf." "H. Conf." "H. Conf." "Conf." "Conf." "H. Conf." "H. Conf.") ///
+	mtitles("Conf." "Conf." "War" "War" "Conf." "Conf." "War" "War") ///
 	postfoot("\hline\hline \end{tabular}}")
 
 
@@ -2502,7 +2502,7 @@ ${main}5_output/tables/prio_int_arms_closeus.tex, replace ///
 	`"\emph{H0: No inv.-U shape}"' `"\qquad \emph{Base Coeff. p-value}"' `"\qquad \emph{Base + Inter. Coeff. p-value}"' `" "' ///
 	`"Gas, Gas\(^2\)"' `"Coal, Coal\(^2\)"' ///
 	`"Continent FEs"' `"Geo Controls"' `"Third Party"' `"\(N\)"')) ///
-	mtitles("Conf." "Conf." "H. Conf." "H. Conf." "Conf." "Conf." "H. Conf." "H. Conf.") ///
+	mtitles("Conf." "Conf." "War" "War" "Conf." "Conf." "War" "War") ///
 	postfoot("\hline\hline \end{tabular}}")
 
 			
@@ -2829,7 +2829,7 @@ ${main}5_output/tables/prio_int_arms_ussr.tex, replace ///
 	`"\emph{H0: No inv.-U shape}"' `"\qquad \emph{Base Coeff. p-value}"' `"\qquad \emph{Base + Inter. Coeff. p-value}"' `" "' ///
 	`"Gas, Gas\(^2\)"' `"Coal, Coal\(^2\)"' ///
 	`"Continent FEs"' `"Geo Controls"' `"Third Party"' `"\(N\)"')) ///
-	mtitles("Conf." "Conf." "H. Conf." "H. Conf." "Conf." "Conf." "H. Conf." "H. Conf.") ///
+	mtitles("Conf." "Conf." "War" "War" "Conf." "Conf." "War" "War") ///
 	postfoot("\hline\hline \end{tabular}}")
 
 
@@ -2929,7 +2929,7 @@ starlevels(\sym{*} 0.1 \sym{**} 0.05 \sym{***} 0.01) ///
  	stats(space putest space gas coal continentfe geocontrols peak N, fmt(s s s s s a2 a2) ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}"  "\multicolumn{1}{c}{@}"  "\multicolumn{1}{c}{@}" )  ///
 	labels(`"\emph{H0: No inv.-U shape}"' `"\qquad \emph{p-value}"' `" "' `"Gas, Gas\(^2\)"' `"Coal, Coal\(^2\)"' `"Continent FEs"' `"Geo Controls"' `"Peak"' `"\(N\)"')) ///
-		mtitles("Conf." "Conf." "H. Conf." "H. Conf." "Conf." "Conf." "H. Conf." "H. Conf.") ///
+		mtitles("Conf." "Conf." "War" "War" "Conf." "Conf." "War" "War") ///
 			postfoot("\hline\hline \end{tabular}}")	
 
 
@@ -3261,7 +3261,7 @@ ${main}5_output/tables/prio_int_bases_noaus.tex, replace ///
 	`"\emph{H0: No inv.-U shape}"' `"\qquad \emph{Base Coeff. p-value}"' `"\qquad \emph{Base + Inter. Coeff. p-value}"' `" "' ///
 	`"Gas, Gas\(^2\)"' `"Coal, Coal\(^2\)"' ///
 	`"Continent FEs"' `"Geo Controls"' `"Third Party"' `"\(N\)"')) ///
-	mtitles("Conf." "Conf." "H. Conf." "H. Conf." "Conf." "Conf." "H. Conf." "H. Conf.") ///
+	mtitles("Conf." "Conf." "War" "War" "Conf." "Conf." "War" "War") ///
 	postfoot("\hline\hline \end{tabular}}")
 
 	
@@ -3592,7 +3592,7 @@ ${main}5_output/tables/prio_int_armstrade_noaus.tex, replace ///
 	`"\emph{H0: No inv.-U shape}"' `"\qquad \emph{Base Coeff. p-value}"' `"\qquad \emph{Base + Inter. Coeff. p-value}"' `" "' ///
 	`"Gas, Gas\(^2\)"' `"Coal, Coal\(^2\)"' ///
 	`"Continent FEs"' `"Geo Controls"' `"Third Party"' `"\(N\)"')) ///
-	mtitles("Conf." "Conf." "H. Conf." "H. Conf." "Conf." "Conf." "H. Conf." "H. Conf.") ///
+	mtitles("Conf." "Conf." "War" "War" "Conf." "Conf." "War" "War") ///
 	postfoot("\hline\hline \end{tabular}}")
 
 
@@ -3653,7 +3653,7 @@ starlevels(\sym{*} 0.1 \sym{**} 0.05 \sym{***} 0.01) ///
  	stats(continentfe geocontrols  peak N, fmt(s s a2 a2) ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" )  ///
 	labels(`"Continent FEs"' `"Geo Controls"' `"Peak"' `"\(N\)"')) ///
-		mtitles("Conf." "Conf." "H. Conf." "H. Conf." "Conf." "Conf." "H. Conf." "H. Conf.") ///
+		mtitles("Conf." "Conf." "War" "War" "Conf." "Conf." "War" "War") ///
 			postfoot("\hline\hline \end{tabular}}")	
 		
 
@@ -3707,7 +3707,7 @@ starlevels(\sym{*} 0.1 \sym{**} 0.05 \sym{***} 0.01) ///
  	stats(yearfe countryfe geocontrols  peak N, fmt(s s s a2 a2) ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" )  ///
 	labels(`"Year FEs"' `"Country FEs"' `"Geo Controls"' `"Peak"' `"\(N\)"')) ///
-		mtitles("Conf." "Conf." "H. Conf." "H. Conf." "Conf." "Conf." "H. Conf." "H. Conf.") ///
+		mtitles("Conf." "Conf." "War" "War" "Conf." "Conf." "War" "War") ///
 			postfoot("\hline\hline \end{tabular}}")	
 
 			
