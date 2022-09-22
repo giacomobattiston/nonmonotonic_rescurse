@@ -4,7 +4,7 @@ set more off
 if "`c(username)'" == "giacomobattiston" { 
         cd "/Users/giacomobattiston/"
         global main "Dropbox/ricerca_dropbox/bbf/technology_conflict/"
-		global git "Documents/GitHub/technology_conflict/"
+		global git "PycharmProjects/technology_conflict/"
 }
 else {
 	cd "C:\Users\Franceschin\Documents\GitHub\technology_conflict"
@@ -1351,12 +1351,12 @@ drop x x2
 
 esttab reg5 reg6 reg7 reg8 reg1 reg2 reg3 reg4 using ///
 ${main}5_output/tables/prio_int_bases.tex, replace ///
- drop(`controls'  1.thirdparty 1.thirdparty#c.x 1.thirdparty#c.x2 ///
+ drop(`controls'  ///
 	gas gas2 coal coal2) /// 
-	coeflabels(x "Res. Value" x2 "Res. Value\(^2\)" 1.thirdparty "Third Party Presence" c.oil#1.thirdparty ///
-	"Oil \(\times\) Third Party" 1.thirdparty#c.oil "Oil \(\times\) Third Party" ///
-	1.thirdparty#c.oil2 "Oil\(^2\) \(\times\) Third Party" c.oil2#1.thirdparty ///
-	"Oil\(^2\) \(\times\) Third Party" oil "Oil" oil2 "Oil\(^2\)") se ///
+	coeflabels(x "Res. Value" x2 "Res. Value\(^2\)" 1.thirdparty "Third Party Presence" c.x#1.thirdparty ///
+	"Res. Value \(\times\) Third Party" 1.thirdparty#c.x "Res. Value \(\times\) Third Party" ///
+	1.thirdparty#c.x2 "Res. Value\(^2\) \(\times\) Third Party" c.x2#1.thirdparty ///
+	"Res. Value\(^2\) \(\times\) Third Party" oil "Oil" oil2 "Oil\(^2\)") se ///
 	starlevels(\sym{*} 0.1 \sym{**} 0.05 \sym{***} 0.01) ///
 	nobaselevels nonumbers ///
 	mgroups("Resource Value: Oil pc" "Resource Value: Sedimentary basins" , ///
@@ -1682,12 +1682,12 @@ drop x x2
 
 esttab reg5 reg6 reg7 reg8 reg1 reg2 reg3 reg4 using ///
 ${main}5_output/tables/prio_int_armstrade.tex, replace ///
- drop(`controls'  1.thirdparty 1.thirdparty#c.x 1.thirdparty#c.x2 ///
+ drop(`controls'  ///
 	gas gas2 coal coal2) /// 
-	coeflabels(x "Res. Value" x2 "Res. Value\(^2\)" 1.thirdparty "Third Party Presence" c.oil#1.thirdparty ///
-	"Oil \(\times\) Third Party" 1.thirdparty#c.oil "Oil \(\times\) Third Party" ///
-	1.thirdparty#c.oil2 "Oil\(^2\) \(\times\) Third Party" c.oil2#1.thirdparty ///
-	"Oil\(^2\) \(\times\) Third Party" oil "Oil" oil2 "Oil\(^2\)") se ///
+	coeflabels(x "Res. Value" x2 "Res. Value\(^2\)" 1.thirdparty "Third Party Presence" c.x#1.thirdparty ///
+	"Res. Value \(\times\) Third Party" 1.thirdparty#c.x "Res. Value \(\times\) Third Party" ///
+	1.thirdparty#c.x2 "Res. Value\(^2\) \(\times\) Third Party" c.x2#1.thirdparty ///
+	"Res. Value\(^2\) \(\times\) Third Party" oil "Oil" oil2 "Oil\(^2\)") se ///
 	starlevels(\sym{*} 0.1 \sym{**} 0.05 \sym{***} 0.01) ///
 	nobaselevels nonumbers ///
 	mgroups("Resource Value: Oil pc" "Resource Value: Sedimentary basins" , ///
@@ -2152,12 +2152,12 @@ drop x x2
 
 esttab reg5 reg6 reg7 reg8 reg1 reg2 reg3 reg4 using ///
 ${main}5_output/tables/prio_int_unus065.tex, replace ///
- drop(`controls'  1.thirdparty 1.thirdparty#c.x 1.thirdparty#c.x2 ///
+ drop(`controls'  ///
 	gas gas2 coal coal2) /// 
-	coeflabels(x "Res. Value" x2 "Res. Value\(^2\)" 1.thirdparty "Third Party Presence" c.oil#1.thirdparty ///
-	"Oil \(\times\) Third Party" 1.thirdparty#c.oil "Oil \(\times\) Third Party" ///
-	1.thirdparty#c.oil2 "Oil\(^2\) \(\times\) Third Party" c.oil2#1.thirdparty ///
-	"Oil\(^2\) \(\times\) Third Party" oil "Oil" oil2 "Oil\(^2\)") se ///
+	coeflabels(x "Res. Value" x2 "Res. Value\(^2\)" 1.thirdparty "Third Party Presence" c.x#1.thirdparty ///
+	"Res. Value \(\times\) Third Party" 1.thirdparty#c.x "Res. Value \(\times\) Third Party" ///
+	1.thirdparty#c.x2 "Res. Value\(^2\) \(\times\) Third Party" c.x2#1.thirdparty ///
+	"Res. Value\(^2\) \(\times\) Third Party" oil "Oil" oil2 "Oil\(^2\)") se ///
 	starlevels(\sym{*} 0.1 \sym{**} 0.05 \sym{***} 0.01) ///
 	nobaselevels nonumbers ///
 	mgroups("Resource Value: Oil pc" "Resource Value: Sedimentary basins" , ///
@@ -2484,12 +2484,12 @@ drop x x2
 
 esttab reg5 reg6 reg7 reg8 reg1 reg2 reg3 reg4 using ///
 ${main}5_output/tables/prio_int_arms_closeus.tex, replace ///
- drop(`controls'  1.thirdparty 1.thirdparty#c.x 1.thirdparty#c.x2 ///
+ drop(`controls'  ///
 	gas gas2 coal coal2) /// 
-	coeflabels(x "Res. Value" x2 "Res. Value\(^2\)" 1.thirdparty "Third Party Presence" c.oil#1.thirdparty ///
-	"Oil \(\times\) Third Party" 1.thirdparty#c.oil "Oil \(\times\) Third Party" ///
-	1.thirdparty#c.oil2 "Oil\(^2\) \(\times\) Third Party" c.oil2#1.thirdparty ///
-	"Oil\(^2\) \(\times\) Third Party" oil "Oil" oil2 "Oil\(^2\)") se ///
+	coeflabels(x "Res. Value" x2 "Res. Value\(^2\)" 1.thirdparty "Third Party Presence" c.x#1.thirdparty ///
+	"Res. Value \(\times\) Third Party" 1.thirdparty#c.x "Res. Value \(\times\) Third Party" ///
+	1.thirdparty#c.x2 "Res. Value\(^2\) \(\times\) Third Party" c.x2#1.thirdparty ///
+	"Res. Value\(^2\) \(\times\) Third Party" oil "Oil" oil2 "Oil\(^2\)") se ///
 	starlevels(\sym{*} 0.1 \sym{**} 0.05 \sym{***} 0.01) ///
 	nobaselevels nonumbers ///
 	mgroups("Resource Value: Oil pc" "Resource Value: Sedimentary basins" , ///
@@ -2811,12 +2811,12 @@ drop x x2
 
 esttab reg5 reg6 reg7 reg8 reg1 reg2 reg3 reg4 using ///
 ${main}5_output/tables/prio_int_arms_ussr.tex, replace ///
- drop(`controls'  1.thirdparty 1.thirdparty#c.x 1.thirdparty#c.x2 ///
+ drop(`controls'  ///
 	gas gas2 coal coal2) /// 
-	coeflabels(x "Res. Value" x2 "Res. Value\(^2\)" 1.thirdparty "Third Party Presence" c.oil#1.thirdparty ///
-	"Oil \(\times\) Third Party" 1.thirdparty#c.oil "Oil \(\times\) Third Party" ///
-	1.thirdparty#c.oil2 "Oil\(^2\) \(\times\) Third Party" c.oil2#1.thirdparty ///
-	"Oil\(^2\) \(\times\) Third Party" oil "Oil" oil2 "Oil\(^2\)") se ///
+	coeflabels(x "Res. Value" x2 "Res. Value\(^2\)" 1.thirdparty "Third Party Presence" c.x#1.thirdparty ///
+	"Res. Value \(\times\) Third Party" 1.thirdparty#c.x "Res. Value \(\times\) Third Party" ///
+	1.thirdparty#c.x2 "Res. Value\(^2\) \(\times\) Third Party" c.x2#1.thirdparty ///
+	"Res. Value\(^2\) \(\times\) Third Party" oil "Oil" oil2 "Oil\(^2\)") se ///
 	starlevels(\sym{*} 0.1 \sym{**} 0.05 \sym{***} 0.01) ///
 	nobaselevels nonumbers ///
 	mgroups("Resource Value: Oil pc" "Resource Value: Sedimentary basins" , ///
@@ -3243,12 +3243,12 @@ drop x x2
 
 esttab reg5 reg6 reg7 reg8 reg1 reg2 reg3 reg4 using ///
 ${main}5_output/tables/prio_int_bases_noaus.tex, replace ///
- drop(`controls'  1.thirdparty 1.thirdparty#c.x 1.thirdparty#c.x2 ///
+ drop(`controls'  ///
 	gas gas2 coal coal2) /// 
-	coeflabels(x "Res. Value" x2 "Res. Value\(^2\)" 1.thirdparty "Third Party Presence" c.oil#1.thirdparty ///
-	"Oil \(\times\) Third Party" 1.thirdparty#c.oil "Oil \(\times\) Third Party" ///
-	1.thirdparty#c.oil2 "Oil\(^2\) \(\times\) Third Party" c.oil2#1.thirdparty ///
-	"Oil\(^2\) \(\times\) Third Party" oil "Oil" oil2 "Oil\(^2\)") se ///
+	coeflabels(x "Res. Value" x2 "Res. Value\(^2\)" 1.thirdparty "Third Party Presence" c.x#1.thirdparty ///
+	"Res. Value \(\times\) Third Party" 1.thirdparty#c.x "Res. Value \(\times\) Third Party" ///
+	1.thirdparty#c.x2 "Res. Value\(^2\) \(\times\) Third Party" c.x2#1.thirdparty ///
+	"Res. Value\(^2\) \(\times\) Third Party" oil "Oil" oil2 "Oil\(^2\)") se ///
 	starlevels(\sym{*} 0.1 \sym{**} 0.05 \sym{***} 0.01) ///
 	nobaselevels nonumbers ///
 	mgroups("Resource Value: Oil pc" "Resource Value: Sedimentary basins" , ///
@@ -3574,12 +3574,12 @@ drop x x2
 
 esttab reg5 reg6 reg7 reg8 reg1 reg2 reg3 reg4 using ///
 ${main}5_output/tables/prio_int_armstrade_noaus.tex, replace ///
- drop(`controls'  1.thirdparty 1.thirdparty#c.x 1.thirdparty#c.x2 ///
+ drop(`controls'  ///
 	gas gas2 coal coal2) /// 
-	coeflabels(x "Res. Value" x2 "Res. Value\(^2\)" 1.thirdparty "Third Party Presence" c.oil#1.thirdparty ///
-	"Oil \(\times\) Third Party" 1.thirdparty#c.oil "Oil \(\times\) Third Party" ///
-	1.thirdparty#c.oil2 "Oil\(^2\) \(\times\) Third Party" c.oil2#1.thirdparty ///
-	"Oil\(^2\) \(\times\) Third Party" oil "Oil" oil2 "Oil\(^2\)") se ///
+	coeflabels(x "Res. Value" x2 "Res. Value\(^2\)" 1.thirdparty "Third Party Presence" c.x#1.thirdparty ///
+	"Res. Value \(\times\) Third Party" 1.thirdparty#c.x "Res. Value \(\times\) Third Party" ///
+	1.thirdparty#c.x2 "Res. Value\(^2\) \(\times\) Third Party" c.x2#1.thirdparty ///
+	"Res. Value\(^2\) \(\times\) Third Party" oil "Oil" oil2 "Oil\(^2\)") se ///
 	starlevels(\sym{*} 0.1 \sym{**} 0.05 \sym{***} 0.01) ///
 	nobaselevels nonumbers ///
 	mgroups("Resource Value: Oil pc" "Resource Value: Sedimentary basins" , ///
@@ -3656,8 +3656,6 @@ starlevels(\sym{*} 0.1 \sym{**} 0.05 \sym{***} 0.01) ///
 		mtitles("Conf." "Conf." "War" "War" "Conf." "Conf." "War" "War") ///
 			postfoot("\hline\hline \end{tabular}}")	
 		
-
-	
 	
 est clear
 
@@ -3679,7 +3677,7 @@ foreach outcome of varlist $outcome_list {
 			estadd local geocontrols = "No"
 		}
 		else {
-			ivreg2 `outcome' c.sedvol#c.oil_price c.sedvol2#c.oil_price2 `controls' i.year i.ccode, cluster(ccode) partial(i.year i.ccode)
+			ivreg2 `outcome' c.sedvol#c.oil_price c.sedvol2#c.oil_price2  i.year i.ccode c.year#i.region, cluster(ccode) partial(i.year i.ccode)
 			* Save geographic controls indicator
 			estadd local geocontrols = "Yes"
 		}
@@ -3700,13 +3698,13 @@ foreach outcome of varlist $outcome_list {
 
 esttab reg* using ///
 ${main}5_output/tables/prioallprices.tex, replace ///
+keep(c.sedvol#c.oil_price c.sedvol2#c.oil_price2) ///
 coeflabels(c.sedvol#c.oil_price  "Sed. Vol. \(\times\) Oil Price" c.sedvol2#c.oil_price2  "Sed. Vol.\(^2\) \(\times\) Oil Price\(^2\)") se ///
 starlevels(\sym{*} 0.1 \sym{**} 0.05 \sym{***} 0.01) ///
  nobaselevels ///
- drop(`controls') ///
  	stats(yearfe countryfe geocontrols  peak N, fmt(s s s a2 a2) ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" )  ///
-	labels(`"Year FEs"' `"Country FEs"' `"Geo Controls"' `"Peak"' `"\(N\)"')) ///
+	labels(`"Year FEs"' `"Country FEs"' `"Regional trends"' `"Peak"' `"\(N\)"')) ///
 		mtitles("Conf." "Conf." "War" "War" "Conf." "Conf." "War" "War") ///
 			postfoot("\hline\hline \end{tabular}}")	
 
