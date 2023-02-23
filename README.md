@@ -43,7 +43,7 @@ In the third section of the do-file (lines 1666-2303), we prepare the final data
 We first open the dataset used by Hunziker and Cederman (2017); then, we merge it with data by Ashraf and Galor (2013), and with all of the intermediate datasets prepared in the second section.
 Finally, we assign labels and save the final dataset.
 
-In the fourth section of the do-file (lines 2303-11685), we produce all of the tables in the paper, preceded by a comment highlighting the table that is being produced.
+In the fourth section of the do-file (lines 2303-10110), we produce all of the tables in the paper, preceded by a comment highlighting the table that is being produced.
 
-In the fifth and last section (lines 11685-11752), we produce all of the figures shown in the paper, again in the same order as they appear and preceded by a comment reporting the reference in the paper.
+In the fifth and last section (lines 10111-10178), we produce all of the figures shown in the paper, again in the same order as they appear and preceded by a comment reporting the reference in the paper.
 

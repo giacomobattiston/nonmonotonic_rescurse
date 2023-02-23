@@ -9781,7 +9781,7 @@ ${main}5_output/tables/prio_int_bases_interv_all.tex, replace ///
 	postfoot("\hline\hline \end{tabular}}")
 	
 			
-* Table 3: WB resources and sedimentary basins, by US armstrade
+* Table: WB resources and sedimentary basins, by US armstrade
 
 global thirdparty_list "armstrade1950"
 local counter 0
