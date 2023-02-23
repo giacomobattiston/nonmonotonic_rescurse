@@ -1626,7 +1626,7 @@ gen net_exp_dummy=net_exp >0 if !missing(net_exp)
 
 gen net_exp_usa_dummy=net_exp_usa >0 if !missing(net_exp_usa)
 
-keep ccode year net_exp_dummy net_exp_usa_dummy 
+keep ccode year net_exp_dummy net_exp_usa_dummy tot_export tot_import
 drop if ccode==0
 save ${main}/2_processed/wtf_all.dta,replace
 
@@ -3066,6 +3066,7 @@ ${main}5_output/tables/prio_int_armstrade.tex, replace ///
 	
 * Table 4: Interventions, bases, and arms
 
+preserve
 clear
 
 use ${main}2_processed/data_interventions_panel.dta, replace
@@ -3123,7 +3124,7 @@ prehead("\begin{tabular}{l*{9}{c}} \hline\hline  &\multicolumn{8}{c}{y = Militar
 stats(space  continentfe geocontrols yearfe  N, fmt(s s s s a2)  ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" )  ///
 	labels(`" "'   `"Continent FEs"' `"Geo Controls"' `"Year FEs"'  `"\(N\)"')) 
-	
+restore
 
 
 	
@@ -3188,6 +3189,8 @@ starlevels(\sym{*} 0.1 \sym{**} 0.05 \sym{***} 0.01) ///
 
 
 est clear
+
+global outcome_list "conflict conflict2"
 			
 * Table A3: Conflict and resources		
 
@@ -3259,12 +3262,13 @@ forval i_indep = 1/2 {
 }
 }
 
+
 esttab reg* using ///
 ${main}5_output/tables/prioall.tex, replace ///
 coeflabels(sedvol "Sed. Vol." sedvol2 "Sed. Vol.\(^2\)" oil "Oil" oil2 "Oil\(^2\)" gas "Gas" gas2 "Gas\(^2\)" coal "Coal" coal2 "Coal\(^2\)" lnarea "Area, (log Km\(^2\))" abslat "Absolute latitude" elevavg "Average altitude (Km)" elevstd "Dispersion in altitude" temp "Average temperature (C)" precip "Average precipitation (mm)" lnpop14 "Population, logs") se ///
 starlevels(\sym{*} 0.1 \sym{**} 0.05 \sym{***} 0.01) ///
-order(oil oil2 gas gas2 coal coal2 sedvol sedvol2 `controls') ///
  nobaselevels ///
+ order(oil oil2 gas gas2 coal coal2 sedvol sedvol2 `control') ///
  	stats(space space putest space continentfe geocontrols  peak N, fmt(s s s s s s a2 a2) ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}"  "\multicolumn{1}{c}{@}"  "\multicolumn{1}{c}{@}" )  ///
 	labels(`" "' `"\emph{H0: No inv.-U shape \cite{lind2010or}}"' `"\qquad \emph{p-value}"' `" "' `"Continent FEs"' `"Geo Controls"' `"Peak"' `"\(N\)"')) ///
