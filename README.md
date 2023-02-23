@@ -33,17 +33,17 @@ The do-file main.do performs the whole analysis, and it calls the gwno.do to ass
 
 The do file main.do  receives as input all of the raw datasets we use in our analysis, explained in the data appendix of the paper, and produces as output all of the tables and graphs included in the paper.
 
-The first section in the paper (lines 1 to 13), assigns the right path for raw data and output folders based on the Stata user performing the analysis.
+The first section in the paper (lines 1 to 14), assigns the right path for raw data and output folders based on the Stata user performing the analysis and adds an ado used to retrieve Stock and Yogo critical values in the IV estimation.
 
-The second section of the do-file (lines 14 to 535) prepares all of the data for the analysis.
-In particular, it opens the raw datasets containing information on for oil prices, countries' UNGA voting affinity with the US, arms trade with the US and the USSR, US bases presence (merged with distance information), and distance from the US.
+The second section of the do-file (lines 15 to 1666) prepares all of the data for the analysis.
+It opens the raw datasets containing information on for oil prices, countries' UNGA voting affinity with the US, arms trade with the US and the USSR, US bases presence (merged with distance information), distance from the US, and arms trade.
 Each of the previous is transformed into intermediate (processed) datasets.
 
-In the third section of the do-file (lines 536-890), we prepare the final dataset used in the analysis.
+In the third section of the do-file (lines 1666-2303), we prepare the final datasets used in the analysis.
 We first open the dataset used by Hunziker and Cederman (2017); then, we merge it with data by Ashraf and Galor (2013), and with all of the intermediate datasets prepared in the second section.
 Finally, we assign labels and save the final dataset.
 
-In the fourth section of the do-file (lines 890-3664), we produce all of the tables in the paper, in the same order as the appear in the paper, and preceded by a comment highlighting the table that is being produced.
+In the fourth section of the do-file (lines 2303-11685), we produce all of the tables in the paper, preceded by a comment highlighting the table that is being produced.
 
-In the fifth and last section (lines 3664-3712), we produce all of the figures shown in the paper, again in the same order as they appear and preceded by a comment reporting the reference in the paper.
+In the fifth and last section (lines 11685-11752), we produce all of the figures shown in the paper, again in the same order as they appear and preceded by a comment reporting the reference in the paper.
 
