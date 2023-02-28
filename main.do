@@ -2403,7 +2403,7 @@ starlevels(\sym{*} 0.1 \sym{**} 0.05 \sym{***} 0.01) ///
  drop(`controls' gas* coal*) ///
  	stats(space space putest space gas coal continentfe geocontrols   peak N, fmt(s s s s s s s a2 a2) ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}"  "\multicolumn{1}{c}{@}"  "\multicolumn{1}{c}{@}" )  ///
-	labels(`" "' `"\emph{H0: No inv.-U shape \cite{lind2010or}}"' `"\qquad \emph{p-value}"' `" "' `"Gas, Gas\(^2\)"' `"Coal, Coal\(^2\)"' `"Continent FEs"'  `"Geo Controls"' `"Peak"' `"\(N\)"')) ///
+	labels(`" "' `"\emph{H0: No inv.-U shape \citep{lind2010or}}"' `"\qquad \emph{p-value}"' `" "' `"Gas, Gas\(^2\)"' `"Coal, Coal\(^2\)"' `"Continent FEs"'  `"Geo Controls"' `"Peak"' `"\(N\)"')) ///
 		mtitles("Conf." "Conf." "War" "War" "Conf." "Conf." "War" "War") ///
 			postfoot("\hline\hline \end{tabular}}")	
 
@@ -2727,8 +2727,8 @@ ${main}5_output/tables/prio_int_bases.tex, replace ///
 	fmt(s s s %6.3f s %6.3f s s s s s  s s s s   a2)  ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" )  ///
 	labels(`" "' `"\emph{Countries with US troops}"' ///
-	`"\qquad \emph{Res. Value \(+\) Res. Value \(\times\) US troops dummy}"' 	`"\qquad \emph{p-value}"' `"\qquad \emph{Res. Value\(^2\) \(+\) Res. Value\(^2\) \(\times\) US troops dummy}"'`"\qquad \emph{p-value}"' `" "' ///
-	`"\emph{H0: No inv.-U shape \cite{lind2010or}}"' `"\qquad \emph{p-value: countries w/o US troops}"' `"\qquad \emph{p-value: countries w/ US troops}"' `" "' ///
+	`"\qquad \emph{Res. Value \(+\) Res. Value \(\times\) US troops}"' 	`"\qquad \emph{p-value}"' `"\qquad \emph{Res. Value\(^2\) \(+\) Res. Value\(^2\) \(\times\) US troops}"'`"\qquad \emph{p-value}"' `" "' ///
+	`"\emph{H0: No inv.-U shape \citep{lind2010or}}"' `"\qquad \emph{p-value: countries w/o US troops}"' `"\qquad \emph{p-value: countries w/ US troops}"' `" "' ///
 	`"Gas, Gas\(^2\)"' `"Coal, Coal\(^2\)"' ///
 	`"Continent FEs"' `"Geo Controls"' `"\(N\)"')) ///
 	mtitles("Conf." "Conf." "War" "War" "Conf." "Conf." "War" "War") ///
@@ -3055,8 +3055,8 @@ ${main}5_output/tables/prio_int_armstrade.tex, replace ///
 	fmt(s s s %6.3f s %6.3f s s s s s  s s s   a2)  ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" )  ///
 	labels(`" "' `"\emph{Countries with US arms' trade}"' ///
-	`"\qquad \emph{Res. Value \(+\) Res. Value \(\times\) US arms' trade dummy}"' 	`"\qquad \emph{p-value}"' `"\qquad \emph{Res. Value\(^2\) \(+\) Res. Value\(^2\) \(\times\) US arms' trade dummy}"'`"\qquad \emph{p-value}"' `" "' ///
-	`"\emph{H0: No inv.-U shape \cite{lind2010or}}"' `"\qquad \emph{p-value: countries w/o US arms' trade}"' `"\qquad \emph{p-value: countries w/ US  arms' trade}"' `" "' ///
+	`"\qquad \emph{Res. Value \(+\) Res. Value \(\times\) US arms' trade}"' 	`"\qquad \emph{p-value}"' `"\qquad \emph{Res. Value\(^2\) \(+\) Res. Value\(^2\) \(\times\) US arms' trade}"'`"\qquad \emph{p-value}"' `" "' ///
+	`"\emph{H0: No inv.-U shape \citep{lind2010or}}"' `"\qquad \emph{p-value: countries w/o US arms' trade}"' `"\qquad \emph{p-value: countries w/ US  arms' trade}"' `" "' ///
 	`"Gas, Gas\(^2\)"' `"Coal, Coal\(^2\)"' ///
 	`"Continent FEs"' `"Geo Controls"' `"\(N\)"')) ///
 	mtitles("Conf." "Conf." "War" "War" "Conf." "Conf." "War" "War") ///
@@ -3184,7 +3184,7 @@ ${main}5_output/tables/balance.tex, replace ///
 label se ///
 starlevels(\sym{*} 0.1 \sym{**} 0.05 \sym{***} 0.01) ///
  nobaselevels nonumbers nomtitles ///
- 	postfoot("\hline\hline \end{tabular}") 	 prehead("\begin{tabular}{l*{5}{c}} \hline\hline  &\multicolumn{4}{c}{y = US Involvement} \\ \cmidrule(lr){2-3} \cmidrule(lr){4-5} &\multicolumn{2}{c}{Involvment: Bases}&\multicolumn{2}{c}{Involvement: Arms' Trade} \\") nonumbers
+ 	postfoot("\hline\hline \end{tabular}") 	 prehead("\begin{tabular}{l*{5}{c}} \hline\hline  &\multicolumn{4}{c}{y = US Involvement} \\ \cmidrule(lr){2-3} \cmidrule(lr){4-5} &\multicolumn{2}{c}{Involvment: Troops}&\multicolumn{2}{c}{Involvement: Arms' Trade} \\") nonumbers
 	
 
 
@@ -3271,7 +3271,7 @@ starlevels(\sym{*} 0.1 \sym{**} 0.05 \sym{***} 0.01) ///
  order(oil oil2 gas gas2 coal coal2 sedvol sedvol2 `control') ///
  	stats(space space putest space continentfe geocontrols  peak N, fmt(s s s s s s a2 a2) ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}"  "\multicolumn{1}{c}{@}"  "\multicolumn{1}{c}{@}" )  ///
-	labels(`" "' `"\emph{H0: No inv.-U shape \cite{lind2010or}}"' `"\qquad \emph{p-value}"' `" "' `"Continent FEs"' `"Geo Controls"' `"Peak"' `"\(N\)"')) ///
+	labels(`" "' `"\emph{H0: No inv.-U shape \citep{lind2010or}}"' `"\qquad \emph{p-value}"' `" "' `"Continent FEs"' `"Geo Controls"' `"Peak"' `"\(N\)"')) ///
 		mtitles("Conf." "Conf." "War" "War" "Conf." "Conf." "War" "War") ///
 			postfoot("\hline\hline \end{tabular}}")	
 
@@ -3887,8 +3887,8 @@ ${main}5_output/tables/prio_int_arms_ussr.tex, replace ///
 	fmt(s s s %6.3f s %6.3f s s s s s s s s   a2)  ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" )  ///
 	labels(`" "' `"\emph{Countries w/ USSR arms' trade}"' ///
-	`"\qquad \emph{Res. Value \(+\) Res. Value \(\times\) USSR arms' trade dummy}"' 	`"\qquad \emph{p-value}"' `"\qquad \emph{Res. Value\(^2\) \(+\) Res. Value\(^2\) \(\times\) USSR arms' trade dummy}"'`"\qquad \emph{p-value}"' `" "' ///
-	`"\emph{H0: No inv.-U shape \cite{lind2010or}}"' `"\qquad \emph{p-value: countries w/o USSR arms' trade}"' `"\qquad \emph{p-value: countries w/ USSR  arms' trade}"' `" "' ///
+	`"\qquad \emph{Res. Value \(+\) Res. Value \(\times\) USSR arms' trade}"' 	`"\qquad \emph{p-value}"' `"\qquad \emph{Res. Value\(^2\) \(+\) Res. Value\(^2\) \(\times\) USSR arms' trade}"'`"\qquad \emph{p-value}"' `" "' ///
+	`"\emph{H0: No inv.-U shape \citep{lind2010or}}"' `"\qquad \emph{p-value: countries w/o USSR arms' trade}"' `"\qquad \emph{p-value: countries w/ USSR  arms' trade}"' `" "' ///
 	`"Gas, Gas\(^2\)"' `"Coal, Coal\(^2\)"' ///
 	`"Continent FEs"' `"Geo Controls"' `"\(N\)"')) ///
 	mtitles("Conf." "Conf." "War" "War" "Conf." "Conf." "War" "War") ///
@@ -4217,8 +4217,8 @@ ${main}5_output/tables/prio_int_bases_milexpc.tex, replace ///
 	fmt(s s s %6.3f s %6.3f s s s s s  s s s s   a2)  ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" )  ///
 	labels(`" "' `"\emph{Countries with US troops}"' ///
-	`"\qquad \emph{Res. Value \(+\) Res. Value \(\times\) US troops dummy}"' 	`"\qquad \emph{p-value}"' `"\qquad \emph{Res. Value\(^2\) \(+\) Res. Value\(^2\) \(\times\) US troops dummy}"'`"\qquad \emph{p-value}"' `" "' ///
-	`"\emph{H0: No inv.-U shape \cite{lind2010or}}"' `"\qquad \emph{p-value: countries w/o US troops}"' `"\qquad \emph{p-value: countries w/ US troops}"' `" "' ///
+	`"\qquad \emph{Res. Value \(+\) Res. Value \(\times\) US troops}"' 	`"\qquad \emph{p-value}"' `"\qquad \emph{Res. Value\(^2\) \(+\) Res. Value\(^2\) \(\times\) US troops}"'`"\qquad \emph{p-value}"' `" "' ///
+	`"\emph{H0: No inv.-U shape \citep{lind2010or}}"' `"\qquad \emph{p-value: countries w/o US troops}"' `"\qquad \emph{p-value: countries w/ US troops}"' `" "' ///
 	`"Gas, Gas\(^2\)"' `"Coal, Coal\(^2\)"' ///
 	`"Continent FEs"' `"Geo Controls"' `"\(N\)"')) ///
 	mtitles("Conf." "Conf." "War" "War" "Conf." "Conf." "War" "War") ///
@@ -4548,8 +4548,8 @@ ${main}5_output/tables/prio_int_armstrade_milexpc.tex, replace ///
 	fmt(s s s %6.3f s %6.3f s s s s s  s s s   a2)  ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" )  ///
 	labels(`" "' `"\emph{Countries with US arms' trade}"' ///
-	`"\qquad \emph{Res. Value \(+\) Res. Value \(\times\) US arms' trade dummy}"' 	`"\qquad \emph{p-value}"' `"\qquad \emph{Res. Value\(^2\) \(+\) Res. Value\(^2\) \(\times\) US arms' trade dummy}"'`"\qquad \emph{p-value}"' `" "' ///
-	`"\emph{H0: No inv.-U shape \cite{lind2010or}}"' `"\qquad \emph{p-value: countries w/o US arms' trade}"' `"\qquad \emph{p-value: countries w/ US  arms' trade}"' `" "' ///
+	`"\qquad \emph{Res. Value \(+\) Res. Value \(\times\) US arms' trade}"' 	`"\qquad \emph{p-value}"' `"\qquad \emph{Res. Value\(^2\) \(+\) Res. Value\(^2\) \(\times\) US arms' trade}"'`"\qquad \emph{p-value}"' `" "' ///
+	`"\emph{H0: No inv.-U shape \citep{lind2010or}}"' `"\qquad \emph{p-value: countries w/o US arms' trade}"' `"\qquad \emph{p-value: countries w/ US  arms' trade}"' `" "' ///
 	`"Gas, Gas\(^2\)"' `"Coal, Coal\(^2\)"' ///
 	`"Continent FEs"' `"Geo Controls"' `"\(N\)"')) ///
 	mtitles("Conf." "Conf." "War" "War" "Conf." "Conf." "War" "War") ///
@@ -4734,8 +4734,8 @@ ${main}5_output/tables/prio_int_bases_dist.tex, replace ///
 	fmt(s s s %6.3f s %6.3f s s s s s  s s s s s  a2)  ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" )  ///
 	labels(`" "' `"\emph{Countries with US troops}"' ///
-	`"\qquad \emph{Res. Value \(+\) Res. Value \(\times\) US troops dummy}"' 	`"\qquad \emph{p-value}"' `"\qquad \emph{Res. Value\(^2\) \(+\) Res. Value\(^2\) \(\times\) US troops dummy}"'`"\qquad \emph{p-value}"' `" "' ///
-	`"\emph{H0: No inv.-U shape \cite{lind2010or}}"' `"\qquad \emph{p-value: countries w/o US troops}"' `"\qquad \emph{p-value: countries w/ US troops}"' `" "' ///
+	`"\qquad \emph{Res. Value \(+\) Res. Value \(\times\) US troops}"' 	`"\qquad \emph{p-value}"' `"\qquad \emph{Res. Value\(^2\) \(+\) Res. Value\(^2\) \(\times\) US troops}"'`"\qquad \emph{p-value}"' `" "' ///
+	`"\emph{H0: No inv.-U shape \citep{lind2010or}}"' `"\qquad \emph{p-value: countries w/o US troops}"' `"\qquad \emph{p-value: countries w/ US troops}"' `" "' ///
 	`"Gas, Gas\(^2\)"' `"Coal, Coal\(^2\)"' ///
 	`"Continent FEs"' `"Geo Controls"' `"\% w/ bases"'  `"\(N\)"')) ///
 	mtitles("Oil" "Sed. Bas." "Oil" "Sed. Bas." "Oil" "Sed. Bas." "Oil" "Sed. Bas." "Oil" "Sed. Bas.") ///
@@ -5065,8 +5065,8 @@ ${main}5_output/tables/prio_int_bases_no0.tex, replace ///
 	fmt(s s s %6.3f s %6.3f s s s s s  s s s s   a2)  ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" )  ///
 	labels(`" "' `"\emph{Countries with US troops}"' ///
-	`"\qquad \emph{Res. Value \(+\) Res. Value \(\times\) US troops dummy}"' 	`"\qquad \emph{p-value}"' `"\qquad \emph{Res. Value\(^2\) \(+\) Res. Value\(^2\) \(\times\) US troops dummy}"'`"\qquad \emph{p-value}"' `" "' ///
-	`"\emph{H0: No inv.-U shape \cite{lind2010or}}"' `"\qquad \emph{p-value: countries w/o US troops}"' `"\qquad \emph{p-value: countries w/ US troops}"' `" "' ///
+	`"\qquad \emph{Res. Value \(+\) Res. Value \(\times\) US troops}"' 	`"\qquad \emph{p-value}"' `"\qquad \emph{Res. Value\(^2\) \(+\) Res. Value\(^2\) \(\times\) US troops}"'`"\qquad \emph{p-value}"' `" "' ///
+	`"\emph{H0: No inv.-U shape \citep{lind2010or}}"' `"\qquad \emph{p-value: countries w/o US troops}"' `"\qquad \emph{p-value: countries w/ US troops}"' `" "' ///
 	`"Gas, Gas\(^2\)"' `"Coal, Coal\(^2\)"' ///
 	`"Continent FEs"' `"Geo Controls"' `"\(N\)"')) ///
 	mtitles("Conf." "Conf." "War" "War" "Conf." "Conf." "War" "War") ///
@@ -5393,8 +5393,8 @@ ${main}5_output/tables/prio_int_armstrade_no0.tex, replace ///
 	fmt(s s s %6.3f s %6.3f s s s s s  s s s   a2)  ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" )  ///
 	labels(`" "' `"\emph{Countries with US arms' trade}"' ///
-	`"\qquad \emph{Res. Value \(+\) Res. Value \(\times\) US arms' trade dummy}"' 	`"\qquad \emph{p-value}"' `"\qquad \emph{Res. Value\(^2\) \(+\) Res. Value\(^2\) \(\times\) US arms' trade dummy}"'`"\qquad \emph{p-value}"' `" "' ///
-	`"\emph{H0: No inv.-U shape \cite{lind2010or}}"' `"\qquad \emph{p-value: countries w/o US arms' trade}"' `"\qquad \emph{p-value: countries w/ US  arms' trade}"' `" "' ///
+	`"\qquad \emph{Res. Value \(+\) Res. Value \(\times\) US arms' trade}"' 	`"\qquad \emph{p-value}"' `"\qquad \emph{Res. Value\(^2\) \(+\) Res. Value\(^2\) \(\times\) US arms' trade}"'`"\qquad \emph{p-value}"' `" "' ///
+	`"\emph{H0: No inv.-U shape \citep{lind2010or}}"' `"\qquad \emph{p-value: countries w/o US arms' trade}"' `"\qquad \emph{p-value: countries w/ US  arms' trade}"' `" "' ///
 	`"Gas, Gas\(^2\)"' `"Coal, Coal\(^2\)"' ///
 	`"Continent FEs"' `"Geo Controls"' `"\(N\)"')) ///
 	mtitles("Conf." "Conf." "War" "War" "Conf." "Conf." "War" "War") ///
@@ -5497,7 +5497,7 @@ starlevels(\sym{*} 0.1 \sym{**} 0.05 \sym{***} 0.01) ///
  drop(`controls' gas* coal*) ///
  	stats(space space putest space gas coal continentfe geocontrols peak N, fmt(s s s s s s a2 a2) ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}"  "\multicolumn{1}{c}{@}"  "\multicolumn{1}{c}{@}" )  ///
-	labels(`" "' `"\emph{H0: No inv.-U shape \cite{lind2010or}}"' `"\qquad \emph{p-value}"' `" "' `"Gas, Gas\(^2\)"' `"Coal, Coal\(^2\)"' `"Continent FEs"' `"Geo Controls"' `"Peak"' `"\(N\)"')) ///
+	labels(`" "' `"\emph{H0: No inv.-U shape \citep{lind2010or}}"' `"\qquad \emph{p-value}"' `" "' `"Gas, Gas\(^2\)"' `"Coal, Coal\(^2\)"' `"Continent FEs"' `"Geo Controls"' `"Peak"' `"\(N\)"')) ///
 		mtitles("Conf." "Conf." "War" "War" "Conf." "Conf." "War" "War") ///
 			postfoot("\hline\hline \end{tabular}}")	
 
@@ -5826,8 +5826,8 @@ ${main}5_output/tables/prio_int_bases_noaus.tex, replace ///
 	fmt(s s s %6.3f s %6.3f s s s s s  s s s   a2)  ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" )  ///
 	labels(`" "' `"\emph{Countries with US troops}"' ///
-	`"\qquad \emph{Res. Value \(+\) Res. Value \(\times\) US troops dummy}"' 	`"\qquad \emph{p-value}"' `"\qquad \emph{Res. Value\(^2\) \(+\) Res. Value\(^2\) \(\times\) US troops dummy}"'`"\qquad \emph{p-value}"' `" "' ///
-	`"\emph{H0: No inv.-U shape \cite{lind2010or}}"' `"\qquad \emph{p-value: countries w/o US troops}"' `"\qquad \emph{p-value: countries w/ US troops}"' `" "' ///
+	`"\qquad \emph{Res. Value \(+\) Res. Value \(\times\) US troops}"' 	`"\qquad \emph{p-value}"' `"\qquad \emph{Res. Value\(^2\) \(+\) Res. Value\(^2\) \(\times\) US troops}"'`"\qquad \emph{p-value}"' `" "' ///
+	`"\emph{H0: No inv.-U shape \citep{lind2010or}}"' `"\qquad \emph{p-value: countries w/o US troops}"' `"\qquad \emph{p-value: countries w/ US troops}"' `" "' ///
 	`"Gas, Gas\(^2\)"' `"Coal, Coal\(^2\)"' ///
 	`"Continent FEs"' `"Geo Controls"' `"\(N\)"')) ///
 	mtitles("Conf." "Conf." "War" "War" "Conf." "Conf." "War" "War") ///
@@ -6157,8 +6157,8 @@ ${main}5_output/tables/prio_int_armstrade_noaus.tex, replace ///
 	fmt(s s s %6.3f s %6.3f s s s s s  s s s   a2)  ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" )  ///
 	labels(`" "' `"\emph{Countries with US arms' trade}"' ///
-	`"\qquad \emph{Res. Value \(+\) Res. Value \(\times\) US arms' trade dummy}"' 	`"\qquad \emph{p-value}"' `"\qquad \emph{Res. Value\(^2\) \(+\) Res. Value\(^2\) \(\times\) US arms' trade dummy}"'`"\qquad \emph{p-value}"' `" "' ///
-	`"\emph{H0: No inv.-U shape \cite{lind2010or}}"' `"\qquad \emph{p-value: countries w/o US arms' trade}"' `"\qquad \emph{p-value: countries w/ US  arms' trade}"' `" "' ///
+	`"\qquad \emph{Res. Value \(+\) Res. Value \(\times\) US arms' trade}"' 	`"\qquad \emph{p-value}"' `"\qquad \emph{Res. Value\(^2\) \(+\) Res. Value\(^2\) \(\times\) US arms' trade}"'`"\qquad \emph{p-value}"' `" "' ///
+	`"\emph{H0: No inv.-U shape \citep{lind2010or}}"' `"\qquad \emph{p-value: countries w/o US arms' trade}"' `"\qquad \emph{p-value: countries w/ US  arms' trade}"' `" "' ///
 	`"Gas, Gas\(^2\)"' `"Coal, Coal\(^2\)"' ///
 	`"Continent FEs"' `"Geo Controls"' `"\(N\)"')) ///
 	mtitles("Conf." "Conf." "War" "War" "Conf." "Conf." "War" "War") ///
@@ -6548,8 +6548,8 @@ ${main}5_output/tables/prio_int_unus065.tex, replace ///
 	fmt(s s s %6.3f s %6.3f s s s s  s s s s   a2)  ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" )  ///
 	labels(`" "' `"\emph{Countries with US UNGA affinity}"' ///
-	`"\qquad \emph{Res. Value \(+\) Res. Value \(\times\) US UNGA affinity dummy}"' 	`"\qquad \emph{p-value}"' `"\qquad \emph{Res. Value\(^2\) \(+\) Res. Value\(^2\) \(\times\) US UNGA affinity dummy}"'`"\qquad \emph{p-value}"' `" "' ///
-	`"\emph{H0: No inv.-U shape \cite{lind2010or}}"' `"\qquad \emph{p-value: countries w/o US UNGA affinity}"' `"\qquad \emph{p-value: countries w/ US UNGA affinity}"' `" "' ///
+	`"\qquad \emph{Res. Value \(+\) Res. Value \(\times\) US UNGA affinity}"' 	`"\qquad \emph{p-value}"' `"\qquad \emph{Res. Value\(^2\) \(+\) Res. Value\(^2\) \(\times\) US UNGA affinity}"'`"\qquad \emph{p-value}"' `" "' ///
+	`"\emph{H0: No inv.-U shape \citep{lind2010or}}"' `"\qquad \emph{p-value: countries w/o US UNGA affinity}"' `"\qquad \emph{p-value: countries w/ US UNGA affinity}"' `" "' ///
 	`"Gas, Gas\(^2\)"' `"Coal, Coal\(^2\)"' ///
 	`"Continent FEs"' `"Geo Controls"' `"\(N\)"')) ///
 	mtitles("Conf." "Conf." "War" "War" "Conf." "Conf." "War" "War") ///
@@ -6879,7 +6879,7 @@ ${main}5_output/tables/prio_int_arms_closeus.tex, replace ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" )  ///
 	labels(`" "' `"\emph{Countries close to US}"' ///
 	`"\qquad \emph{Res. Value \(+\) Res. Value \(\times\) Close to US}"' 	`"\qquad \emph{p-value}"' `"\qquad \emph{Res. Value\(^2\) \(+\) Res. Value\(^2\) \(\times\) Close to US}"'`"\qquad \emph{p-value}"' `" "' ///
-	`"\emph{H0: No inv.-U shape \cite{lind2010or}}"' `"\qquad \emph{p-value: countries close to US}"' `"\qquad \emph{p-value: countries close to US}"' `" "' ///
+	`"\emph{H0: No inv.-U shape \citep{lind2010or}}"' `"\qquad \emph{p-value: countries close to US}"' `"\qquad \emph{p-value: countries close to US}"' `" "' ///
 	`"Gas, Gas\(^2\)"' `"Coal, Coal\(^2\)"' ///
 	`"Continent FEs"' `"Geo Controls"' `"\(N\)"')) ///
 	mtitles("Conf." "Conf." "War" "War" "Conf." "Conf." "War" "War") ///
@@ -7274,8 +7274,8 @@ ${main}5_output/tables/prio_int_bases_oilnet.tex, replace ///
 	fmt(s s s %6.3f s %6.3f s s s s s  s s s s   a2)  ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" )  ///
 	labels(`" "' `"\emph{Countries with US troops}"' ///
-	`"\qquad \emph{Res. Value \(+\) Res. Value \(\times\) US troops dummy}"' 	`"\qquad \emph{p-value}"' `"\qquad \emph{Res. Value\(^2\) \(+\) Res. Value\(^2\) \(\times\) US troops dummy}"'`"\qquad \emph{p-value}"' `" "' ///
-	`"\emph{H0: No inv.-U shape \cite{lind2010or}}"' `"\qquad \emph{p-value: countries w/o US troops}"' `"\qquad \emph{p-value: countries w/ US troops}"' `" "' ///
+	`"\qquad \emph{Res. Value \(+\) Res. Value \(\times\) US troops}"' 	`"\qquad \emph{p-value}"' `"\qquad \emph{Res. Value\(^2\) \(+\) Res. Value\(^2\) \(\times\) US troops}"'`"\qquad \emph{p-value}"' `" "' ///
+	`"\emph{H0: No inv.-U shape \citep{lind2010or}}"' `"\qquad \emph{p-value: countries w/o US troops}"' `"\qquad \emph{p-value: countries w/ US troops}"' `" "' ///
 	`"Gas, Gas\(^2\)"' `"Coal, Coal\(^2\)"' ///
 	`"Continent FEs"' `"Geo Controls"' `"\(N\)"')) ///
 	mtitles("Conf." "Conf." "War" "War" "Conf." "Conf." "War" "War") ///
@@ -7602,8 +7602,8 @@ ${main}5_output/tables/prio_int_armstrade_oilnet.tex, replace ///
 	fmt(s s s %6.3f s %6.3f s s s s s  s s s   a2)  ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" )  ///
 	labels(`" "' `"\emph{Countries with US arms' trade}"' ///
-	`"\qquad \emph{Res. Value \(+\) Res. Value \(\times\) US arms' trade dummy}"' 	`"\qquad \emph{p-value}"' `"\qquad \emph{Res. Value\(^2\) \(+\) Res. Value\(^2\) \(\times\) US arms' trade dummy}"'`"\qquad \emph{p-value}"' `" "' ///
-	`"\emph{H0: No inv.-U shape \cite{lind2010or}}"' `"\qquad \emph{p-value: countries w/o US arms' trade}"' `"\qquad \emph{p-value: countries w/ US  arms' trade}"' `" "' ///
+	`"\qquad \emph{Res. Value \(+\) Res. Value \(\times\) US arms' trade}"' 	`"\qquad \emph{p-value}"' `"\qquad \emph{Res. Value\(^2\) \(+\) Res. Value\(^2\) \(\times\) US arms' trade}"'`"\qquad \emph{p-value}"' `" "' ///
+	`"\emph{H0: No inv.-U shape \citep{lind2010or}}"' `"\qquad \emph{p-value: countries w/o US arms' trade}"' `"\qquad \emph{p-value: countries w/ US  arms' trade}"' `" "' ///
 	`"Gas, Gas\(^2\)"' `"Coal, Coal\(^2\)"' ///
 	`"Continent FEs"' `"Geo Controls"' `"\(N\)"')) ///
 	mtitles("Conf." "Conf." "War" "War" "Conf." "Conf." "War" "War") ///
@@ -7733,7 +7733,7 @@ starlevels(\sym{*} 0.1 \sym{**} 0.05 \sym{***} 0.01) ///
  drop(`controls' _cons) ///
  	stats(Fstat space limlsize10 limlsize15 limlsize20 limlsize25 space space putest space continentfe geocontrols    N, fmt(s s s s s s s s s s s  a2) ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}"  "\multicolumn{1}{c}{@}"  "\multicolumn{1}{c}{@}" )  ///
-	labels(`"CD F-stat"' `" "'  `"Stock-Yogo crit. value (10\% max. IV size)"' `"Stock-Yogo crit. value (15\% max. IV size)"' `"Stock-Yogo crit. value (20\% max. IV size)"' `"Stock-Yogo crit. value (25\% max. IV size)"' `" "' `"\emph{H0: No inv.-U shape \cite{lind2010or}}"' `"\qquad \emph{p-value}"' `" "' `"Continent FEs"'  `"Geo Controls"'  `"\(N\)"')) ///
+	labels(`"CD F-stat"' `" "'  `"Stock-Yogo crit. value (10\% max. IV size)"' `"Stock-Yogo crit. value (15\% max. IV size)"' `"Stock-Yogo crit. value (20\% max. IV size)"' `"Stock-Yogo crit. value (25\% max. IV size)"' `" "' `"\emph{H0: No inv.-U shape \citep{lind2010or}}"' `"\qquad \emph{p-value}"' `" "' `"Continent FEs"'  `"Geo Controls"'  `"\(N\)"')) ///
 		mtitles("Conf." "Conf." "Conf.""War" "War" "War") ///
 			postfoot("\hline\hline \end{tabular}}")	
 	
@@ -8060,8 +8060,8 @@ ${main}5_output/tables/prio_int_bases_milexpc2.tex, replace ///
 	fmt(s s s %6.3f s %6.3f s s s s s  s s s s   a2)  ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" )  ///
 	labels(`" "' `"\emph{Countries with US troops}"' ///
-	`"\qquad \emph{Res. Value \(+\) Res. Value \(\times\) US troops dummy}"' 	`"\qquad \emph{p-value}"' `"\qquad \emph{Res. Value\(^2\) \(+\) Res. Value\(^2\) \(\times\) US troops dummy}"'`"\qquad \emph{p-value}"' `" "' ///
-	`"\emph{H0: No inv.-U shape \cite{lind2010or}}"' `"\qquad \emph{p-value: countries w/o US troops}"' `"\qquad \emph{p-value: countries w/ US troops}"' `" "' ///
+	`"\qquad \emph{Res. Value \(+\) Res. Value \(\times\) US troops}"' 	`"\qquad \emph{p-value}"' `"\qquad \emph{Res. Value\(^2\) \(+\) Res. Value\(^2\) \(\times\) US troops}"'`"\qquad \emph{p-value}"' `" "' ///
+	`"\emph{H0: No inv.-U shape \citep{lind2010or}}"' `"\qquad \emph{p-value: countries w/o US troops}"' `"\qquad \emph{p-value: countries w/ US troops}"' `" "' ///
 	`"Gas, Gas\(^2\)"' `"Coal, Coal\(^2\)"' ///
 	`"Continent FEs"' `"Geo Controls"' `"\(N\)"')) ///
 	mtitles("Conf." "Conf." "War" "War" "Conf." "Conf." "War" "War") ///
@@ -8391,8 +8391,8 @@ ${main}5_output/tables/prio_int_armstrade_milexpc2.tex, replace ///
 	fmt(s s s %6.3f s %6.3f s s s s s  s s s   a2)  ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" )  ///
 	labels(`" "' `"\emph{Countries with US arms' trade}"' ///
-	`"\qquad \emph{Res. Value \(+\) Res. Value \(\times\) US arms' trade dummy}"' 	`"\qquad \emph{p-value}"' `"\qquad \emph{Res. Value\(^2\) \(+\) Res. Value\(^2\) \(\times\) US arms' trade dummy}"'`"\qquad \emph{p-value}"' `" "' ///
-	`"\emph{H0: No inv.-U shape \cite{lind2010or}}"' `"\qquad \emph{p-value: countries w/o US arms' trade}"' `"\qquad \emph{p-value: countries w/ US  arms' trade}"' `" "' ///
+	`"\qquad \emph{Res. Value \(+\) Res. Value \(\times\) US arms' trade}"' 	`"\qquad \emph{p-value}"' `"\qquad \emph{Res. Value\(^2\) \(+\) Res. Value\(^2\) \(\times\) US arms' trade}"'`"\qquad \emph{p-value}"' `" "' ///
+	`"\emph{H0: No inv.-U shape \citep{lind2010or}}"' `"\qquad \emph{p-value: countries w/o US arms' trade}"' `"\qquad \emph{p-value: countries w/ US  arms' trade}"' `" "' ///
 	`"Gas, Gas\(^2\)"' `"Coal, Coal\(^2\)"' ///
 	`"Continent FEs"' `"Geo Controls"' `"\(N\)"')) ///
 	mtitles("Conf." "Conf." "War" "War" "Conf." "Conf." "War" "War") ///
@@ -8719,8 +8719,8 @@ ${main}5_output/tables/prio_int_bases_milexpc_int.tex, replace ///
 	fmt(s s s %6.3f s %6.3f s s s s s  s s s s   a2)  ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" )  ///
 	labels(`" "' `"\emph{Countries with US troops}"' ///
-	`"\qquad \emph{Res. Value \(+\) Res. Value \(\times\) US troops dummy}"' 	`"\qquad \emph{p-value}"' `"\qquad \emph{Res. Value\(^2\) \(+\) Res. Value\(^2\) \(\times\) US troops dummy}"'`"\qquad \emph{p-value}"' `" "' ///
-	`"\emph{H0: No inv.-U shape \cite{lind2010or}}"' `"\qquad \emph{p-value: countries w/o US troops}"' `"\qquad \emph{p-value: countries w/ US troops}"' `" "' ///
+	`"\qquad \emph{Res. Value \(+\) Res. Value \(\times\) US troops}"' 	`"\qquad \emph{p-value}"' `"\qquad \emph{Res. Value\(^2\) \(+\) Res. Value\(^2\) \(\times\) US troops}"'`"\qquad \emph{p-value}"' `" "' ///
+	`"\emph{H0: No inv.-U shape \citep{lind2010or}}"' `"\qquad \emph{p-value: countries w/o US troops}"' `"\qquad \emph{p-value: countries w/ US troops}"' `" "' ///
 	`"Gas, Gas\(^2\)"' `"Coal, Coal\(^2\)"' ///
 	`"Continent FEs"' `"Geo Controls"' `"\(N\)"')) ///
 	mtitles("Conf." "Conf." "War" "War" "Conf." "Conf." "War" "War") ///
@@ -9050,8 +9050,8 @@ ${main}5_output/tables/prio_int_armstrade_milexpc_int.tex, replace ///
 	fmt(s s s %6.3f s %6.3f s s s s s  s s s   a2)  ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" )  ///
 	labels(`" "' `"\emph{Countries with US arms' trade}"' ///
-	`"\qquad \emph{Res. Value \(+\) Res. Value \(\times\) US arms' trade dummy}"' 	`"\qquad \emph{p-value}"' `"\qquad \emph{Res. Value\(^2\) \(+\) Res. Value\(^2\) \(\times\) US arms' trade dummy}"'`"\qquad \emph{p-value}"' `" "' ///
-	`"\emph{H0: No inv.-U shape \cite{lind2010or}}"' `"\qquad \emph{p-value: countries w/o US arms' trade}"' `"\qquad \emph{p-value: countries w/ US  arms' trade}"' `" "' ///
+	`"\qquad \emph{Res. Value \(+\) Res. Value \(\times\) US arms' trade}"' 	`"\qquad \emph{p-value}"' `"\qquad \emph{Res. Value\(^2\) \(+\) Res. Value\(^2\) \(\times\) US arms' trade}"'`"\qquad \emph{p-value}"' `" "' ///
+	`"\emph{H0: No inv.-U shape \citep{lind2010or}}"' `"\qquad \emph{p-value: countries w/o US arms' trade}"' `"\qquad \emph{p-value: countries w/ US  arms' trade}"' `" "' ///
 	`"Gas, Gas\(^2\)"' `"Coal, Coal\(^2\)"' ///
 	`"Continent FEs"' `"Geo Controls"' `"\(N\)"')) ///
 	mtitles("Conf." "Conf." "War" "War" "Conf." "Conf." "War" "War") ///
@@ -9237,8 +9237,8 @@ ${main}5_output/tables/prio_int_bases_dist_c2.tex, replace ///
 	fmt(s s s %6.3f s %6.3f s s s s s  s s s s s  a2)  ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" )  ///
 	labels(`" "' `"\emph{Countries with US troops}"' ///
-	`"\qquad \emph{Res. Value \(+\) Res. Value \(\times\) US troops dummy}"' 	`"\qquad \emph{p-value}"' `"\qquad \emph{Res. Value\(^2\) \(+\) Res. Value\(^2\) \(\times\) US troops dummy}"'`"\qquad \emph{p-value}"' `" "' ///
-	`"\emph{H0: No inv.-U shape \cite{lind2010or}}"' `"\qquad \emph{p-value: countries w/o US troops}"' `"\qquad \emph{p-value: countries w/ US troops}"' `" "' ///
+	`"\qquad \emph{Res. Value \(+\) Res. Value \(\times\) US troops}"' 	`"\qquad \emph{p-value}"' `"\qquad \emph{Res. Value\(^2\) \(+\) Res. Value\(^2\) \(\times\) US troops}"'`"\qquad \emph{p-value}"' `" "' ///
+	`"\emph{H0: No inv.-U shape \citep{lind2010or}}"' `"\qquad \emph{p-value: countries w/o US troops}"' `"\qquad \emph{p-value: countries w/ US troops}"' `" "' ///
 	`"Gas, Gas\(^2\)"' `"Coal, Coal\(^2\)"' ///
 	`"Continent FEs"' `"Geo Controls"' `"\% w/ bases"'  `"\(N\)"')) ///
 	mtitles("Oil" "Sed. Bas." "Oil" "Sed. Bas." "Oil" "Sed. Bas." "Oil" "Sed. Bas." "Oil" "Sed. Bas.") ///
@@ -9422,8 +9422,8 @@ ${main}5_output/tables/prio_int_bases_dist500.tex, replace ///
 	fmt(s s s %6.3f s %6.3f s s s s s  s s s s s  a2)  ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" )  ///
 	labels(`" "' `"\emph{Countries with US troops}"' ///
-	`"\qquad \emph{Res. Value \(+\) Res. Value \(\times\) US troops dummy}"' 	`"\qquad \emph{p-value}"' `"\qquad \emph{Res. Value\(^2\) \(+\) Res. Value\(^2\) \(\times\) US troops dummy}"'`"\qquad \emph{p-value}"' `" "' ///
-	`"\emph{H0: No inv.-U shape \cite{lind2010or}}"' `"\qquad \emph{p-value: countries w/o US troops}"' `"\qquad \emph{p-value: countries w/ US troops}"' `" "' ///
+	`"\qquad \emph{Res. Value \(+\) Res. Value \(\times\) US troops}"' 	`"\qquad \emph{p-value}"' `"\qquad \emph{Res. Value\(^2\) \(+\) Res. Value\(^2\) \(\times\) US troops}"'`"\qquad \emph{p-value}"' `" "' ///
+	`"\emph{H0: No inv.-U shape \citep{lind2010or}}"' `"\qquad \emph{p-value: countries w/o US troops}"' `"\qquad \emph{p-value: countries w/ US troops}"' `" "' ///
 	`"Gas, Gas\(^2\)"' `"Coal, Coal\(^2\)"' ///
 	`"Continent FEs"' `"Geo Controls"' `"\% w/ bases"'  `"\(N\)"')) ///
 	mtitles("Oil" "Sed. Bas." "Oil" "Sed. Bas." "Oil" "Sed. Bas." "Oil" "Sed. Bas." "Oil" "Sed. Bas.") ///
@@ -9777,8 +9777,8 @@ ${main}5_output/tables/prio_int_bases_interv_all.tex, replace ///
 	fmt(s s s %6.3f s %6.3f s s s s s  s s s s   a2)  ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" )  ///
 	labels(`" "' `"\emph{Countries with US troops}"' ///
-	`"\qquad \emph{Res. Value \(+\) Res. Value \(\times\) US troops dummy}"' 	`"\qquad \emph{p-value}"' `"\qquad \emph{Res. Value\(^2\) \(+\) Res. Value\(^2\) \(\times\) US troops dummy}"'`"\qquad \emph{p-value}"' `" "' ///
-	`"\emph{H0: No inv.-U shape \cite{lind2010or}}"' `"\qquad \emph{p-value: countries w/o US troops}"' `"\qquad \emph{p-value: countries w/ US troops}"' `" "' ///
+	`"\qquad \emph{Res. Value \(+\) Res. Value \(\times\) US troops}"' 	`"\qquad \emph{p-value}"' `"\qquad \emph{Res. Value\(^2\) \(+\) Res. Value\(^2\) \(\times\) US troops}"'`"\qquad \emph{p-value}"' `" "' ///
+	`"\emph{H0: No inv.-U shape \citep{lind2010or}}"' `"\qquad \emph{p-value: countries w/o US troops}"' `"\qquad \emph{p-value: countries w/ US troops}"' `" "' ///
 	`"Gas, Gas\(^2\)"' `"Coal, Coal\(^2\)"' ///
 	`"Continent FEs"' `"Geo Controls"' `"\(N\)"')) ///
 	mtitles("Conf." "Conf." "War" "War" "Conf." "Conf." "War" "War") ///
@@ -10105,8 +10105,8 @@ ${main}5_output/tables/prio_int_armstrade_interv_all.tex, replace ///
 	fmt(s s s %6.3f s %6.3f s s s s s  s s s   a2)  ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" )  ///
 	labels(`" "' `"\emph{Countries with US arms' trade}"' ///
-	`"\qquad \emph{Res. Value \(+\) Res. Value \(\times\) US arms' trade dummy}"' 	`"\qquad \emph{p-value}"' `"\qquad \emph{Res. Value\(^2\) \(+\) Res. Value\(^2\) \(\times\) US arms' trade dummy}"'`"\qquad \emph{p-value}"' `" "' ///
-	`"\emph{H0: No inv.-U shape \cite{lind2010or}}"' `"\qquad \emph{p-value: countries w/o US arms' trade}"' `"\qquad \emph{p-value: countries w/ US  arms' trade}"' `" "' ///
+	`"\qquad \emph{Res. Value \(+\) Res. Value \(\times\) US arms' trade}"' 	`"\qquad \emph{p-value}"' `"\qquad \emph{Res. Value\(^2\) \(+\) Res. Value\(^2\) \(\times\) US arms' trade}"'`"\qquad \emph{p-value}"' `" "' ///
+	`"\emph{H0: No inv.-U shape \citep{lind2010or}}"' `"\qquad \emph{p-value: countries w/o US arms' trade}"' `"\qquad \emph{p-value: countries w/ US  arms' trade}"' `" "' ///
 	`"Gas, Gas\(^2\)"' `"Coal, Coal\(^2\)"' ///
 	`"Continent FEs"' `"Geo Controls"' `"\(N\)"')) ///
 	mtitles("Conf." "Conf." "War" "War" "Conf." "Conf." "War" "War") ///
