@@ -2,11 +2,11 @@
 - [Introduction](#technology_conflict)
 - [Folder structure](#folder-structure)
 
-# technology_conflict
+# nonmonotonic_rescurse
 
 Collaborators: Giacomo Battiston, Matteo Bizzarri and Riccardo Franceschin
 
-Replication files for the paper "Third parties and the non-monotonicity of the resource curse: Evidence from US military influence and oil value"
+Replication files for the paper "Third parties and the non-monotonicity of the resource curse: Evidence from US military influence and oil value."
 
 ## Folder structure
 
