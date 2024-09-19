@@ -6,7 +6,7 @@
 
 Collaborators: Giacomo Battiston, Matteo Bizzarri and Riccardo Franceschin
 
-Replication files for the paper "Third-Party Interest, Resource Value, and the Likelihood of Conflict"
+Replication files for the paper "Third parties and the non-monotonicity of the resource curse: Evidence from US military influence and oil value"
 
 ## Folder structure
 
