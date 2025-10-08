@@ -7,8 +7,8 @@ if "`c(username)'" == "giacomobattiston" {
 		global git "Documents/GitHub/technology_conflict/"
 }
 else {
-	cd "C:\Users\Franceschin\Documents\GitHub\technology_conflict"
-	global main "C:\Users\Franceschin\Dropbox\bbf\technology_conflict\"
+	cd "C:\Users\ricfr\Documents\GitHub\technology_conflict"
+	global main "C:\Users\ricfr\Dropbox\bbf\technology_conflict\"
 }
 
 ******************************* OIL PRICES *************************************

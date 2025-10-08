@@ -17,7 +17,7 @@ else {
 use ${main}1_data\Koga\KOGA_ISQ2011.dta,clear
 keep if ccode2==2
 keep ccode1 year mili_intervention distance ethnictie Coldwar con_polity third_polity ///
- lratio majpow2 premilint ethltie typeint reb_reistr regime  
+ lratio majpow2 premilint ethltie typeint reb_relstr regime  
 rename ccode1 ccode
 *replace vietnam with same number we use in other dataset
 replace ccode=816 if ccode==817
@@ -56,7 +56,7 @@ they are:
 */
 drop if _merge==2
 g us_interv=0
-replace us_interv=1 if _merge==3&typeint>0
+replace us_interv=1 if _merge==3&mili_intervention>0
 drop _merge
 *us_interv is a dummy that takes 1 if US intervened in the country in that year, we should re-run the regressions with this dummy
 
